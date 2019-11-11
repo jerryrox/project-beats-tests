@@ -15,7 +15,7 @@ namespace PBFramework.Networking.Tests
         public IEnumerator TestRequest()
         {
             var request = new WebRequest("file://" + Path.Combine(Application.streamingAssetsPath, "TestText.txt"));
-            var progress = new SimpleProgress();
+            var progress = new ReturnableProgress<IWebRequest>();
             request.Request(progress);
 
             // Max threshold
@@ -50,7 +50,7 @@ namespace PBFramework.Networking.Tests
         public IEnumerator TestRetry()
         {
             var request = new WebRequest("http://23.237.126.42/ost/touhou-youyoumu-perfect-cherry-blossom/vrdyenmp/%5B01%5D%20Youyoumu%20~%20Snow%20or%20Cherry%20Petal.mp3");
-            var progress = new SimpleProgress();
+            var progress = new ReturnableProgress<IWebRequest>();
             request.Request(progress);
 
             Debug.Log("Requesting to: " + request.Url);
@@ -94,7 +94,7 @@ namespace PBFramework.Networking.Tests
         public IEnumerator TestTimeout()
         {
             var request = new WebRequest("http://23.237.126.42/ost/touhou-youyoumu-perfect-cherry-blossom/vrdyenmp/%5B01%5D%20Youyoumu%20~%20Snow%20or%20Cherry%20Petal.mp3", timeout: 2);
-            var progress = new SimpleProgress();
+            var progress = new ReturnableProgress<IWebRequest>();
             request.Request(progress);
 
             while(!request.IsDone)
@@ -115,6 +115,100 @@ namespace PBFramework.Networking.Tests
                 Assert.IsNotNull(request.Response.ErrorMessage);
                 Debug.Log("Result was false");
             }
+        }
+
+        [UnityTest]
+        public IEnumerator TestPromiseStart()
+        {
+            var request = new WebRequest("file://" + Path.Combine(Application.streamingAssetsPath, "TestText.txt"));
+            IPromise promise = request;
+            Assert.IsNotNull(promise);
+
+            // Register callback on finish.
+            bool onFinishedCalled = false;
+            promise.OnFinished += () =>
+            {
+                onFinishedCalled = true;
+            };
+            Assert.IsFalse(onFinishedCalled);
+
+            // Start the request.
+            promise.Start();
+
+            // Setup time limit.
+            float limit = 4;
+            while (!promise.IsFinished)
+            {
+                limit -= Time.deltaTime;
+                if(limit <= 0)
+                    Assert.Fail("Request took too long! perhaps it's not running at all?");
+                yield return null;
+            }
+
+            Assert.IsTrue(promise.IsFinished);
+            Assert.IsTrue(request.IsDone);
+            Assert.IsTrue(onFinishedCalled);
+
+            var response = request.Response;
+            Assert.IsTrue(response.IsSuccess);
+            Assert.AreEqual("My random text for testing.", response.TextData);
+            Assert.AreEqual(request, promise.Result);
+        }
+
+        [UnityTest]
+        public IEnumerator TestPromiseRevoke()
+        {
+            var request = new WebRequest("http://23.237.126.42/ost/touhou-youyoumu-perfect-cherry-blossom/vrdyenmp/%5B01%5D%20Youyoumu%20~%20Snow%20or%20Cherry%20Petal.mp3");
+            IPromise promise = request;
+            Assert.IsNotNull(promise);
+
+            // Register callback
+            bool onFinishedCalled = false;
+            promise.OnFinished += () =>
+            {
+                onFinishedCalled = true;
+            };
+            Assert.IsFalse(onFinishedCalled);
+
+            // Start request
+            promise.Start();
+
+            // Wait till certain progress level
+            while (request.Progress < 0.4f)
+            {
+                Debug.Log("Progress: " + request.Progress);
+                yield return null;
+            }
+
+            Assert.IsFalse(request.IsDone);
+            Assert.IsFalse(promise.IsFinished);
+
+            // Revoke the request.
+            promise.Revoke();
+            Assert.IsFalse(request.IsDone);
+            Assert.IsFalse(promise.IsFinished);
+
+            // See if any progress is changing even after revoke.
+            float lastProgress = request.Progress;
+            float limit = 3;
+            while (true)
+            {
+                limit -= Time.deltaTime;
+                if (request.Progress != lastProgress)
+                {
+                    Debug.Log("New progress detected! " + request.Progress);
+                    Assert.Fail("There mustn't be any progressing going on!");
+                }
+                if(limit <= 0)
+                    break;
+                yield return null;
+            }
+
+            Assert.IsNull(request.Response);
+            Assert.IsFalse(request.IsDone);
+            Assert.IsFalse(promise.IsFinished);
+            Assert.AreEqual(request, promise.Result);
+            Assert.IsFalse(onFinishedCalled);
         }
     }
 }

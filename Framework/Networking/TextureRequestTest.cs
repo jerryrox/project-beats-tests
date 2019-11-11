@@ -55,5 +55,38 @@ namespace PBFramework.Networking.Tests
 
             Debug.Log("Saved");
         }
+
+        [UnityTest]
+        public IEnumerator TestPromise()
+        {
+            var request = new TextureRequest("https://cdn-www.bluestacks.com/bs-images/Banner_com.sunborn.girlsfrontline.en-1.jpg", false);
+            IPromise<Texture2D> promise = request;
+            Assert.AreEqual(request, promise);
+            Assert.IsNull(promise.Result);
+
+            // Receive via callback
+            Texture2D texture = null;
+            promise.OnFinishedResult += (c) => texture = c;
+
+            // Request
+            promise.Start();
+            Assert.IsFalse(promise.IsFinished);
+            Assert.IsFalse(request.IsDone);
+
+            // Wait till finish
+            while (!promise.IsFinished)
+            {
+                Debug.Log("Progress: " + request.Progress);
+                yield return null;
+            }
+
+            Assert.IsTrue(promise.IsFinished);
+            Assert.IsTrue(request.IsDone);
+            Assert.IsNotNull(request.Response);
+            Assert.IsNotNull(promise.Result);
+            Assert.IsNotNull(texture);
+            Assert.AreEqual(promise.Result, request.Response.TextureData);
+            Assert.AreEqual(promise.Result, texture);
+        }
     }
 }
