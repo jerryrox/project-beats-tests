@@ -85,7 +85,9 @@ namespace PBFramework.Networking.Tests
             Assert.IsTrue(request.IsDone);
             Assert.IsNotNull(request.Response);
             Assert.IsNotNull(promise.Result);
+            Assert.IsNotNull(clip);
             Assert.AreEqual(promise.Result, request.Response.AudioData);
+            Assert.AreEqual(promise.Result, clip);
         }
     }
 }
