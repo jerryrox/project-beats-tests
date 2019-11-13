@@ -43,6 +43,8 @@ namespace PBFramework.Allocation.Caching.Tests
                     Assert.Fail("Request should've finished by now.");
                 yield return null;
             }
+            Assert.AreEqual(1, listener.Progress);
+            Assert.AreEqual(1, listener2.Progress);
             Assert.IsNotNull(listener.Value);
             Assert.IsNotNull(listener2.Value);
             Assert.IsTrue(cacher.IsCached("Key1"));
@@ -188,6 +190,7 @@ namespace PBFramework.Allocation.Caching.Tests
                 {
                     Limit = 1f
                 };
+                timer.OnProgress += SetProgress;
                 timer.OnFinished += delegate
                 {
                     DoFinish(new Dummy() {

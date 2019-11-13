@@ -16,6 +16,8 @@ namespace PBFramework.Tests
             remove => OnFinishedResult -= (v) => value();
         }
 
+        public event Action<float> OnProgress;
+
         public T Result { get; set; }
         object IPromise.Result
         {
@@ -23,6 +25,8 @@ namespace PBFramework.Tests
         }
 
         public bool IsFinished { get; set; }
+
+        public float Progress { get; private set; }
 
         public virtual void Start()
         {
@@ -38,6 +42,12 @@ namespace PBFramework.Tests
         {
             Result = value;
             OnFinishedResult(value);
+        }
+
+        public virtual void SetProgress(float progress)
+        {
+            Progress = progress;
+            OnProgress?.Invoke(progress);
         }
     }
 }

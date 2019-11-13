@@ -68,6 +68,7 @@ namespace PBFramework.Threading.Tests
                 Assert.IsFalse(timer.IsFinished);
 
                 timer.Pause();
+                curTime = timer.Current;
                 Assert.AreEqual(curTime, timer.Current, Delta);
                 Assert.IsFalse(timer.IsRunning);
                 Assert.IsFalse(timer.IsFinished);
@@ -105,8 +106,6 @@ namespace PBFramework.Threading.Tests
 
         private IEnumerator TestLimit(ITimer timer)
         {
-            var progress = new SimpleProgress();
-            timer.Progress = progress;
             timer.Limit = 1f;
 
             bool finished = false;
@@ -134,6 +133,7 @@ namespace PBFramework.Threading.Tests
             yield return new WaitForSecondsRealtime(1.25f);
             try
             {
+                Assert.AreEqual(1f, timer.Progress);
                 Assert.IsTrue(finished);
                 Assert.IsTrue(finisehd2);
                 Assert.IsFalse(timer.IsRunning);

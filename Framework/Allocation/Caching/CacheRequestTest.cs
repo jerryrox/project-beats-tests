@@ -54,10 +54,14 @@ namespace PBFramework.Allocation.Caching.Tests
                 remove => OnFinishedResult -= (v) => value();
             }
 
+            public event Action<float> OnProgress;
+
             public bool Result { get; set; } = false;
             object IPromise.Result => Result;
 
             public bool IsFinished { get; private set; }
+
+            public float Progress { get; }
 
             public void Start()
             {
