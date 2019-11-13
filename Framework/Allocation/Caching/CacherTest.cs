@@ -15,8 +15,8 @@ namespace PBFramework.Allocation.Caching.Tests
         [UnityTest]
         public IEnumerator TestRequest()
         {
-            var listener = new ReturnableProgress<Dummy>();
-            var listener2 = new ReturnableProgress<Dummy>();
+            var listener = new ReturnableProgress<DummyCacherData>();
+            var listener2 = new ReturnableProgress<DummyCacherData>();
 
             var cacher = new DummyCacher();
             cacher.Request("Key1", listener);
@@ -58,9 +58,9 @@ namespace PBFramework.Allocation.Caching.Tests
         public IEnumerator TestRemove()
         {
             var cacher = new DummyCacher();
-            var listener = new ReturnableProgress<Dummy>();
-            var listener2 = new ReturnableProgress<Dummy>();
-            var listener3 = new ReturnableProgress<Dummy>();
+            var listener = new ReturnableProgress<DummyCacherData>();
+            var listener2 = new ReturnableProgress<DummyCacherData>();
+            var listener3 = new ReturnableProgress<DummyCacherData>();
 
             var id = cacher.Request("AA", listener);
             var id2 = cacher.Request("BB", listener2);
@@ -106,10 +106,10 @@ namespace PBFramework.Allocation.Caching.Tests
         public IEnumerator TestDataLockRequest()
         {
             var cacher = new DummyCacher();
-            var listeners = new ReturnableProgress<Dummy>[] {
-                new ReturnableProgress<Dummy>(),
-                new ReturnableProgress<Dummy>(),
-                new ReturnableProgress<Dummy>(),
+            var listeners = new ReturnableProgress<DummyCacherData>[] {
+                new ReturnableProgress<DummyCacherData>(),
+                new ReturnableProgress<DummyCacherData>(),
+                new ReturnableProgress<DummyCacherData>(),
             };
             var ids = new uint[3];
 
@@ -139,10 +139,10 @@ namespace PBFramework.Allocation.Caching.Tests
         public IEnumerator TestDataLockCached()
         {
             var cacher = new DummyCacher();
-            var listeners = new ReturnableProgress<Dummy>[] {
-                new ReturnableProgress<Dummy>(),
-                new ReturnableProgress<Dummy>(),
-                new ReturnableProgress<Dummy>(),
+            var listeners = new ReturnableProgress<DummyCacherData>[] {
+                new ReturnableProgress<DummyCacherData>(),
+                new ReturnableProgress<DummyCacherData>(),
+                new ReturnableProgress<DummyCacherData>(),
             };
 
             for (int i = 0; i < listeners.Length; i++)
@@ -159,64 +159,5 @@ namespace PBFramework.Allocation.Caching.Tests
             Assert.IsTrue(listeners[listeners.Length - 1].Value.IsDestroyed);
 
         }
-
-
-        private class DummyCacher : Cacher<string, Dummy> {
-
-            public override string StringifyKey(string key) => key;
-
-            protected override IPromise<Dummy> CreateRequest(string key) => new Requester(key);
-
-            protected override void DestroyData(Dummy data)
-            {
-                data.IsDestroyed = true;
-            }
-        }
-
-        private class Requester : DummyRequester<Dummy>
-        {
-            private string key;
-            private SynchronizedTimer timer;
-
-
-            public Requester(string key) => this.key = key;
-
-            public override void Start()
-            {
-                if(timer != null) return;
-
-                base.Start();
-                timer = new SynchronizedTimer()
-                {
-                    Limit = 1f
-                };
-                timer.OnProgress += SetProgress;
-                timer.OnFinished += delegate
-                {
-                    DoFinish(new Dummy() {
-                        Key = key,
-                        IsDestroyed = false
-                    });
-                    timer = null;
-                };
-                timer.Start();
-            }
-
-            public override void Revoke()
-            {
-                if(timer == null) return;
-
-                base.Revoke();
-                timer.Stop();
-                timer = null;
-            }
-        }
-
-        private class Dummy {
-
-            public string Key { get; set; } = null;
-
-            public bool IsDestroyed { get; set; } = false;
-        }
-}
+    }
 }
