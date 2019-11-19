@@ -64,8 +64,12 @@ namespace PBFramework.DB.Tests
             query = new DatabaseQuery<TestEntity>(new DummyProcessor());
             query.Where(e => e["LastName"].ToString().Equals("LN0"));
 
-            result = query.GetResult();
-            Assert.AreEqual(0, result.Count);
+            try
+            {
+                result = query.GetResult();
+                Assert.Fail("There should've been an exception!");
+            }
+            catch (Exception) {}
         }
 
         [Test]
