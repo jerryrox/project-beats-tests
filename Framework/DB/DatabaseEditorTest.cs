@@ -179,6 +179,8 @@ namespace PBFramework.DB.Tests
                 }
             }
 
+            public void Wipe() { }
+
             public JObject LoadRaw(string key, bool requireLock = true) => null;
 
             public TestEntity LoadData(string key, bool requireLock = true) => null;

@@ -198,6 +198,8 @@ namespace PBFramework.DB.Tests
 
             public void RemoveData(List<TestEntity> data) { }
 
+            public void Wipe() { }
+
             public JObject LoadRaw(string key, bool requireLock = true)
             {
                 var path = Path.Combine(dataDirectory.FullName, $"{key}.data");

@@ -291,6 +291,43 @@ namespace PBFramework.DB.Tests
             Assert.AreEqual("LN0", entity.LastName);
         }
 
+        [Test]
+        public void TestWipe()
+        {
+            var processor = new DatabaseProcessor<TestEntity>(new DummyDatabase());
+            processor.LoadIndex();
+
+            var dbDir = new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "DB"));
+            var backupDir = new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "DB_Backup"));
+
+            try
+            {
+                dbDir.Copy(backupDir);
+            }
+            catch (Exception e)
+            {
+                Debug.Log("Failed to make a backup before testing!: " + e.Message);
+                throw e;
+            }
+
+            try
+            {
+                Assert.AreEqual(5, processor.Index.GetAll().Count);
+                processor.Wipe();
+                Assert.AreEqual(0, processor.Index.GetAll().Count);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            finally
+            {
+                // Revert
+                dbDir.Delete(true);
+                backupDir.MoveTo(dbDir.FullName);
+            }
+        }
+
 
         private class DummyDatabase : IDatabase<TestEntity>
         {
@@ -304,6 +341,8 @@ namespace PBFramework.DB.Tests
             public IDatabaseEditor<TestEntity> Edit() => null;
 
             public IDatabaseQuery<TestEntity> Query() => null;
+
+            public void Wipe() { }
 
             public void Dispose() { }
         }
