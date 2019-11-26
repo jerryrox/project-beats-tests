@@ -18,7 +18,7 @@ namespace PBFramework.Dependencies.Tests
             {
                 dependency.Cache(null);
             }
-            catch (ArgumentNullException e)
+            catch (ArgumentNullException)
             {
             }
 
@@ -45,7 +45,7 @@ namespace PBFramework.Dependencies.Tests
             {
                 dependency.CacheAs<Dummy>(null);
             }
-            catch (ArgumentNullException e)
+            catch (ArgumentNullException)
             {
             }
 

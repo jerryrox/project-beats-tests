@@ -43,7 +43,7 @@ namespace PBFramework.DB.Tests
                 result.Reset();
                 Assert.Fail("This should've failed!");
             }
-            catch (NotSupportedException e)
+            catch (NotSupportedException)
             {
                 Debug.Log("Caught NotSupportedException.");
             }

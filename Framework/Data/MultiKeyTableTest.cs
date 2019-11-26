@@ -20,14 +20,14 @@ namespace PBFramework.Data.Tests
                 table.AddKeyset(null, null);
                 Assert.Fail("The statement was supposed to throw an exception.");
             }
-            catch (ArgumentException e) {}
+            catch (ArgumentException) {}
             Assert.AreEqual(0, table.KeysetCount);
             try
             {
                 table.AddKeyset("", null);
                 Assert.Fail("The statement was supposed to throw an exception.");
             }
-            catch (ArgumentException e) {}
+            catch (ArgumentException) {}
             Assert.AreEqual(0, table.KeysetCount);
 
             try
@@ -35,7 +35,7 @@ namespace PBFramework.Data.Tests
                 table.AddKeyset("a", null);
                 Assert.Fail("The statement was supposed to throw an exception.");
             }
-            catch (ArgumentNullException e) {}
+            catch (ArgumentNullException) {}
             Assert.AreEqual(0, table.KeysetCount);
 
             // Add a proper keyset first
@@ -47,7 +47,7 @@ namespace PBFramework.Data.Tests
                 table.AddKeyset("Id", d => d.Name);
                 Assert.Fail("The statement was supposed to throw an exception.");
             }
-            catch (DuplicateKeyException e)
+            catch (DuplicateKeyException)
             {
             }
             Assert.AreEqual(1, table.KeysetCount);

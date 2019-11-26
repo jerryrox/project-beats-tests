@@ -66,6 +66,8 @@ namespace PBFramework.Allocation.Caching.Tests
             public void Start()
             {
                 IsFinished = false;
+
+                OnProgress?.Invoke(0);
             }
 
             public void Revoke()
@@ -77,6 +79,7 @@ namespace PBFramework.Allocation.Caching.Tests
             {
                 IsFinished = true;
                 Result = result;
+                OnProgress?.Invoke(1);
                 OnFinishedResult?.Invoke(result);
             }
         }
