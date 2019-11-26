@@ -162,7 +162,7 @@ namespace PBFramework.DB.Tests
             }
             finally
             {
-                var newDataFile = Path.Combine(Application.streamingAssetsPath, "data/00000000-0000-0000-0000-000000000005.data");
+                var newDataFile = Path.Combine(Application.streamingAssetsPath, "DB/data/00000000-0000-0000-0000-000000000005.data");
                 if (File.Exists(newDataFile))
                 {
                     File.Delete(newDataFile);
@@ -302,7 +302,7 @@ namespace PBFramework.DB.Tests
 
             try
             {
-                dbDir.Copy(backupDir);
+                dbDir.Copy(backupDir, true);
             }
             catch (Exception e)
             {
