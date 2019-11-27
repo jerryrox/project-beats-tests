@@ -51,7 +51,7 @@ namespace PBFramework.Utils.Tests
                     IOUtils.CopyDirectory(from, to, false);
                     Assert.Fail();
                 }
-                catch (Exception e) {}
+                catch (Exception) {}
                 Assert.IsTrue(from.Exists);
                 Assert.IsTrue(fromFile.Exists);
                 Assert.AreEqual("test2", File.ReadAllText(fromFile.FullName));
