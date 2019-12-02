@@ -176,15 +176,26 @@ namespace PBFramework.Audio.Tests
             controller.IsLoop = true;
 
             controller.Play();
-            yield return new WaitForSeconds(audio.Duration / 1000f * 2.5f);
+            for (int i = 0; i < 2; i++)
+            {
+                yield return new WaitForSeconds(audio.Duration / 1000f + 0.05f);
+                Assert.AreEqual(i + 1, loopCount);
+            }
             controller.Stop();
             Assert.AreEqual(2, loopCount);
 
+            yield return new WaitForSeconds(1f);
+
             controller.LoopTime = audio.Duration / 2f;
-            loopCount = 0;
-            controller.Seek(audio.Duration / 2f);
+            // controller.Seek(audio.Duration / 2f);
             controller.Play();
-            yield return new WaitForSeconds(audio.Duration / 1000f / 2f * 2.5f);
+            controller.Seek(audio.Duration / 2f);
+            loopCount = 0;
+            for (int i = 0; i < 2; i++)
+            {
+                yield return new WaitForSeconds(audio.Duration / 1000f / 2f + 0.05f);
+                Assert.AreEqual(i + 1, loopCount);
+            }
             controller.Stop();
             Assert.AreEqual(2, loopCount);
         }
