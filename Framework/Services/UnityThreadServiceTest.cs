@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -67,6 +69,46 @@ namespace PBFramework.Services.Tests
             Assert.Greater(dummy.I, 0, "Dummy's I shouldn't be 0 or less!!");
             Assert.AreEqual(true, dummy.DidRun);
             Assert.IsFalse(dummy.Finished);
+        }
+
+        [UnityTest]
+        public IEnumerator TestDispatch()
+        {
+            bool finished = false;
+
+            int unityThread = Thread.CurrentThread.ManagedThreadId;
+
+            UnityThreadService.Initialize();
+            Task.Run(() =>
+            {
+                Assert.AreNotEqual(unityThread, Thread.CurrentThread.ManagedThreadId);
+                Thread.Sleep(500);
+                Assert.IsTrue((bool)UnityThreadService.Dispatch(() => finished = true));
+            });
+            while (!finished)
+            {
+                yield return null;
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator TestDispatchUnattended()
+        {
+            bool finished = false;
+
+            int unityThread = Thread.CurrentThread.ManagedThreadId;
+
+            UnityThreadService.Initialize();
+            Task.Run(() =>
+            {
+                Assert.AreNotEqual(unityThread, Thread.CurrentThread.ManagedThreadId);
+                Thread.Sleep(500);
+                UnityThreadService.DispatchUnattended(() => finished = true);
+            });
+            while (!finished)
+            {
+                yield return null;
+            }
         }
 
         IEnumerator MyProcess(Dummy dummy)
