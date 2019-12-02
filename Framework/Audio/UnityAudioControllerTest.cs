@@ -160,6 +160,35 @@ namespace PBFramework.Audio.Tests
             catch (Exception) { }
         }
 
+        [UnityTest]
+        public IEnumerator TestLoop()
+        {
+            IAudio audio = null;
+            yield return LoadAudio(a => audio = a);
+
+            var controller = CreateController();
+
+            int loopCount = 0;
+            controller.OnLoop += () => loopCount++;
+            
+            controller.MountAudio(audio);
+            controller.LoopTime = 0f;
+            controller.IsLoop = true;
+
+            controller.Play();
+            yield return new WaitForSeconds(audio.Duration / 1000f * 2.5f);
+            controller.Stop();
+            Assert.AreEqual(2, loopCount);
+
+            controller.LoopTime = audio.Duration / 2f;
+            loopCount = 0;
+            controller.Seek(audio.Duration / 2f);
+            controller.Play();
+            yield return new WaitForSeconds(audio.Duration / 1000f / 2f * 2.5f);
+            controller.Stop();
+            Assert.AreEqual(2, loopCount);
+        }
+
         private DummyController CreateController()
         {
             return new GameObject("controller").AddComponent<DummyController>();
