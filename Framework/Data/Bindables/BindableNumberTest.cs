@@ -14,7 +14,7 @@ namespace PBFramework.Data.Bindables.Tests
         {
             double lastUpdated = 0.0;
             var bindable = new BindableDouble();
-            bindable.OnValueChanged += (v) => lastUpdated = v;
+            bindable.OnValueChanged += (v, _) => lastUpdated = v;
 
             Assert.AreEqual(double.MinValue, bindable.MinValue, DoubleDelta);
             Assert.AreEqual(double.MaxValue, bindable.MaxValue, DoubleDelta);
@@ -30,7 +30,7 @@ namespace PBFramework.Data.Bindables.Tests
             Assert.AreEqual(2.0, lastUpdated, DoubleDelta);
 
             bindable = new BindableDouble(5, -100, 100);
-            bindable.OnValueChanged += (v) => lastUpdated = v;
+            bindable.OnValueChanged += (v, _) => lastUpdated = v;
 
             Assert.AreEqual(-100.0, bindable.MinValue, DoubleDelta);
             Assert.AreEqual(100.0, bindable.MaxValue, DoubleDelta);
@@ -47,7 +47,7 @@ namespace PBFramework.Data.Bindables.Tests
         {
             float lastUpdated = 0.0f;
             var bindable = new BindableFloat();
-            bindable.OnValueChanged += (v) => lastUpdated = v;
+            bindable.OnValueChanged += (v, _) => lastUpdated = v;
 
             Assert.AreEqual(float.MinValue, bindable.MinValue, FloatDelta);
             Assert.AreEqual(float.MaxValue, bindable.MaxValue, FloatDelta);
@@ -63,7 +63,7 @@ namespace PBFramework.Data.Bindables.Tests
             Assert.AreEqual(2.0f, lastUpdated, FloatDelta);
 
             bindable = new BindableFloat(5, -100, 100);
-            bindable.OnValueChanged += (v) => lastUpdated = v;
+            bindable.OnValueChanged += (v, _) => lastUpdated = v;
 
             Assert.AreEqual(-100.0f, bindable.MinValue, FloatDelta);
             Assert.AreEqual(100.0f, bindable.MaxValue, FloatDelta);
@@ -80,7 +80,7 @@ namespace PBFramework.Data.Bindables.Tests
         {
             int lastUpdated = 0;
             var bindable = new BindableInt();
-            bindable.OnValueChanged += (v) => lastUpdated = v;
+            bindable.OnValueChanged += (v, _) => lastUpdated = v;
 
             Assert.AreEqual(int.MinValue, bindable.MinValue);
             Assert.AreEqual(int.MaxValue, bindable.MaxValue);
@@ -96,7 +96,7 @@ namespace PBFramework.Data.Bindables.Tests
             Assert.AreEqual(2, lastUpdated);
 
             bindable = new BindableInt(5, -100, 100);
-            bindable.OnValueChanged += (v) => lastUpdated = v;
+            bindable.OnValueChanged += (v, _) => lastUpdated = v;
 
             Assert.AreEqual(-100, bindable.MinValue);
             Assert.AreEqual(100, bindable.MaxValue);

@@ -27,11 +27,11 @@ namespace PBFramework.Data.Bindables.Tests
             Dummy d2 = new Dummy();
 
             var dummy = new Bindable<Dummy>();
-            dummy.OnValueChanged += (v) => {
+            dummy.OnValueChanged += (v, _) => {
                 d1 = v;
                 onValueChangedCalled = true;
             };
-            dummy.OnRawValueChanged += (v) => {
+            dummy.OnRawValueChanged += (v, _) => {
                 d2 = v as Dummy;
                 onRawValueChangedCalled = true;
             };
@@ -59,6 +59,55 @@ namespace PBFramework.Data.Bindables.Tests
 
             Assert.AreEqual(d4, d1);
             Assert.AreEqual(d4, d2);
+        }
+
+        // TODO: Add test case for TriggerWhenDifferent
+        [Test]
+        public void TestTriggerWhenDifferent()
+        {
+            var dummy1 = new Dummy();
+            var dummy2 = new Dummy();
+
+            int checkIndex = 0;
+            Action<Dummy, Dummy> sameCheck = (x, y) =>
+            {
+                Assert.AreEqual(x, y);
+                checkIndex++;
+            };
+            Action<Dummy, Dummy> differentCheck = (x, y) =>
+            {
+                Assert.AreNotEqual(x, y);
+                checkIndex++;
+            };
+
+            var bindable = new Bindable<Dummy>(dummy1);
+
+            bindable.OnValueChanged += sameCheck;
+            bindable.Value = dummy1;
+            Assert.AreEqual(1, checkIndex);
+            bindable.OnValueChanged -= sameCheck;
+
+            bindable.OnValueChanged += differentCheck;
+            bindable.Value = dummy2;
+            Assert.AreEqual(2, checkIndex);
+            bindable.OnValueChanged -= differentCheck;
+
+            bindable.TriggerWhenDifferent = true;
+
+            bindable.OnValueChanged += sameCheck;
+            bindable.Value = dummy2;
+            Assert.AreEqual(2, checkIndex);
+            bindable.OnValueChanged -= sameCheck;
+
+            bindable.OnValueChanged += differentCheck;
+            bindable.Value = dummy1;
+            Assert.AreEqual(3, checkIndex);
+            bindable.OnValueChanged -= differentCheck;
+
+            bindable.OnValueChanged += sameCheck;
+            bindable.Value = dummy1;
+            Assert.AreEqual(3, checkIndex);
+            bindable.OnValueChanged -= sameCheck;
         }
 
         private class Dummy

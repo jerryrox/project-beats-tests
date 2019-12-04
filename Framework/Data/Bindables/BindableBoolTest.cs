@@ -10,7 +10,7 @@ namespace PBFramework.Data.Bindables.Tests
         {
             bool lastUpdated = false;
             var bindable = new BindableBool();
-            bindable.OnValueChanged += (v) => lastUpdated = v;
+            bindable.OnValueChanged += (v, _) => lastUpdated = v;
 
             Assert.IsFalse(bindable.Value);
 
