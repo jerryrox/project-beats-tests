@@ -61,7 +61,6 @@ namespace PBFramework.Data.Bindables.Tests
             Assert.AreEqual(d4, d2);
         }
 
-        // TODO: Add test case for TriggerWhenDifferent
         [Test]
         public void TestTriggerWhenDifferent()
         {
