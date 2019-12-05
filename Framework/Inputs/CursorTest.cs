@@ -5,7 +5,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace PBFramework.Inputs
+namespace PBFramework.Inputs.Tests
 {
     public class CursorTest {
 
@@ -37,7 +37,7 @@ namespace PBFramework.Inputs
             Assert.AreEqual(0f, cursor.RawPosition.x, Delta);
             Assert.AreEqual(0f, cursor.RawPosition.y, Delta);
             Assert.AreEqual(-640f, cursor.Position.x, Delta);
-            Assert.AreEqual(360f, cursor.Position.y, Delta);
+            Assert.AreEqual(-360f, cursor.Position.y, Delta);
 
             cursor.Process(Screen.width, Screen.height);
             Assert.AreEqual(Screen.width, cursor.RawPosition.x, Delta);
@@ -45,9 +45,9 @@ namespace PBFramework.Inputs
             Assert.AreEqual(Screen.width, cursor.RawDelta.x, Delta);
             Assert.AreEqual(Screen.height, cursor.RawDelta.y, Delta);
             Assert.AreEqual(640, cursor.Position.x, Delta);
-            Assert.AreEqual(-360, cursor.Position.y, Delta);
+            Assert.AreEqual(360, cursor.Position.y, Delta);
             Assert.AreEqual(1280f, cursor.Delta.x, Delta);
-            Assert.AreEqual(-720f, cursor.Delta.y, Delta);
+            Assert.AreEqual(720f, cursor.Delta.y, Delta);
         }
 
         private class DummyCursor : Cursor
