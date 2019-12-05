@@ -21,36 +21,21 @@ namespace PBFramework.Inputs.Tests
                 new MouseCursor(KeyCode.Mouse1, environment.Resolution)
             };
 
+            environment.SetActivatable(cursors);
+            environment.ListenToState(cursors);
+
             while (environment.IsRunning)
             {
                 for (int i = 0; i < cursors.Length; i++)
                 {
-                    var active = !Input.GetKey(KeyCode.LeftShift);
-                    if (active)
+                    if (environment.IsActivated)
                     {
-                        if (!cursors[i].IsActive.Value)
-                        {
-                            cursors[i].SetActive(true);
-                            Debug.LogWarning($"Cursor {i} activated");
-                        }
-                        Assert.IsTrue(cursors[i].IsActive.Value);
-
                         cursors[i].Process();
-                        if (i == 0)
+                        if (i == 0 && Input.GetKey(KeyCode.LeftControl))
                         {
                             Debug.Log($"Raw pos: {cursors[i].RawPosition}, Delta: {cursors[i].RawDelta}");
                             Debug.Log($"Pos: {cursors[i].Position}, Delta: {cursors[i].Delta}");
                         }
-                    }
-                    else
-                    {
-                        if (cursors[i].IsActive.Value)
-                        {
-                            cursors[i].SetActive(false);
-                            cursors[i].Release();
-                            Debug.LogWarning($"Cursor {i} released");
-                        }
-                        Assert.IsFalse(cursors[i].IsActive.Value);
                     }
                 }
 
