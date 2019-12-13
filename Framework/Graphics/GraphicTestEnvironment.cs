@@ -1,16 +1,32 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
+using PBFramework.Assets.Fonts;
 using PBFramework.Dependencies;
 
 namespace PBFramework.Graphics.Tests
 {
     public class GraphicTestEnvironment : MonoBehaviour {
 
+        private ISystemFontInfo arialFont;
+
+
         public bool IsRunning { get; protected set; } = true;
+
+        public ISystemFontInfo ArialFont
+        {
+            get
+            {
+                if(arialFont != null) return arialFont;
+                arialFont = SystemFontProvider.Fonts.Where(f => f.Name.Equals("Arial")).FirstOrDefault();
+                Assert.IsNotNull(arialFont);
+                return arialFont;
+            }
+        }
 
 
         /// <summary>

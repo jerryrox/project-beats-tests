@@ -109,6 +109,59 @@ namespace PBFramework.Graphics.Tests
             }
         }
 
+        [Test]
+        public void TestAnchoredSizing()
+        {
+            var env = GraphicTestEnvironment.Create();
+            var root = env.CreateRoot(null);
+
+            var obj = root.CreateChild("obj1");
+            var child = obj.CreateChild("obj2");
+
+            obj.Size = new Vector2(500, 300);
+            Assert.AreEqual(new Vector2(500, 300), obj.Size);
+
+            child.Anchor = Anchors.MiddleStretch;
+            child.Size = new Vector2(400, 100);
+            Assert.AreEqual(new Vector2(400, 100), child.Size);
+            Assert.AreEqual(child.Width, 400, Delta);
+            Assert.AreEqual(child.Height, 100, Delta);
+            Assert.AreEqual(-100, child.RawWidth, Delta);
+            Assert.AreEqual(100, child.RawHeight, Delta);
+            child.Width = 300;
+            Assert.AreEqual(new Vector2(300, 100), child.Size);
+            Assert.AreEqual(child.Width, 300, Delta);
+            Assert.AreEqual(-200, child.RawWidth, Delta);
+
+            child.Anchor = Anchors.CenterStretch;
+            child.Size = new Vector2(200, 350);
+            Assert.AreEqual(new Vector2(200, 350), child.Size);
+            Assert.AreEqual(child.Width, 200, Delta);
+            Assert.AreEqual(child.Height, 350, Delta);
+            Assert.AreEqual(200, child.RawWidth, Delta);
+            Assert.AreEqual(50, child.RawHeight, Delta);
+            child.Height = 300;
+            Assert.AreEqual(new Vector2(200, 300), child.Size);
+            Assert.AreEqual(child.Height, 300, Delta);
+            Assert.AreEqual(0, child.RawHeight, Delta);
+
+            child.Anchor = Anchors.Fill;
+            child.Size = new Vector2(400, 400);
+            Assert.AreEqual(new Vector2(400, 400), child.Size);
+            Assert.AreEqual(child.Width, 400, Delta);
+            Assert.AreEqual(child.Height, 400, Delta);
+            Assert.AreEqual(-100, child.RawWidth, Delta);
+            Assert.AreEqual(100, child.RawHeight, Delta);
+            child.Width = 500;
+            Assert.AreEqual(new Vector2(500, 400), child.Size);
+            Assert.AreEqual(child.Width, 500, Delta);
+            Assert.AreEqual(0, child.RawWidth, Delta);
+            child.Height = 600;
+            Assert.AreEqual(new Vector2(500, 600), child.Size);
+            Assert.AreEqual(child.Height, 600, Delta);
+            Assert.AreEqual(300, child.RawHeight, Delta);
+        }
+
         [UnityTest]
         public IEnumerator TestDepth()
         {
