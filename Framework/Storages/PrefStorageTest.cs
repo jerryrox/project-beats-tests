@@ -43,6 +43,9 @@ namespace PBFramework.Storages.Tests
             storage.SetObject("obj", new Dummy());
             Assert.AreEqual("dummy", storage.GetObject<Dummy>("obj").A);
             Assert.AreEqual(10, storage.GetObject<Dummy>("obj").B);
+
+            storage.SetEnum("enum", DummyEnum.FDSA);
+            Assert.AreEqual(DummyEnum.FDSA, storage.GetEnum<DummyEnum>("enum"));
         }
 
         [Test]
@@ -106,6 +109,15 @@ namespace PBFramework.Storages.Tests
         {
             public string A = "dummy";
             public int B = 10;
+        }
+
+        private enum DummyEnum
+        {
+            Troll = 0,
+            Lolz,
+            ASDF,
+            FDSA,
+            LAZER
         }
     }
 }
