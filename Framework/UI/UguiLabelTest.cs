@@ -8,7 +8,7 @@ using UnityEngine.TestTools;
 using PBFramework.Assets.Fonts;
 using PBFramework.Graphics.Tests;
 
-namespace PBFramework.Graphics.UI.Tests
+namespace PBFramework.UI.Tests
 {
     public class UguiLabelTest {
         

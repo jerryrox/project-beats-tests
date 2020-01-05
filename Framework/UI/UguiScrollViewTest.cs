@@ -9,7 +9,7 @@ using PBFramework.Assets.Atlasing;
 using PBFramework.Graphics.Tests;
 using PBFramework.Dependencies;
 
-namespace PBFramework.Graphics.UI.Tests
+namespace PBFramework.UI.Tests
 {
     public class UguiScrollViewTest {
         

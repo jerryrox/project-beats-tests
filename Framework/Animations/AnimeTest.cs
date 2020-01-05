@@ -3,11 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.TestTools;
+using PBFramework.UI;
 using PBFramework.Assets.Atlasing;
-using PBFramework.Graphics;
-using PBFramework.Graphics.UI;
 using PBFramework.Graphics.Tests;
 using PBFramework.Dependencies;
 

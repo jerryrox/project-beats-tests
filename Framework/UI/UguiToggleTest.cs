@@ -3,14 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.TestTools;
 using PBFramework.Assets.Atlasing;
 using PBFramework.Graphics.Tests;
 using PBFramework.Dependencies;
 
-namespace PBFramework.Graphics.UI.Tests
+namespace PBFramework.UI.Tests
 {
-    public class UguiButtonTest {
+    public class UguiToggleTest {
         
         [UnityTest]
         public IEnumerator Test()
@@ -22,25 +23,22 @@ namespace PBFramework.Graphics.UI.Tests
             var env = GraphicTestEnvironment.Create();
             var root = env.CreateRoot(dependencies);
 
-            var button = root.CreateChild<UguiButton>("button");
-            button.Label.Font = env.ArialFont.ToFont();
-            button.Background.Color = Color.green;
-
-            button.Label.Text = "Press me!";
-
-            int clickCount = 0;
-            button.OnClick += () =>
-            {
-                clickCount++;
-                Debug.Log("Clicked");
-            };
-            Assert.AreEqual(0, clickCount);
-
-            button.InvokeClick();
-            Assert.AreEqual(1, clickCount);
+            var toggle = root.CreateChild<UguiToggle>("toggle");
+            toggle.Background.SpriteName = "circle-32";
+            toggle.Tick.SpriteName = "circle-16";
+            toggle.Tick.Color = Color.black;
+            toggle.Tick.Size = new Vector2(16, 16);
 
             while (env.IsRunning)
             {
+                if (Input.GetKeyDown(KeyCode.Q))
+                {
+                    toggle.UseFade = !toggle.UseFade;
+                }
+                if (Input.GetKeyDown(KeyCode.W))
+                {
+                    toggle.Value = !toggle.Value;
+                }
                 yield return null;
             }
         }

@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using NUnit.Framework;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.TestTools;
+﻿using NUnit.Framework;
 using UnityEngine.EventSystems;
-using PBFramework.Assets.Atlasing;
+using PBFramework.Graphics;
 using PBFramework.Graphics.Tests;
-using PBFramework.Dependencies;
 
-namespace PBFramework.Graphics.UI.Tests
+namespace PBFramework.UI.Tests
 {
     public class EventTriggerTest {
         

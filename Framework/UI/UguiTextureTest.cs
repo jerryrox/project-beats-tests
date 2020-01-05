@@ -9,7 +9,7 @@ using PBFramework.Graphics.Tests;
 using PBFramework.Threading;
 using PBFramework.Networking;
 
-namespace PBFramework.Graphics.UI.Tests
+namespace PBFramework.UI.Tests
 {
     public class UguiTextureTest {
         

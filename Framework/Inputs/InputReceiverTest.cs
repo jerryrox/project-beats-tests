@@ -7,8 +7,8 @@ using UnityEngine.UI;
 using UnityEngine.TestTools;
 using PBFramework.Assets.Atlasing;
 using PBFramework.Graphics;
-using PBFramework.Graphics.UI;
-using PBFramework.Graphics.UI.Tests;
+using PBFramework.UI;
+using PBFramework.UI.Tests;
 using PBFramework.Graphics.Tests;
 using PBFramework.Dependencies;
 
