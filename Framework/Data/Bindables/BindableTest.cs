@@ -8,12 +8,12 @@ namespace PBFramework.Data.Bindables.Tests
         [Test]
         public void TestCreation()
         {
-            var dummy = new Bindable<Dummy>();
+            var dummy = CreateBindable();
             Assert.AreEqual(null, dummy.Value);
             Assert.AreEqual(null, dummy.RawValue);
 
             var d = new Dummy();
-            dummy = new Bindable<Dummy>(d);
+            dummy = CreateBindable(d);
             Assert.AreEqual(d, dummy.Value);
             Assert.AreEqual(d, dummy.RawValue);
         }
@@ -26,7 +26,7 @@ namespace PBFramework.Data.Bindables.Tests
             Dummy d1 = new Dummy();
             Dummy d2 = new Dummy();
 
-            var dummy = new Bindable<Dummy>();
+            var dummy = CreateBindable();
             dummy.OnValueChanged += (v, _) => {
                 d1 = v;
                 onValueChangedCalled = true;
@@ -79,7 +79,7 @@ namespace PBFramework.Data.Bindables.Tests
                 checkIndex++;
             };
 
-            var bindable = new Bindable<Dummy>(dummy1);
+            var bindable = CreateBindable(dummy1);
 
             bindable.OnValueChanged += sameCheck;
             bindable.Value = dummy1;
@@ -109,7 +109,12 @@ namespace PBFramework.Data.Bindables.Tests
             bindable.OnValueChanged -= sameCheck;
         }
 
-        private class Dummy
+        protected virtual IBindable<Dummy> CreateBindable(Dummy d = null)
+        {
+            return new Bindable<Dummy>(d);
+        }
+
+        public class Dummy
         {
 
         }
