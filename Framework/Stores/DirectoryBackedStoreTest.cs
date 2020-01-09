@@ -177,11 +177,9 @@ namespace PBFramework.Stores.Test
         private IEnumerator InitStore(DummyStore store, int expectedCount = 0)
         {
             var progress = new EventProgress();
-            bool loaded = false;
-            progress.OnFinished += () => loaded = true;
-            store.Reload(progress);
-            while (!loaded)
-                yield return null;
+            store.Reload(progress).Wait();
+            yield return null;
+            Assert.AreEqual(1f, progress.Progress, 0.00001f);
             Assert.AreEqual(expectedCount, store.Count);
         }
 
@@ -254,19 +252,22 @@ namespace PBFramework.Stores.Test
                 return new DirectoryStorage(GetStorageDirectory());
             }
 
-            protected override DummyIndex ParseData(DirectoryInfo directory)
+            protected override DummyIndex ParseData(DirectoryInfo directory, DummyIndex data)
             {
-                var dataFile = directory.GetFiles("*.data");
-                if(dataFile.Length == 0) return null;
-
-                var json = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(dataFile[0].FullName));
-                var data = new DummyIndex()
+                if (data == null)
                 {
-                    Id = new Guid(json["Id"].ToString()),
-                    Name = json["Name"].ToString(),
-                    Age = json["Age"].Value<int>(),
-                    IsVerified = json["IsVerified"].Value<bool>(),
-                };
+                    var dataFile = directory.GetFiles("*.data");
+                    if(dataFile.Length == 0) return null;
+
+                    var json = JsonConvert.DeserializeObject<JObject>(File.ReadAllText(dataFile[0].FullName));
+                    data = new DummyIndex()
+                    {
+                        Id = new Guid(json["Id"].ToString()),
+                        Name = json["Name"].ToString(),
+                        Age = json["Age"].Value<int>(),
+                        IsVerified = json["IsVerified"].Value<bool>(),
+                    };
+                }
                 return data;
             }
 
