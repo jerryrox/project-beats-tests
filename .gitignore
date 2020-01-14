@@ -1,2 +1,3 @@
 *.meta
 .meta
+Game/Networking/API/Osu/OsuCredentials.cs
