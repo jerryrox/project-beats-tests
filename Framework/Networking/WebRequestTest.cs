@@ -204,7 +204,7 @@ namespace PBFramework.Networking.Tests
                 yield return null;
             }
 
-            Assert.IsNull(request.Response);
+            Assert.IsNotNull(request.Response);
             Assert.IsFalse(request.IsDone);
             Assert.IsFalse(promise.IsFinished);
             Assert.AreEqual(request, promise.Result);
