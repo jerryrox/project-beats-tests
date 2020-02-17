@@ -78,32 +78,43 @@ namespace PBFramework.Audio.Tests
             controller.MountAudio(audio);
             Assert.AreEqual(0f, clock.CurrentTime, Delta);
 
+            Debug.Log("A");
             controller.Play(500);
             Assert.AreEqual(-500f, clock.CurrentTime, Delta);
 
+            Debug.Log("B");
             controller.Pause();
             Assert.AreEqual(-500, clock.CurrentTime, Delta);
             yield return new WaitForSeconds(1f);
             Assert.AreEqual(-500, clock.CurrentTime, Delta);
 
+            Debug.Log("C");
             controller.Play();
             Assert.AreEqual(-500, clock.CurrentTime, Delta);
             yield return new WaitForSeconds(1f);
             Assert.AreEqual(500, clock.CurrentTime, Delta);
 
+            Debug.Log("D");
             controller.Stop();
             Assert.AreEqual(0, clock.CurrentTime, Delta);
             yield return new WaitForSeconds(1f);
             Assert.AreEqual(0, clock.CurrentTime, Delta);
 
+            Debug.Log("E");
             controller.Seek(1000);
             Assert.AreEqual(950, clock.CurrentTime, Delta);
             yield return new WaitForSeconds(1f);
             Assert.AreEqual(950, clock.CurrentTime, Delta);
 
+            Debug.Log("F");
             controller.Play(0);
             yield return new WaitForSeconds(1f);
             Assert.AreEqual(1000, clock.CurrentTime, Delta);
+
+            Debug.Log("G");
+            controller.Seek(5000);
+            Assert.AreEqual(4950, clock.CurrentTime, Delta);
+            yield return new WaitForSeconds(2f);
         }
 
         private IEnumerator LoadAudio(Action<IAudio> onFinished)

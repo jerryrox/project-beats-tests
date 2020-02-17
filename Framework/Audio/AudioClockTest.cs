@@ -68,7 +68,7 @@ namespace PBFramework.Audio.Tests
 
         private class DummyAudio : IAudio
         {
-            public float Duration { get; set; } = 1000;
+            public int Duration { get; set; } = 1000;
 
             public int Frequency { get; set; } = 22050;
 

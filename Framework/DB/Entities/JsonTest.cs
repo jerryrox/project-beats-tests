@@ -16,10 +16,10 @@ namespace PBFramework.DB.Entities.Tests
         [Test]
         public void TestSerializeToJObject()
         {
-            Dummy dummy = new Dummy()
+            Dummy dummy = new Dummy(55)
             {
                 A = 10,
-                B = "ASDF"
+                B = "ASDF",
             };
             JObject json = (JObject)JToken.FromObject(dummy);
             Debug.Log(json.ToString());
@@ -100,6 +100,19 @@ namespace PBFramework.DB.Entities.Tests
 
             [JsonIgnore]
             public bool D { get; set; }
+
+            [JsonProperty]
+            private int E { get; set; }
+
+
+            public Dummy()
+            {
+            }
+
+            public Dummy(int e)
+            {
+                E = e;
+            }
         }
     }
 }
