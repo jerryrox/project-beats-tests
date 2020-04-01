@@ -4,25 +4,40 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using PBFramework.Threading;
 
 namespace PBGame.Tests
 {
     public class TestGame : ProjectBeatsGame
     {
-        private Action onInit;
+        private static TestGame Game;
+
+        private Func<IEnumerator> onInit;
         private Action onUpdate;
-        private Action onDispose;
+        private Func<IEnumerator> onDispose;
 
         private bool isRunning = true;
         private bool shouldFail = false;
 
 
+        public override bool ShouldShowFirstView => false;
+
+
         /// <summary>
         /// Initializes a new game test environment and returns a yieldable coroutine for UnityTest cases.
         /// </summary>
-        public static Coroutine Run(Action onInit = null, Action onUpdate = null, Action onDispose = null)
+        public static Coroutine Run<T>(T tester, Func<IEnumerator> onInit = null, Action onUpdate = null, Func<IEnumerator> onDispose = null)
+            where T : class
         {
-            var testGame = new GameObject("TestGame").AddComponent<TestGame>();
+            if(Game != null)
+                throw new Exception("TestGame instance is already initialized!");
+
+            Camera camera = new GameObject("camera").AddComponent<Camera>();
+            camera.gameObject.AddComponent<AudioListener>();
+            camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = Color.black;
+
+            Game = new GameObject("TestGame").AddComponent<TestGame>();
 
             Debug.LogWarning("==============================");
             Debug.LogWarning("Test game initialized.");
@@ -30,11 +45,33 @@ namespace PBGame.Tests
             Debug.LogWarning("Press Cmd+2 to Fail test");
             Debug.LogWarning("==============================");
 
-            testGame.onInit = onInit;
-            testGame.onUpdate = onUpdate;
-            testGame.onDispose = onDispose;
+            if(tester != null)
+                Game.Dependencies.Inject(tester);
 
-            return testGame.StartCoroutine(testGame.TestRoutine());
+            Game.onInit = onInit;
+            Game.onUpdate = onUpdate;
+            Game.onDispose = onDispose;
+
+            return Game.StartCoroutine(Game.TestRoutine());
+        }
+
+        /// <summary>
+        /// Waits for the specified progress to be finished.
+        /// </summary>
+        public static Coroutine AwaitProgress(IEventProgress progress)
+        {
+            return Game.StartCoroutine(Game.ProgressYieldRoutine(progress));
+        }
+
+        /// <summary>
+        /// Handles the process for awaiting the specified progress.
+        /// </summary>
+        private IEnumerator ProgressYieldRoutine(IEventProgress progress)
+        {
+            bool isFinished = false;
+            progress.OnFinished += () => isFinished = true;
+            while (!isFinished)
+                yield return null;
         }
 
         /// <summary>
@@ -42,7 +79,8 @@ namespace PBGame.Tests
         /// </summary>
         private IEnumerator TestRoutine()
         {
-            onInit?.Invoke();
+            if (onInit != null)
+                yield return onInit.Invoke();
 
             while (isRunning)
             {
@@ -50,7 +88,8 @@ namespace PBGame.Tests
                 yield return null;
             }
 
-            onDispose?.Invoke();
+            if(onDispose != null)
+                yield return onDispose.Invoke();
 
             if(shouldFail)
                 Assert.Fail("Manually failed test.");
