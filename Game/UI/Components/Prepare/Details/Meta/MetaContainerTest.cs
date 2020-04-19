@@ -10,9 +10,6 @@ using PBGame.Tests;
 using PBGame.Graphics;
 using PBGame.Rulesets;
 using PBGame.Rulesets.Maps;
-using PBGame.Configurations;
-using PBFramework.UI;
-using PBFramework.Graphics;
 using PBFramework.Threading;
 using PBFramework.Dependencies;
 
@@ -20,7 +17,7 @@ namespace PBGame.UI.Components.Prepare.Details.Meta.Tests
 {
     public class MetaContainerTest {
 
-        private IMetaContainer metaContainer;
+        private MetaContainer metaContainer;
 
 
         [ReceivesDependency]
