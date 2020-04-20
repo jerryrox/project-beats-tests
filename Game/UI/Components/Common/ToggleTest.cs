@@ -52,7 +52,6 @@ namespace PBGame.UI.Components.Common.Tests
         {
             toggle = RootMain.CreateChild<BasicToggle>("toggle");
             toggle.Size = new Vector2(100f, 100f);
-            toggle.OnTriggered += () => toggle.IsFocused = !toggle.IsFocused;
             yield break;
         }
 
@@ -61,7 +60,6 @@ namespace PBGame.UI.Components.Common.Tests
             toggle = labelledToggle = RootMain.CreateChild<LabelledToggle>("toggle");
             labelledToggle.Size = new Vector2(200f, 200f);
             labelledToggle.LabelText = "Toggle text";
-            labelledToggle.OnTriggered += () => toggle.IsFocused = !toggle.IsFocused;
             labelledToggle.Tint = new Color(1f, 0.5f, 0.5f);
             yield break;
         }

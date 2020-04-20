@@ -32,6 +32,10 @@ namespace PBFramework.UI.Tests
             dropdown.Label.Color = Color.black;
 
             dropdown.Property.Font = font;
+            dropdown.Property.PopupBackground.Color = new Color(0f, 0f, 0f, 0.6f);
+            dropdown.Property.LabelColor = new Color(1f, 1f, 1f, 0.8f);
+            dropdown.Property.SelectedColor = new Color(1f, 1f, 1f, 1f);
+            dropdown.Property.EntryHeight = 30f;
 
             dropdown.Value = 5;
             
