@@ -87,7 +87,7 @@ namespace PBGame.UI.Components.SettingsMenu.Navbars.Tests
             navBar = RootMain.CreateChild<NavBar>("nav-bar");
             {
                 navBar.Size = new Vector2(64f, 400f);
-                navBar.SetSettings(settingsData);
+                navBar.SetSettingsData(settingsData);
             }
 
             yield break;
