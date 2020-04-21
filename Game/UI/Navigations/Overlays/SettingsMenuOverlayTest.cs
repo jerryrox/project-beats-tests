@@ -89,6 +89,7 @@ namespace PBGame.UI.Navigations.Overlays.Tests
             tabData.AddEntry(new SettingsEntryFloat(nameof(bindableFloat), bindableFloat));
             tabData.AddEntry(new SettingsEntryString(nameof(bindableString), bindableString));
             tabData.AddEntry(new SettingsEntryInt(nameof(bindableInt), bindableInt));
+            tabData.AddEntry(new SettingsEntryAction("Do action!", () => Debug.Log("Performed action")));
             tabData.AddEntry(new SettingsEntryEnum<TestType>(nameof(bindableEnum), bindableEnum));
             tabData.AddEntry(new SettingsEntryBool(nameof(bindableBool), bindableBool));
             tabData.AddEntry(new SettingsEntryBool(nameof(bindableBool2), bindableBool2));
