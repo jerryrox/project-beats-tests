@@ -34,7 +34,8 @@ namespace PBGame.UI.Components.Common.Dropdown.Tests
         
         private IEnumerator Init()
         {
-            context = new DropdownContext(OnSelectionChange);
+            context = new DropdownContext();
+            context.OnSelection += OnSelectionChange;
             context.Datas.Add(new DropdownData("Selection A", "Extra A"));
             context.Datas.Add(new DropdownData("Selection B", "Extra B"));
             context.Datas.Add(new DropdownData("Selection C", "Extra C"));
