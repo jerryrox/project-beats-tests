@@ -116,6 +116,8 @@ namespace PBFramework.Audio.Tests
 
             public float CurrentTime { get; set; } = 0f;
 
+            public float Progress { get; set; } = 0f;
+
             public bool IsLoop { get; set; } = false;
 
 
