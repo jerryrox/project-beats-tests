@@ -45,11 +45,15 @@ namespace PBGame.Networking.API.Osu.Requests.Tests
             api.IsOnline.OnValueChanged += (online, _) => isOnline = online;
             api.User.OnValueChanged += (u, _) => user = u;
 
-            var request = new LoginRequest(OsuCredentials.Username, OsuCredentials.Password);
+            var request = new LoginRequest()
+            {
+                Username = OsuCredentials.Username,
+                Password = OsuCredentials.Password
+            };
             request.OnRequestEnd += (_) => finished = true;
             api.Request(request);
-            
-            while(!finished) yield return null;
+
+            while (!finished) yield return null;
 
             var onlineUser = api.User.Value;
             Assert.IsTrue(isOnline);

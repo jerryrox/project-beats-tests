@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using PBGame.Networking.Maps;
 using PBGame.Networking.API.Osu.Responses;
+using PBGame.Networking.API.Responses;
 using Newtonsoft.Json;
 
 namespace PBGame.Networking.API.Osu.Requests.Tests
@@ -19,7 +20,7 @@ namespace PBGame.Networking.API.Osu.Requests.Tests
             var api = new OsuApi();
 
             var request = new MapsetListRequest();
-            MapsetListResponse response = null;
+            IMapsetListResponse response = null;
             request.OnRequestEnd += (r) => response = r;
             api.Request(request);
 
@@ -42,7 +43,7 @@ namespace PBGame.Networking.API.Osu.Requests.Tests
                     IsDescending = true,
                 };
 
-                MapsetListResponse response = null;
+                IMapsetListResponse response = null;
                 request.OnRequestEnd += (r) => response = r;
                 api.Request(request);
 

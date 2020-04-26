@@ -7,7 +7,7 @@ using UnityEngine.TestTools;
 using PBGame.Stores;
 using PBGame.Networking.API.Osu.Tests;
 using PBGame.Networking.API.Osu.Responses;
-using PBFramework.Storages;
+using PBGame.Networking.API.Responses;
 
 namespace PBGame.Networking.API.Osu.Requests.Tests
 {
@@ -18,8 +18,12 @@ namespace PBGame.Networking.API.Osu.Requests.Tests
         {
             var api = new OsuApi();
 
-            var request = new MapDownloadRequest(GetStore(), 61080);
-            MapDownloadResponse response = null;
+            var request = new MapDownloadRequest()
+            {
+                DownloadStore = GetStore(),
+                MapsetId = 61080
+            };
+            IMapDownloadResponse response = null;
             request.OnRequestEnd += (r) => response = r;
             api.Request(request);
 
@@ -46,8 +50,12 @@ namespace PBGame.Networking.API.Osu.Requests.Tests
             store.MapStorage.DeleteAll();
             Assert.IsFalse(store.MapStorage.Exists(fileName));
 
-            var request = new MapDownloadRequest(store, mapsetId);
-            MapDownloadResponse response = null;
+            var request = new MapDownloadRequest()
+            {
+                DownloadStore = store,
+                MapsetId = mapsetId
+            };
+            IMapDownloadResponse response = null;
             request.OnRequestEnd += (r) => response = r;
             api.Request(request);
 
@@ -62,7 +70,11 @@ namespace PBGame.Networking.API.Osu.Requests.Tests
 
         private IEnumerator WaitLogin(IApi api)
         {
-            var loginRequest = new LoginRequest(OsuCredentials.Username, OsuCredentials.Password);
+            var loginRequest = new LoginRequest()
+            {
+                Username = OsuCredentials.Username,
+                Password = OsuCredentials.Password
+            };
             api.Request(loginRequest);
 
             while(!loginRequest.Promise.IsFinished) yield return null;
