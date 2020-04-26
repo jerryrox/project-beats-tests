@@ -8,6 +8,7 @@ using PBGame.Stores;
 using PBGame.Networking.API.Osu.Tests;
 using PBGame.Networking.API.Osu.Responses;
 using PBGame.Networking.API.Responses;
+using PBGame.Networking.Maps;
 
 namespace PBGame.Networking.API.Osu.Requests.Tests
 {
@@ -21,7 +22,7 @@ namespace PBGame.Networking.API.Osu.Requests.Tests
             var request = new MapDownloadRequest()
             {
                 DownloadStore = GetStore(),
-                MapsetId = 61080
+                Mapset = GetMapset()
             };
             IMapDownloadResponse response = null;
             request.OnRequestEnd += (r) => response = r;
@@ -53,7 +54,7 @@ namespace PBGame.Networking.API.Osu.Requests.Tests
             var request = new MapDownloadRequest()
             {
                 DownloadStore = store,
-                MapsetId = mapsetId
+                Mapset = GetMapset()
             };
             IMapDownloadResponse response = null;
             request.OnRequestEnd += (r) => response = r;
@@ -86,5 +87,49 @@ namespace PBGame.Networking.API.Osu.Requests.Tests
         /// Creates a new dummy store for testing.
         /// </summary>
         private IDownloadStore GetStore() => new DummyDownloadStore();
+
+        private OnlineMapset GetMapset()
+        {
+            return new OnlineMapset()
+            {
+                Artist = "HoneyWorks meets YURiCa/Hanatan",
+                CoverImage = "https://assets.ppy.sh/beatmaps/1102807/covers/cover.jpg?1586745143",
+                CardImage = "https://assets.ppy.sh/beatmaps/1102807/covers/card.jpg?1586745143",
+                Creator = "William K",
+                FavoriteCount = 1,
+                Id = 1102807,
+                PlayCount = 198,
+                PreviewAudio = "https://b.ppy.sh/preview/1102807.mp3",
+                Source = "ずっと前から好きでした。～告白実行委員会～",
+                Status = MapStatus.Ranked,
+                Title = "Destiny ~Zutto Mae kara Kimi ga Suki Deshita~",
+                HasVideo = false,
+                HasStoryboard = false,
+                Bpm = 81,
+                DisabledInformation = null,
+                IsDisabled = false,
+                LastUpdate = DateTime.Parse("2020-04-13T02:32:02+00:00"),
+                Tags = "kokuhaku jikkou iinkai i've ive always liked you confession executive confess your love committee insert song",
+                Maps = new List<OnlineMap>() {
+                    new OnlineMap() {
+                        Accuracy = 7,
+                        AR = 8,
+                        Bpm = 81,
+                        CircleCount = 412,
+                        CS = 4,
+                        Difficulty = 4.21f,
+                        Drain = 5,
+                        HitDuration = 312,
+                        Id = 2303786,
+                        Mode = Rulesets.GameModes.OsuStandard,
+                        SliderCount = 474,
+                        SpinnerCount = 4,
+                        TotalCount = 1372,
+                        TotalDuration = 344,
+                        Version = "Fate"
+                    }
+                }
+            };
+        }
     }
 }
