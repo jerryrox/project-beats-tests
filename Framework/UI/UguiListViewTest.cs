@@ -88,6 +88,11 @@ namespace PBFramework.UI.Tests
                 if(Input.GetKeyDown(KeyCode.P))
                     listView.Limit --;
 
+                if(Input.GetKeyDown(KeyCode.K))
+                    Debug.Log("Container start pos: " + listView.ContainerStartPos);
+                if (Input.GetKeyDown(KeyCode.L))
+                    Debug.Log("Container end pos: " + listView.ContainerEndPos);
+
                 yield return null;
             }
         }
