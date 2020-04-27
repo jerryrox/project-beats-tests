@@ -47,7 +47,7 @@ namespace PBFramework.Graphics.Tests
             var root = UguiRoot.Create(dependency);
             var camera = new GameObject("Cam").AddComponent<Camera>();
             root.SetCameraRender(camera);
-            root.Resolution = new Vector2(1280f, 720f);
+            root.BaseResolution = new Vector2(1280f, 720f);
             return root;
         }
 

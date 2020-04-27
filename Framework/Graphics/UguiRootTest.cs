@@ -15,7 +15,7 @@ namespace PBFramework.Graphics.Tests
         {
             var root = UguiRoot.Create(null);
             root.SetOverlayRender();
-            root.Resolution = new Vector2(1280f, 720f);
+            root.BaseResolution = new Vector2(1280f, 720f);
 
             var canvas = root.GetComponent<Canvas>();
             var scaler = root.GetComponent<CanvasScaler>();
