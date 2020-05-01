@@ -207,5 +207,31 @@ namespace PBFramework.Graphics.Tests
                 yield return null;
             }
         }
+
+        [Test]
+        public void TestPositionAtCorner()
+        {
+            var env = GraphicTestEnvironment.Create();
+            var root = env.CreateRoot(null);
+
+            var obj = root.CreateChild("obj");
+            obj.Size = new Vector2(500, 300);
+
+            Assert.AreEqual(new Vector2(0f, 0f), obj.GetPositionAtCorner(Pivots.Center));
+            Assert.AreEqual(new Vector2(0f, 150f), obj.GetPositionAtCorner(Pivots.Top));
+            Assert.AreEqual(new Vector2(0f, -150f), obj.GetPositionAtCorner(Pivots.Bottom));
+            Assert.AreEqual(new Vector2(-250f, 0f), obj.GetPositionAtCorner(Pivots.Left));
+            Assert.AreEqual(new Vector2(250f, 0f), obj.GetPositionAtCorner(Pivots.Right));
+
+            obj.Pivot = Pivots.TopLeft;
+            Assert.AreEqual(new Vector2(250f, -150f), obj.GetPositionAtCorner(Pivots.Center));
+            Assert.AreEqual(new Vector2(250f, 0f), obj.GetPositionAtCorner(Pivots.Top));
+            Assert.AreEqual(new Vector2(250f, -300f), obj.GetPositionAtCorner(Pivots.Bottom));
+            Assert.AreEqual(new Vector2(0f, -150f), obj.GetPositionAtCorner(Pivots.Left));
+            Assert.AreEqual(new Vector2(500f, -150f), obj.GetPositionAtCorner(Pivots.Right));
+            Assert.AreEqual(new Vector2(500f, 0f), obj.GetPositionAtCorner(Pivots.TopRight));
+            Assert.AreEqual(new Vector2(0f, -300f), obj.GetPositionAtCorner(Pivots.BottomLeft));
+            Assert.AreEqual(new Vector2(500f, -300f), obj.GetPositionAtCorner(Pivots.BottomRight));
+        }
     }
 }
