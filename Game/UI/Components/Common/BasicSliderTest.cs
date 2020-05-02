@@ -10,7 +10,7 @@ using PBFramework.UI;
 using PBFramework.Graphics;
 using PBFramework.Dependencies;
 
-namespace PBGame.UI.Components.Common
+namespace PBGame.UI.Components.Common.Tests
 {
     public class BasicSliderTest {
 
