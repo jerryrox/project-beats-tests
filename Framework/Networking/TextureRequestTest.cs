@@ -60,7 +60,7 @@ namespace PBFramework.Networking.Tests
         public IEnumerator TestPromise()
         {
             var request = new TextureRequest("https://cdn-www.bluestacks.com/bs-images/Banner_com.sunborn.girlsfrontline.en-1.jpg", false);
-            IPromise<Texture2D> promise = request;
+            IExplicitPromise<Texture2D> promise = request;
             Assert.AreEqual(request, promise);
             Assert.IsNull(promise.Result);
 

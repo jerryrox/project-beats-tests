@@ -45,7 +45,7 @@ namespace PBFramework.Allocation.Caching.Tests
             Assert.IsFalse(listener2.Value);
         }
 
-        private class DummyRequest : IPromise<bool>
+        private class DummyRequest : IExplicitPromise<bool>
         {
             public event Action<bool> OnFinishedResult;
             public event Action OnFinished
@@ -57,7 +57,7 @@ namespace PBFramework.Allocation.Caching.Tests
             public event Action<float> OnProgress;
 
             public bool Result { get; set; } = false;
-            object IPromise.Result => Result;
+            object IPromise.RawResult => Result;
 
             public bool IsFinished { get; private set; }
 

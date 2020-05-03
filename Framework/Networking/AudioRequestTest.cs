@@ -61,7 +61,7 @@ namespace PBFramework.Networking.Tests
         public IEnumerator TestPromise()
         {
             var request = new AudioRequest("http://23.237.126.42/ost/touhou-youyoumu-perfect-cherry-blossom/vrdyenmp/%5B01%5D%20Youyoumu%20~%20Snow%20or%20Cherry%20Petal.mp3", false);
-            IPromise<AudioClip> promise = request;
+            IExplicitPromise<AudioClip> promise = request;
             Assert.AreEqual(request, promise);
             Assert.IsNull(promise.Result);
 

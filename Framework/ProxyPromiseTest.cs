@@ -54,7 +54,7 @@ namespace PBFramework.Tests
             promise.Resolve(1);
             Assert.IsTrue(finished);
             Assert.IsTrue(promise.IsFinished);
-            Assert.AreEqual(1, promise.Result);
+            Assert.AreEqual(1, promise.RawResult);
         }
 
         [Test]
@@ -103,14 +103,14 @@ namespace PBFramework.Tests
             promise.Resolve(1);
             Assert.AreEqual(1, result);
             Assert.AreEqual(1, promise.Result);
-            Assert.AreEqual(1, (promise as ProxyPromise).Result);
+            Assert.AreEqual(1, (promise as ProxyPromise).RawResult);
             Assert.IsTrue(finished);
             Assert.IsTrue(promise.IsFinished);
 
             promise.Resolve((object)3);
             Assert.AreEqual(3, result);
             Assert.AreEqual(3, promise.Result);
-            Assert.AreEqual(3, (promise as ProxyPromise).Result);
+            Assert.AreEqual(3, (promise as ProxyPromise).RawResult);
             Assert.IsTrue(finished);
             Assert.IsTrue(promise.IsFinished);
 

@@ -7,7 +7,7 @@ namespace PBFramework.Tests
     /// <summary>
     /// A dummy class used for testing with an IPromise implementation.
     /// </summary>
-    public class DummyRequester<T> : IPromise<T> {
+    public class DummyRequester<T> : IExplicitPromise<T> {
 
         public event Action<T> OnFinishedResult;
         public event Action OnFinished
@@ -19,7 +19,7 @@ namespace PBFramework.Tests
         public event Action<float> OnProgress;
 
         public T Result { get; set; }
-        object IPromise.Result
+        object IPromise.RawResult
         {
             get => Result;
         }

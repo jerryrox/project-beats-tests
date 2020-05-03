@@ -54,13 +54,15 @@ namespace PBGame.UI.Components.Prepare.Details.Meta.Tests
 
         private IEnumerator Init()
         {
+            string testMapId = "";
+
             // Load a test map
             Debug.Log("Loading map");
             var progress = new ReturnableProgress<IMapset>();
-            MapManager.Load(new Guid("f97d1638-e8de-4f25-b860-76f1803167c7"), progress);
+            MapManager.Load(new Guid("2e8a9917-2970-437b-bc51-ca9d4bcdd670"), progress);
             yield return TestGame.AwaitProgress(progress);
             Assert.AreEqual(1, MapManager.AllMapsets.Count);
-            Assert.AreEqual("f97d1638-e8de-4f25-b860-76f1803167c7", MapManager.AllMapsets[0].Id.ToString());
+            Assert.AreEqual("2e8a9917-2970-437b-bc51-ca9d4bcdd670", MapManager.AllMapsets[0].Id.ToString());
 
             // Create meta container display.
             metaContainer = RootMain.CreateChild<MetaContainer>();

@@ -121,7 +121,7 @@ namespace PBFramework.Networking.Tests
         public IEnumerator TestPromiseStart()
         {
             var request = new WebRequest("file://" + Path.Combine(Application.streamingAssetsPath, "TestText.txt"));
-            IPromise promise = request;
+            IExplicitPromise promise = request;
             Assert.IsNotNull(promise);
 
             // Register callback on finish.
@@ -152,14 +152,14 @@ namespace PBFramework.Networking.Tests
             var response = request.Response;
             Assert.IsTrue(response.IsSuccess);
             Assert.AreEqual("My random text for testing.", response.TextData);
-            Assert.AreEqual(request, promise.Result);
+            Assert.AreEqual(request, promise.RawResult);
         }
 
         [UnityTest]
         public IEnumerator TestPromiseRevoke()
         {
             var request = new WebRequest("http://23.237.126.42/ost/touhou-youyoumu-perfect-cherry-blossom/vrdyenmp/%5B01%5D%20Youyoumu%20~%20Snow%20or%20Cherry%20Petal.mp3");
-            IPromise promise = request;
+            IExplicitPromise promise = request;
             Assert.IsNotNull(promise);
 
             // Register callback
@@ -207,7 +207,7 @@ namespace PBFramework.Networking.Tests
             Assert.IsNotNull(request.Response);
             Assert.IsFalse(request.IsDone);
             Assert.IsFalse(promise.IsFinished);
-            Assert.AreEqual(request, promise.Result);
+            Assert.AreEqual(request, promise.RawResult);
             Assert.IsFalse(onFinishedCalled);
         }
     }

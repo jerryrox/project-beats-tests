@@ -215,8 +215,8 @@ namespace PBFramework.Audio.Tests
             request.Start();
             while(!request.IsFinished)
                 yield return null;
-            Assert.IsNotNull(request.Result);
-            AudioClip clip = request.Result as AudioClip;
+            Assert.IsNotNull(request.RawResult);
+            AudioClip clip = request.RawResult as AudioClip;
             Assert.IsNotNull(clip);
             Assert.Greater(clip.length, 0f);
         }
