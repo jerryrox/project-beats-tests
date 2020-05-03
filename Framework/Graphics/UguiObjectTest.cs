@@ -93,12 +93,12 @@ namespace PBFramework.Graphics.Tests
             obj.Scale = new Vector3(1.1f, 1.2f, 1f);
             Assert.AreEqual(new Vector3(1.1f, 1.2f, 1f), obj.Scale);
 
-            obj.Pivot = Pivots.TopRight;
-            Assert.AreEqual(GraphicHelper.GetPivot(Pivots.TopRight), obj.RawTransform.pivot);
+            obj.Pivot = PivotType.TopRight;
+            Assert.AreEqual(GraphicHelper.GetPivot(PivotType.TopRight), obj.RawTransform.pivot);
 
-            obj.Anchor = Anchors.BottomRight;
-            Assert.AreEqual(GraphicHelper.GetMinAnchor(Anchors.BottomRight), obj.RawTransform.anchorMin);
-            Assert.AreEqual(GraphicHelper.GetMinAnchor(Anchors.BottomRight), obj.RawTransform.anchorMax);
+            obj.Anchor = AnchorType.BottomRight;
+            Assert.AreEqual(GraphicHelper.GetMinAnchor(AnchorType.BottomRight), obj.RawTransform.anchorMin);
+            Assert.AreEqual(GraphicHelper.GetMinAnchor(AnchorType.BottomRight), obj.RawTransform.anchorMax);
 
             obj.Depth = 100;
             Assert.AreEqual(100, obj.Depth);
@@ -121,7 +121,7 @@ namespace PBFramework.Graphics.Tests
             obj.Size = new Vector2(500, 300);
             Assert.AreEqual(new Vector2(500, 300), obj.Size);
 
-            child.Anchor = Anchors.MiddleStretch;
+            child.Anchor = AnchorType.MiddleStretch;
             child.Size = new Vector2(400, 100);
             Assert.AreEqual(new Vector2(400, 100), child.Size);
             Assert.AreEqual(child.Width, 400, Delta);
@@ -133,7 +133,7 @@ namespace PBFramework.Graphics.Tests
             Assert.AreEqual(child.Width, 300, Delta);
             Assert.AreEqual(-200, child.RawWidth, Delta);
 
-            child.Anchor = Anchors.CenterStretch;
+            child.Anchor = AnchorType.CenterStretch;
             child.Size = new Vector2(200, 350);
             Assert.AreEqual(new Vector2(200, 350), child.Size);
             Assert.AreEqual(child.Width, 200, Delta);
@@ -145,7 +145,7 @@ namespace PBFramework.Graphics.Tests
             Assert.AreEqual(child.Height, 300, Delta);
             Assert.AreEqual(0, child.RawHeight, Delta);
 
-            child.Anchor = Anchors.Fill;
+            child.Anchor = AnchorType.Fill;
             child.Size = new Vector2(400, 400);
             Assert.AreEqual(new Vector2(400, 400), child.Size);
             Assert.AreEqual(child.Width, 400, Delta);
@@ -217,21 +217,21 @@ namespace PBFramework.Graphics.Tests
             var obj = root.CreateChild("obj");
             obj.Size = new Vector2(500, 300);
 
-            Assert.AreEqual(new Vector2(0f, 0f), obj.GetPositionAtCorner(Pivots.Center));
-            Assert.AreEqual(new Vector2(0f, 150f), obj.GetPositionAtCorner(Pivots.Top));
-            Assert.AreEqual(new Vector2(0f, -150f), obj.GetPositionAtCorner(Pivots.Bottom));
-            Assert.AreEqual(new Vector2(-250f, 0f), obj.GetPositionAtCorner(Pivots.Left));
-            Assert.AreEqual(new Vector2(250f, 0f), obj.GetPositionAtCorner(Pivots.Right));
+            Assert.AreEqual(new Vector2(0f, 0f), obj.GetPositionAtCorner(PivotType.Center));
+            Assert.AreEqual(new Vector2(0f, 150f), obj.GetPositionAtCorner(PivotType.Top));
+            Assert.AreEqual(new Vector2(0f, -150f), obj.GetPositionAtCorner(PivotType.Bottom));
+            Assert.AreEqual(new Vector2(-250f, 0f), obj.GetPositionAtCorner(PivotType.Left));
+            Assert.AreEqual(new Vector2(250f, 0f), obj.GetPositionAtCorner(PivotType.Right));
 
-            obj.Pivot = Pivots.TopLeft;
-            Assert.AreEqual(new Vector2(250f, -150f), obj.GetPositionAtCorner(Pivots.Center));
-            Assert.AreEqual(new Vector2(250f, 0f), obj.GetPositionAtCorner(Pivots.Top));
-            Assert.AreEqual(new Vector2(250f, -300f), obj.GetPositionAtCorner(Pivots.Bottom));
-            Assert.AreEqual(new Vector2(0f, -150f), obj.GetPositionAtCorner(Pivots.Left));
-            Assert.AreEqual(new Vector2(500f, -150f), obj.GetPositionAtCorner(Pivots.Right));
-            Assert.AreEqual(new Vector2(500f, 0f), obj.GetPositionAtCorner(Pivots.TopRight));
-            Assert.AreEqual(new Vector2(0f, -300f), obj.GetPositionAtCorner(Pivots.BottomLeft));
-            Assert.AreEqual(new Vector2(500f, -300f), obj.GetPositionAtCorner(Pivots.BottomRight));
+            obj.Pivot = PivotType.TopLeft;
+            Assert.AreEqual(new Vector2(250f, -150f), obj.GetPositionAtCorner(PivotType.Center));
+            Assert.AreEqual(new Vector2(250f, 0f), obj.GetPositionAtCorner(PivotType.Top));
+            Assert.AreEqual(new Vector2(250f, -300f), obj.GetPositionAtCorner(PivotType.Bottom));
+            Assert.AreEqual(new Vector2(0f, -150f), obj.GetPositionAtCorner(PivotType.Left));
+            Assert.AreEqual(new Vector2(500f, -150f), obj.GetPositionAtCorner(PivotType.Right));
+            Assert.AreEqual(new Vector2(500f, 0f), obj.GetPositionAtCorner(PivotType.TopRight));
+            Assert.AreEqual(new Vector2(0f, -300f), obj.GetPositionAtCorner(PivotType.BottomLeft));
+            Assert.AreEqual(new Vector2(500f, -300f), obj.GetPositionAtCorner(PivotType.BottomRight));
         }
     }
 }

@@ -101,33 +101,33 @@ namespace PBFramework.Animations.Tests
 
                 if (Input.GetKeyDown(KeyCode.A))
                 {
-                    anime.WrapMode = WrapModes.None;
+                    anime.WrapMode = WrapModeType.None;
                     Debug.Log("Wrapmode set to none");
                 }
                 if (Input.GetKeyDown(KeyCode.S))
                 {
-                    anime.WrapMode = WrapModes.Reset;
+                    anime.WrapMode = WrapModeType.Reset;
                     Debug.Log("Wrapmode set to reset");
                 }
                 if (Input.GetKeyDown(KeyCode.D))
                 {
-                    anime.WrapMode = WrapModes.Loop;
+                    anime.WrapMode = WrapModeType.Loop;
                     Debug.Log("Wrapmode set to loop");
                 }
 
                 if (Input.GetKeyDown(KeyCode.F))
                 {
-                    anime.StopMode = StopModes.None;
+                    anime.StopMode = StopModeType.None;
                     Debug.Log("Stopmode set to none");
                 }
                 if (Input.GetKeyDown(KeyCode.G))
                 {
-                    anime.StopMode = StopModes.Reset;
+                    anime.StopMode = StopModeType.Reset;
                     Debug.Log("Stopmode set to reset");
                 }
                 if (Input.GetKeyDown(KeyCode.H))
                 {
-                    anime.StopMode = StopModes.End;
+                    anime.StopMode = StopModeType.End;
                     Debug.Log("Stopmode set to end");
                 }
                 yield return null;

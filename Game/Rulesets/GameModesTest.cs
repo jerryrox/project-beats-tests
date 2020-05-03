@@ -12,8 +12,8 @@ namespace PBGame.Rulesets.Tests
         [Test]
         public void Test()
         {
-            Assert.AreEqual(0, GameModes.OsuStandard.GetIndex());
-            Assert.AreEqual(0, GameModes.BeatsStandard.GetIndex());
+            Assert.AreEqual(0, GameModeType.OsuStandard.GetIndex());
+            Assert.AreEqual(0, GameModeType.BeatsStandard.GetIndex());
         }
     }
 }

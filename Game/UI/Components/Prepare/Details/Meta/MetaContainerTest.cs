@@ -46,7 +46,7 @@ namespace PBGame.UI.Components.Prepare.Details.Meta.Tests
                         var map = MapManager.AllMapsets[0].Maps[0];
                         map.CreatePlayable(ModeManager);
 
-                        MapSelection.SelectMapset(MapManager.AllMapsets[0], map.GetPlayable(GameModes.BeatsStandard));
+                        MapSelection.SelectMapset(MapManager.AllMapsets[0], map.GetPlayable(GameModeType.BeatsStandard));
                     }
                 }
             );

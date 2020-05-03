@@ -47,7 +47,7 @@ namespace PBGame.UI.Navigations.Overlays.Tests
 
             var bg = RootMain.CreateChild<UguiSprite>("bg", -1);
             {
-                bg.Anchor = Anchors.Fill;
+                bg.Anchor = AnchorType.Fill;
                 bg.Offset = Offset.Zero;
                 bg.Alpha = 0.25f;
             }

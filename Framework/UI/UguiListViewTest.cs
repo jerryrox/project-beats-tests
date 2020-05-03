@@ -126,13 +126,13 @@ namespace PBFramework.UI.Tests
             {
                 MySprite = CreateChild<UguiSprite>("sprite");
                 {
-                    MySprite.Anchor = Anchors.Fill;
+                    MySprite.Anchor = AnchorType.Fill;
                     MySprite.RawSize = Vector2.zero;
                     MySprite.Color = Color.black;
                 }
                 MyLabel = CreateChild<UguiLabel>("label", 1);
                 {
-                    MyLabel.Anchor = Anchors.Fill;
+                    MyLabel.Anchor = AnchorType.Fill;
                     MyLabel.RawSize = Vector2.zero;
                     MyLabel.Color = Color.white;
                 }

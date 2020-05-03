@@ -67,23 +67,23 @@ namespace PBGame.UI.Components.Common.Tests
         private void UpdateToggleAnchor()
         {
             if(Input.GetKeyDown(KeyCode.Q))
-                toggle.IconAnchor = Anchors.TopLeft;
+                toggle.IconAnchor = AnchorType.TopLeft;
             if (Input.GetKeyDown(KeyCode.W))
-                toggle.IconAnchor = Anchors.Top;
+                toggle.IconAnchor = AnchorType.Top;
             if (Input.GetKeyDown(KeyCode.E))
-                toggle.IconAnchor = Anchors.TopRight;
+                toggle.IconAnchor = AnchorType.TopRight;
             if (Input.GetKeyDown(KeyCode.A))
-                toggle.IconAnchor = Anchors.Left;
+                toggle.IconAnchor = AnchorType.Left;
             if (Input.GetKeyDown(KeyCode.S))
-                toggle.IconAnchor = Anchors.Center;
+                toggle.IconAnchor = AnchorType.Center;
             if (Input.GetKeyDown(KeyCode.D))
-                toggle.IconAnchor = Anchors.Right;
+                toggle.IconAnchor = AnchorType.Right;
             if (Input.GetKeyDown(KeyCode.Z))
-                toggle.IconAnchor = Anchors.BottomLeft;
+                toggle.IconAnchor = AnchorType.BottomLeft;
             if (Input.GetKeyDown(KeyCode.X))
-                toggle.IconAnchor = Anchors.Bottom;
+                toggle.IconAnchor = AnchorType.Bottom;
             if (Input.GetKeyDown(KeyCode.C))
-                toggle.IconAnchor = Anchors.BottomRight;
+                toggle.IconAnchor = AnchorType.BottomRight;
         }
 
         private void UpdateLabelAnchor()
