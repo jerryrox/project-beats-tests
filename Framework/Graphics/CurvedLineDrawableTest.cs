@@ -17,6 +17,7 @@ namespace PBFramework.Graphics.Tests
             var obj = root.CreateChild("MyObject");
             var drawable = obj.RawObject.AddComponent<CurvedLineDrawable>();
             drawable.CurveRadius = 15f;
+            drawable.CurveAngle = 10f;
 
             List<Transform> hints = new List<Transform>();
             hints.Add(CreateHintAt(root.transform, new Vector2(-4f, 4f)));
