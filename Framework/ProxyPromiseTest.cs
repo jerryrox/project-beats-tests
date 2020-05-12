@@ -19,7 +19,7 @@ namespace PBFramework.Tests
             bool revoked = false;
             bool finished = false;
             float progress = 0f;
-            Action startAction = () => started = true;
+            Action<ProxyPromise> startAction = (p) => started = true;
             Action revokeAction = () => revoked = true;
             Action<float> progressAction = (p) => progress = p;
             Action resolveAction = () => finished = true;
@@ -65,7 +65,7 @@ namespace PBFramework.Tests
             bool finished = false;
             float progress = 0f;
             int result = 0;
-            Action startAction = () => started = true;
+            Action<ProxyPromise> startAction = (p) => started = true;
             Action revokeAction = () => revoked = true;
             Action<float> progressAction = (p) => progress = p;
             Action resolveAction = () => finished = true;
