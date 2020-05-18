@@ -80,8 +80,8 @@ namespace PBFramework.Tests
 
             public TestPromise() : base()
             {
-                startAction = (promise) => IsStarted = true;
-                revokeAction = () => IsRevoked = true;
+                StartAction = (promise) => IsStarted = true;
+                RevokeAction = () => IsRevoked = true;
             }
         }
     }
