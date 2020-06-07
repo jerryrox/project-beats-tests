@@ -7,6 +7,7 @@ using PBGame.Tests;
 using PBGame.Audio;
 using PBGame.Graphics;
 using PBFramework.UI;
+using PBFramework.Data.Bindables;
 using PBFramework.Graphics;
 using PBFramework.Dependencies;
 
@@ -45,7 +46,7 @@ namespace PBGame.UI.Components.Offsets.Tests
         {
             if (Input.GetKeyDown(KeyCode.A))
             {
-                TestOffset newOffset = new TestOffset() { Offset = Random.Range(-100, 101) };
+                TestOffset newOffset = new TestOffset() { Offset = new BindableInt(Random.Range(-100, 101)) };
                 slider.SetSource(newOffset);
                 Debug.Log("Created new offset with value: " + newOffset.Offset);
             }
@@ -62,7 +63,7 @@ namespace PBGame.UI.Components.Offsets.Tests
 
         private class TestOffset : IMusicOffset
         {
-            public int Offset { get; set; } = 0;
+            public BindableInt Offset { get; set; } = new BindableInt(0);
         }
     }
 }
