@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PBFramework.Data.Bindables;
 
 namespace PBFramework.DB.Entities.Tests
 {
@@ -87,6 +88,45 @@ namespace PBFramework.DB.Entities.Tests
 
             dummy = json.ToObject<Dummy>();
             Assert.IsFalse(dummy.D);
+        }
+
+        [Test]
+        public void TestSerializeBindableInt()
+        {
+            BindableInt original = new BindableInt(100);
+            original.OnValueChanged += (_, __) => { };
+            string jsonStr = JToken.FromObject(original).ToString();
+            Debug.Log(jsonStr);
+
+            BindableInt reconstructed = JsonConvert.DeserializeObject<BindableInt>(jsonStr);
+            Assert.AreEqual(original.Value, reconstructed.Value);
+            Assert.AreEqual(original.MaxValue, reconstructed.MaxValue);
+            Assert.AreEqual(original.MinValue, reconstructed.MinValue);
+            Assert.AreEqual(original.TriggerWhenDifferent, reconstructed.TriggerWhenDifferent);
+            Assert.AreEqual(original.RawValue, reconstructed.RawValue);
+        }
+
+        [Test]
+        public void TestSerializeBindableObject()
+        {
+            Dummy dummy = new Dummy()
+            {
+                A = 1,
+                B = "A",
+                C = 5.1f,
+                D = true
+            };
+            Bindable<Dummy> original = new Bindable<Dummy>(dummy);
+            original.OnValueChanged += (_, __) => { };
+            string jsonStr = JToken.FromObject(original).ToString();
+            Debug.Log(jsonStr);
+
+            Bindable<Dummy> reconstructed = JsonConvert.DeserializeObject<Bindable<Dummy>>(jsonStr);
+            Assert.AreEqual(dummy.A, reconstructed.Value.A);
+            Assert.AreEqual(dummy.B, reconstructed.Value.B);
+            Assert.AreEqual(dummy.C, reconstructed.Value.C);
+            // D has JsonIgnore.
+            Assert.AreNotEqual(dummy.D, reconstructed.Value.D);
         }
 
 
