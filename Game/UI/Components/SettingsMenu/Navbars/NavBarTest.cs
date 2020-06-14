@@ -93,7 +93,7 @@ namespace PBGame.UI.Components.SettingsMenu.Navbars.Tests
             yield break;
         }
 
-        private void Update()
+        protected void Update()
         {
             for (int i = 0; i < settingsData.TabCount; i++)
             {

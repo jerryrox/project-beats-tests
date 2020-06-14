@@ -79,7 +79,7 @@ namespace PBFramework.Inputs.Tests
             touches.AddEnumerable(cursors);
         }
 
-        void Update()
+        protected virtual void Update()
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {

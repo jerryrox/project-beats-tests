@@ -46,7 +46,7 @@ namespace PBGame.UI.Components.System
             yield break;
         }
 
-        private void Update()
+        protected void Update()
         {
             if (Input.GetKeyDown(KeyCode.Q))
             {

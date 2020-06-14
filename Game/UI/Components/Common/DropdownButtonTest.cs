@@ -28,7 +28,7 @@ namespace PBGame.UI.Components.Common.Tests
             yield return TestGame.Run(
                 this,
                 () => Init(),
-                Update
+                null
             );
         }
         
@@ -53,11 +53,6 @@ namespace PBGame.UI.Components.Common.Tests
                 button.Context = context;
             }
             yield break;
-        }
-        
-        private void Update()
-        {
-
         }
 
         private void OnSelectionChange(DropdownData data)

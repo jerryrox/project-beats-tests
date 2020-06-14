@@ -29,8 +29,7 @@ namespace PBGame.UI.Components.SettingsMenu.Contents.Test
         {
             yield return TestGame.Run(
                 this,
-                () => Init(),
-                Update
+                () => Init()
             );
         }
         
@@ -73,11 +72,6 @@ namespace PBGame.UI.Components.SettingsMenu.Contents.Test
                 contentGroup.SetTabData(tabData);
             }
             yield break;
-        }
-
-        private void Update()
-        {
-            
         }
 
         private enum TestType

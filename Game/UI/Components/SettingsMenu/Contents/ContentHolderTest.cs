@@ -30,7 +30,7 @@ namespace PBGame.UI.Components.SettingsMenu.Contents.Test
             yield return TestGame.Run(
                 this,
                 () => Init(),
-                Update
+                null
             );
         }
 
@@ -52,11 +52,6 @@ namespace PBGame.UI.Components.SettingsMenu.Contents.Test
                 contentHolder.SetSettingsData(settingsData);
             }
             yield break;
-        }
-
-        private void Update()
-        {
-
         }
 
         private SettingsTab CreateTabData(string name, string iconName)

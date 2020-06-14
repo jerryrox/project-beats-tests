@@ -40,7 +40,7 @@ namespace PBGame.UI.Components.System.Tests
             yield break;
         }
 
-        private void Update()
+        protected void Update()
         {
             if (Input.GetKeyDown(KeyCode.Q))
                 SetFps(120);

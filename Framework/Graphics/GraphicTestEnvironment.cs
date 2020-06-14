@@ -51,7 +51,7 @@ namespace PBFramework.Graphics.Tests
             return root;
         }
 
-        void Update()
+        protected virtual void Update()
         {
             if (Input.GetKey(KeyCode.LeftShift))
             {

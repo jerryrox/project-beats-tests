@@ -40,7 +40,7 @@ namespace PBGame.UI.Components.Common.Tests
             yield break;
         }
 
-        private void Update()
+        protected void Update()
         {
             if (Input.GetKeyDown(KeyCode.Q))
                 slider.Tint = Color.red;

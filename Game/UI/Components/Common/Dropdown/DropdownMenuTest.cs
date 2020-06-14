@@ -53,7 +53,7 @@ namespace PBGame.UI.Components.Common.Dropdown.Tests
             yield break;
         }
 
-        private void Update()
+        protected void Update()
         {
             if (Input.GetKeyDown(KeyCode.Q))
             {
