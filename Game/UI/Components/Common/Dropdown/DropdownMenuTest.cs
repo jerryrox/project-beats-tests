@@ -41,6 +41,11 @@ namespace PBGame.UI.Components.Common.Dropdown.Tests
             context.Datas.Add(new DropdownData("Selection C", "Extra C"));
             context.Datas.Add(new DropdownData("Selection D", "Extra D"));
             context.Datas.Add(new DropdownData("Selection E", "Extra E"));
+            context.Datas.Add(new DropdownData("Selection F", "Extra F"));
+            context.Datas.Add(new DropdownData("Selection G", "Extra G"));
+            context.Datas.Add(new DropdownData("Selection H", "Extra H"));
+            context.Datas.Add(new DropdownData("Selection I", "Extra I"));
+            context.Datas.Add(new DropdownData("Selection J", "Extra J"));
 
             var container = RootMain.CreateChild<UguiSprite>("bg");
             {
