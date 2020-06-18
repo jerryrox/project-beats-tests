@@ -109,6 +109,43 @@ namespace PBFramework.Data.Bindables.Tests
             bindable.OnValueChanged -= sameCheck;
         }
 
+        [Test]
+        public void TestSetValueWithoutTrigger()
+        {
+            BindableInt bindableInt = new BindableInt(0);
+            int updatedValue = bindableInt.Value;
+            bindableInt.OnNewValue += (val) => updatedValue = val;
+
+            bindableInt.Value = 1;
+            Assert.AreEqual(1, bindableInt.Value);
+            Assert.AreEqual(bindableInt.Value, updatedValue);
+
+            bindableInt.SetWithoutTrigger(5);
+            Assert.AreEqual(5, bindableInt.Value);
+            Assert.AreEqual(1, updatedValue);
+        }
+
+        [Test]
+        public void TestTriggerWithCustomPrevState()
+        {
+            BindableInt bindableInt = new BindableInt(5);
+            int newValue = bindableInt.Value;
+            int prevValue = bindableInt.Value;
+            bindableInt.OnValueChanged += (n, p) =>
+            {
+                newValue = n;
+                prevValue = p;
+            };
+
+            bindableInt.Value = 10;
+            Assert.AreEqual(10, newValue);
+            Assert.AreEqual(5, prevValue);
+
+            bindableInt.TriggerWithPrevious(9);
+            Assert.AreEqual(10, newValue);
+            Assert.AreEqual(9, prevValue);
+        }
+
         protected virtual IBindable<Dummy> CreateBindable(Dummy d = null)
         {
             return new Bindable<Dummy>(d);
