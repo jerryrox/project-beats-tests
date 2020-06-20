@@ -16,6 +16,8 @@ namespace PBGame.Tests
         private Action onUpdate;
         private Func<IEnumerator> onDispose;
 
+        private TestKeyBinding[] keyBindings;
+
         private bool isRunning = true;
         private bool shouldFail = false;
 
@@ -26,7 +28,7 @@ namespace PBGame.Tests
         /// <summary>
         /// Initializes a new game test environment and returns a yieldable coroutine for UnityTest cases.
         /// </summary>
-        public static Coroutine Run<T>(T tester, Func<IEnumerator> onInit = null, Action onUpdate = null, Func<IEnumerator> onDispose = null)
+        public static Coroutine Run<T>(T tester, Func<IEnumerator> onInit = null, Action onUpdate = null, Func<IEnumerator> onDispose = null, TestKeyBinding[] keyBindings = null)
             where T : class
         {
             if(Game != null)
@@ -45,12 +47,21 @@ namespace PBGame.Tests
             Debug.LogWarning("Press Cmd+2 to Fail test");
             Debug.LogWarning("==============================");
 
+            if (keyBindings != null && keyBindings.Length > 0)
+            {
+                Debug.LogWarning("[Test key bindings]");
+                foreach(var binding in keyBindings)
+                    Debug.Log(binding.GetUsage());
+                Debug.LogWarning("==============================");
+            }
+
             if(tester != null)
                 Game.Dependencies.Inject(tester);
 
             Game.onInit = onInit;
             Game.onUpdate = onUpdate;
             Game.onDispose = onDispose;
+            Game.keyBindings = keyBindings;
 
             return Game.StartCoroutine(Game.TestRoutine());
         }
@@ -113,6 +124,12 @@ namespace PBGame.Tests
                     isRunning = false;
                     shouldFail = true;
                 }
+            }
+
+            if (keyBindings != null)
+            {
+                foreach(var binding in keyBindings)
+                    binding.CheckInput();
             }
         }
     }
