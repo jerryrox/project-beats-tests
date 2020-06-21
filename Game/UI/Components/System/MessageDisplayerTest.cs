@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
@@ -8,6 +9,7 @@ using PBGame.Tests;
 using PBGame.Graphics;
 using PBGame.Notifications;
 using PBFramework.UI;
+using PBFramework.Testing;
 using PBFramework.Graphics;
 using PBFramework.Dependencies;
 
@@ -29,51 +31,39 @@ namespace PBGame.UI.Components.System
         [UnityTest]
         public IEnumerator Test()
         {
-            yield return TestGame.Run(
-                this,
-                () => Init(),
-                Update
-            );
+            TestOptions options = new TestOptions()
+            {
+                UseManualTesting = true,
+                Actions = new TestAction[]
+                {
+                    new TestAction(true, KeyCode.Q, () => AddNotification(1, NotificationScope.Temporary), "Adds a new temporary notification with one line."),
+                    new TestAction(true, KeyCode.W, () => AddNotification(2, NotificationScope.Stored), "Adds a new stored notification with two lines."),
+                    new TestAction(true, KeyCode.E, () => AddNotification(3, NotificationScope.Temporary), "Adds a new temporary notification with three lines."),
+                }
+            };
+            return TestGame.Setup(this, options).Run();
         }
         
-        private IEnumerator Init()
+        [InitWithDependency]
+        private void Init()
         {
             displayer = RootMain.CreateChild<MessageDisplayer>("displayer", 0);
             {
                 displayer.Size = new Vector2(320f, 0f);
                 displayer.Position = new Vector3(0f, 300f, 0f);
             }
-            yield break;
         }
 
-        protected void Update()
+        private IEnumerator AddNotification(int lines, NotificationScope scope)
         {
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                NotificationBox.Add(new Notification() {
-                    Message = "My message lolz",
-                    Type = GetNotificationType(),
-                    Scope = NotificationScope.Temporary,
-                });
-            }
-            if (Input.GetKeyDown(KeyCode.W))
-            {
-                NotificationBox.Add(new Notification()
-                {
-                    Message = "My message lolz\nNext line",
-                    Type = GetNotificationType(),
-                    Scope = NotificationScope.Stored,
-                });
-            }
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                NotificationBox.Add(new Notification()
-                {
-                    Message = "My message lolz\nNext line\nAnother line",
-                    Type = GetNotificationType(),
-                    Scope = NotificationScope.Temporary,
-                });
-            }
+            string message = string.Join("\n", Enumerable.Range(0, lines).Select(i => "asdf" + i));
+
+            NotificationBox.Add(new Notification() {
+                Message = message,
+                Type = GetNotificationType(),
+                Scope = scope,
+            });
+            yield break;
         }
 
         private NotificationType GetNotificationType()

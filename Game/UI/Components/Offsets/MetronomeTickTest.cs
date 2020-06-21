@@ -7,6 +7,7 @@ using UnityEngine.TestTools;
 using PBGame.Tests;
 using PBGame.Graphics;
 using PBFramework.UI;
+using PBFramework.Testing;
 using PBFramework.Graphics;
 using PBFramework.Dependencies;
 
@@ -24,31 +25,29 @@ namespace PBGame.UI.Components.Offsets.Tests
         [UnityTest]
         public IEnumerator Test()
         {
-            yield return TestGame.Run(
-                this,
-                () => Init(),
-                Update,
-                keyBindings: new TestKeyBinding[] {
-                    new TestKeyBinding(KeyCode.Q, DoTick, "Sets the metronome tick to its Ticked state.")
+            TestOptions options = new TestOptions()
+            {
+                UseManualTesting = true,
+                Actions = new TestAction[]
+                {
+                    new TestAction(false, KeyCode.Q, () => DoTick(), "Sets the metronome tick to its Ticked state.")
                 }
-            );
+            };
+            return TestGame.Setup(this, options).Run();
         }
         
-        private IEnumerator Init()
+        [InitWithDependency]
+        private void Init()
         {
             ticker = RootMain.CreateChild<MetronomeTick>("ticker");
             ticker.Size = new Vector2(24f, 24f);
             ticker.Tint = new Color(1f, 0.2f, 0.2f);
-            yield break;
         }
 
-        private void Update()
-        {
-        }
-
-        private void DoTick()
+        private IEnumerator DoTick()
         {
             ticker.Tick();
+            yield break;
         }
     }
 }

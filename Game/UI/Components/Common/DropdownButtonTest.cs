@@ -8,6 +8,7 @@ using PBGame.UI.Components.Common.Dropdown;
 using PBGame.Tests;
 using PBGame.Graphics;
 using PBFramework.UI;
+using PBFramework.Testing;
 using PBFramework.Graphics;
 using PBFramework.Dependencies;
 
@@ -25,14 +26,15 @@ namespace PBGame.UI.Components.Common.Tests
         [UnityTest]
         public IEnumerator Test()
         {
-            yield return TestGame.Run(
-                this,
-                () => Init(),
-                null
-            );
+            TestOptions options = new TestOptions()
+            {
+                UseManualTesting = true,
+            };
+            return TestGame.Setup(this, options).Run();
         }
         
-        private IEnumerator Init()
+        [InitWithDependency]
+        private void Init()
         {
             context = new DropdownContext();
             context.Datas.Add(new DropdownData("Selection A", "Extra A"));
@@ -52,7 +54,6 @@ namespace PBGame.UI.Components.Common.Tests
                 button.Size = new Vector2(200f, 42f);
                 button.Context = context;
             }
-            yield break;
         }
 
         private void OnSelectionChange(DropdownData data)

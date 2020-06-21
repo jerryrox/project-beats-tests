@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using PBGame.Tests;
 using PBGame.Graphics;
+using PBFramework.Testing;
 using PBFramework.Graphics;
 using PBFramework.Dependencies;
 
@@ -24,28 +25,57 @@ namespace PBGame.UI.Components.Common.Tests
         [UnityTest]
         public IEnumerator TestBasic()
         {
-            yield return TestGame.Run(
-                this,
-                () => InitBasic(),
-                () =>
+            TestOptions options = new TestOptions()
+            {
+                UseManualTesting = true,
+                Actions = new TestAction[]
                 {
-                    UpdateToggleAnchor();
+                    new TestAction(() => InitBasic()),
+                    new TestAction(true, KeyCode.Q, () => UpdateToggleAnchor(AnchorType.TopLeft), "Sets anchor to TopLeft"),
+                    new TestAction(true, KeyCode.W, () => UpdateToggleAnchor(AnchorType.Top), "Sets anchor to Top"),
+                    new TestAction(true, KeyCode.E, () => UpdateToggleAnchor(AnchorType.TopRight), "Sets anchor to TopRight"),
+                    new TestAction(true, KeyCode.A, () => UpdateToggleAnchor(AnchorType.Left), "Sets anchor to Left"),
+                    new TestAction(true, KeyCode.S, () => UpdateToggleAnchor(AnchorType.Center), "Sets anchor to Center"),
+                    new TestAction(true, KeyCode.D, () => UpdateToggleAnchor(AnchorType.Right), "Sets anchor to Right"),
+                    new TestAction(true, KeyCode.Z, () => UpdateToggleAnchor(AnchorType.BottomLeft), "Sets anchor to BottomLeft"),
+                    new TestAction(true, KeyCode.X, () => UpdateToggleAnchor(AnchorType.Bottom), "Sets anchor to Bottom"),
+                    new TestAction(true, KeyCode.C, () => UpdateToggleAnchor(AnchorType.BottomRight), "Sets anchor to BottomRight"),
                 }
-            );
+            };
+            return TestGame.Setup(this, options).Run();
         }
 
         [UnityTest]
         public IEnumerator TestLabelled()
         {
-            yield return TestGame.Run(
-                this,
-                () => InitLabelled(),
-                () =>
+            TestOptions options = new TestOptions()
+            {
+                UseManualTesting = true,
+                Actions = new TestAction[]
                 {
-                    UpdateToggleAnchor();
-                    UpdateLabelAnchor();
+                    new TestAction(() => InitLabelled()),
+                    new TestAction(true, KeyCode.Q, () => UpdateToggleAnchor(AnchorType.TopLeft), "Sets toggle anchor to TopLeft"),
+                    new TestAction(true, KeyCode.W, () => UpdateToggleAnchor(AnchorType.Top), "Sets toggle anchor to Top"),
+                    new TestAction(true, KeyCode.E, () => UpdateToggleAnchor(AnchorType.TopRight), "Sets toggle anchor to TopRight"),
+                    new TestAction(true, KeyCode.A, () => UpdateToggleAnchor(AnchorType.Left), "Sets toggle anchor to Left"),
+                    new TestAction(true, KeyCode.S, () => UpdateToggleAnchor(AnchorType.Center), "Sets toggle anchor to Center"),
+                    new TestAction(true, KeyCode.D, () => UpdateToggleAnchor(AnchorType.Right), "Sets toggle anchor to Right"),
+                    new TestAction(true, KeyCode.Z, () => UpdateToggleAnchor(AnchorType.BottomLeft), "Sets toggle anchor to BottomLeft"),
+                    new TestAction(true, KeyCode.X, () => UpdateToggleAnchor(AnchorType.Bottom), "Sets toggle anchor to Bottom"),
+                    new TestAction(true, KeyCode.C, () => UpdateToggleAnchor(AnchorType.BottomRight), "Sets toggle anchor to BottomRight"),
+
+                    new TestAction(true, KeyCode.U, () => UpdateLabelAnchor(TextAnchor.UpperLeft), "Sets label anchor to UpperLeft"),
+                    new TestAction(true, KeyCode.I, () => UpdateLabelAnchor(TextAnchor.UpperCenter), "Sets label anchor to UpperCenter"),
+                    new TestAction(true, KeyCode.O, () => UpdateLabelAnchor(TextAnchor.UpperRight), "Sets label anchor to UpperRight"),
+                    new TestAction(true, KeyCode.J, () => UpdateLabelAnchor(TextAnchor.MiddleLeft), "Sets label anchor to MiddleLeft"),
+                    new TestAction(true, KeyCode.K, () => UpdateLabelAnchor(TextAnchor.MiddleCenter), "Sets label anchor to MiddleCenter"),
+                    new TestAction(true, KeyCode.L, () => UpdateLabelAnchor(TextAnchor.MiddleRight), "Sets label anchor to MiddleRight"),
+                    new TestAction(true, KeyCode.M, () => UpdateLabelAnchor(TextAnchor.LowerLeft), "Sets label anchor to LowerLeft"),
+                    new TestAction(true, KeyCode.Comma, () => UpdateLabelAnchor(TextAnchor.LowerCenter), "Sets label anchor to LowerCenter"),
+                    new TestAction(true, KeyCode.Period, () => UpdateLabelAnchor(TextAnchor.LowerRight), "Sets label anchor to LowerRight"),
                 }
-            );
+            };
+            return TestGame.Setup(this, options).Run();
         }
 
         private IEnumerator InitBasic()
@@ -64,48 +94,16 @@ namespace PBGame.UI.Components.Common.Tests
             yield break;
         }
 
-        private void UpdateToggleAnchor()
+        private IEnumerator UpdateToggleAnchor(AnchorType type)
         {
-            if(Input.GetKeyDown(KeyCode.Q))
-                toggle.IconAnchor = AnchorType.TopLeft;
-            if (Input.GetKeyDown(KeyCode.W))
-                toggle.IconAnchor = AnchorType.Top;
-            if (Input.GetKeyDown(KeyCode.E))
-                toggle.IconAnchor = AnchorType.TopRight;
-            if (Input.GetKeyDown(KeyCode.A))
-                toggle.IconAnchor = AnchorType.Left;
-            if (Input.GetKeyDown(KeyCode.S))
-                toggle.IconAnchor = AnchorType.Center;
-            if (Input.GetKeyDown(KeyCode.D))
-                toggle.IconAnchor = AnchorType.Right;
-            if (Input.GetKeyDown(KeyCode.Z))
-                toggle.IconAnchor = AnchorType.BottomLeft;
-            if (Input.GetKeyDown(KeyCode.X))
-                toggle.IconAnchor = AnchorType.Bottom;
-            if (Input.GetKeyDown(KeyCode.C))
-                toggle.IconAnchor = AnchorType.BottomRight;
+            toggle.IconAnchor = type;
+            yield break;
         }
 
-        private void UpdateLabelAnchor()
-        {
-            if (Input.GetKeyDown(KeyCode.U))
-                labelledToggle.LabelAnchor = TextAnchor.UpperLeft;
-            if (Input.GetKeyDown(KeyCode.I))
-                labelledToggle.LabelAnchor = TextAnchor.UpperCenter;
-            if (Input.GetKeyDown(KeyCode.O))
-                labelledToggle.LabelAnchor = TextAnchor.UpperRight;
-            if (Input.GetKeyDown(KeyCode.J))
-                labelledToggle.LabelAnchor = TextAnchor.MiddleLeft;
-            if (Input.GetKeyDown(KeyCode.K))
-                labelledToggle.LabelAnchor = TextAnchor.MiddleCenter;
-            if (Input.GetKeyDown(KeyCode.L))
-                labelledToggle.LabelAnchor = TextAnchor.MiddleRight;
-            if (Input.GetKeyDown(KeyCode.M))
-                labelledToggle.LabelAnchor = TextAnchor.LowerLeft;
-            if (Input.GetKeyDown(KeyCode.Comma))
-                labelledToggle.LabelAnchor = TextAnchor.LowerCenter;
-            if (Input.GetKeyDown(KeyCode.Period))
-                labelledToggle.LabelAnchor = TextAnchor.LowerRight;
+        private IEnumerator UpdateLabelAnchor(TextAnchor type)
+    {
+            labelledToggle.LabelAnchor = type;
+            yield break;
         }
     }
 }

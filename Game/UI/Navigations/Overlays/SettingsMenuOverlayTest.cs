@@ -10,6 +10,7 @@ using PBGame.Configurations.Settings;
 using PBFramework.UI;
 using PBFramework.UI.Navigations;
 using PBFramework.Data.Bindables;
+using PBFramework.Testing;
 using PBFramework.Graphics;
 using PBFramework.Dependencies;
 
@@ -31,14 +32,19 @@ namespace PBGame.UI.Navigations.Overlays.Tests
         [UnityTest]
         public IEnumerator Test()
         {
-            yield return TestGame.Run(
-                this,
-                () => Init(),
-                Update
-            );
+            TestOptions options = new TestOptions()
+            {
+                UseManualTesting = true,
+                Actions = new TestAction[]
+                {
+                    new TestAction(true, KeyCode.Q, (isAuto) => AssignSettingsData(), "Assigns settings data to overlay.")
+                }
+            };
+            return TestGame.Setup(this, options).Run();
         }
 
-        private IEnumerator Init()
+        [InitWithDependency]
+        private void Init()
         {
             settingsData = new SettingsData();
             settingsData.AddTabData(CreateTabData("A", "icon-settings"));
@@ -51,18 +57,13 @@ namespace PBGame.UI.Navigations.Overlays.Tests
                 bg.Offset = Offset.Zero;
                 bg.Alpha = 0.25f;
             }
-            yield break;
         }
 
-        protected void Update()
+        private IEnumerator AssignSettingsData()
         {
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                overlay = OverlayNavigator.Show<SettingsMenuOverlay>();
-                {
-                    overlay.SetSettingsData(settingsData);
-                }
-            }
+            overlay = OverlayNavigator.Show<SettingsMenuOverlay>();
+            overlay.SetSettingsData(settingsData);
+            yield break;
         }
 
         private SettingsTab CreateTabData(string name, string iconName)

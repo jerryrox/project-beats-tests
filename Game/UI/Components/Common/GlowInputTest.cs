@@ -7,6 +7,7 @@ using UnityEngine.TestTools;
 using PBGame.Tests;
 using PBGame.Graphics;
 using PBFramework.UI;
+using PBFramework.Testing;
 using PBFramework.Graphics;
 using PBFramework.Dependencies;
 
@@ -24,14 +25,20 @@ namespace PBGame.UI.Components.Common.Tests
         [UnityTest]
         public IEnumerator Test()
         {
-            yield return TestGame.Run(
-                this,
-                () => Init(),
-                Update
-            );
+            TestOptions options = new TestOptions()
+            {
+                UseManualTesting = true,
+                Actions = new TestAction[]
+                {
+                    new TestAction(true, KeyCode.PageUp, () => ToggleFocus(), "Toggles focus on the input."),
+                    new TestAction(true, KeyCode.PageDown, () => CreateIcon(), "Creates an icon on the input."),
+                }
+            };
+            return TestGame.Setup(this, options).Run();
         }
         
-        private IEnumerator Init()
+        [InitWithDependency]
+        private void Init()
         {
             input = RootMain.CreateChild<GlowInput>("input", 0);
             {
@@ -41,19 +48,18 @@ namespace PBGame.UI.Components.Common.Tests
                     Debug.Log("Focus state changed to: " + isFocused);
                 };
             }
+        }
+
+        private IEnumerator ToggleFocus()
+        {
+            input.IsFocused = !input.IsFocused;
             yield break;
         }
 
-        protected void Update()
+        private IEnumerator CreateIcon()
         {
-            if (Input.GetKeyDown(KeyCode.PageUp))
-            {
-                input.IsFocused = !input.IsFocused;
-            }
-            if (Input.GetKeyDown(KeyCode.PageDown))
-            {
-                input.CreateIconSprite(spriteName: "icon-search");
-            }
+            input.CreateIconSprite(spriteName: "icon-search");
+            yield break;
         }
     }
 }

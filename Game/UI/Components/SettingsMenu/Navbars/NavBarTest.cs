@@ -11,6 +11,7 @@ using PBGame.Configurations;
 using PBGame.Configurations.Settings;
 using PBFramework.UI;
 using PBFramework.Data.Bindables;
+using PBFramework.Testing;
 using PBFramework.Graphics;
 using PBFramework.Dependencies;
 
@@ -42,28 +43,31 @@ namespace PBGame.UI.Components.SettingsMenu.Navbars.Tests
         [UnityTest]
         public IEnumerator TestDummyConfig()
         {
-            yield return TestGame.Run(
-                this,
-                () => Init(false),
-                Update
-            );
+            isUsingActualConfig = false;
+            TestOptions options = new TestOptions()
+            {
+                UseManualTesting = true,
+                UpdateMethod = Update,
+            };
+            return TestGame.Setup(this, options).Run();
         }
 
         [UnityTest]
         public IEnumerator TestActualConfig()
         {
-            yield return TestGame.Run(
-                this,
-                () => Init(true),
-                Update
-            );
+            isUsingActualConfig = true;
+            TestOptions options = new TestOptions()
+            {
+                UseManualTesting = true,
+                UpdateMethod = Update,
+            };
+            return TestGame.Setup(this, options).Run();
         }
 
-        private IEnumerator Init(bool useActualConfig)
+        [InitWithDependency]
+        private void Init()
         {
-            isUsingActualConfig = useActualConfig;
-
-            if (useActualConfig)
+            if (isUsingActualConfig)
             {
                 // Load configurations
                 GameConfiguration.Load();
@@ -89,11 +93,9 @@ namespace PBGame.UI.Components.SettingsMenu.Navbars.Tests
                 navBar.Size = new Vector2(64f, 400f);
                 navBar.SetSettingsData(settingsData);
             }
-
-            yield break;
         }
 
-        protected void Update()
+        private void Update()
         {
             for (int i = 0; i < settingsData.TabCount; i++)
             {

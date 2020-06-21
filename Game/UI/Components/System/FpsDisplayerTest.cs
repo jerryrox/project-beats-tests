@@ -7,6 +7,7 @@ using UnityEngine.TestTools;
 using PBGame.Tests;
 using PBGame.Graphics;
 using PBFramework.UI;
+using PBFramework.Testing;
 using PBFramework.Graphics;
 using PBFramework.Dependencies;
 
@@ -16,6 +17,7 @@ namespace PBGame.UI.Components.System.Tests
 
         private FpsDisplayer fpsDisplayer;
 
+
         [ReceivesDependency]
         private IRootMain RootMain { get; set; }
         
@@ -23,41 +25,35 @@ namespace PBGame.UI.Components.System.Tests
         [UnityTest]
         public IEnumerator Test()
         {
-            yield return TestGame.Run(
-                this,
-                () => Init(),
-                Update
-            );
+            TestOptions options = new TestOptions()
+            {
+                UseManualTesting = true,
+                Actions = new TestAction[]
+                {
+                    new TestAction(true, KeyCode.Q, () => SetFps(120), "Sets to 120 fps"),
+                    new TestAction(true, KeyCode.W, () => SetFps(60), "Sets to 60 fps"),
+                    new TestAction(true, KeyCode.E, () => SetFps(50), "Sets to 50 fps"),
+                    new TestAction(true, KeyCode.R, () => SetFps(45), "Sets to 45 fps"),
+                    new TestAction(true, KeyCode.T, () => SetFps(30), "Sets to 30 fps"),
+                }
+            };
+            return TestGame.Setup(this, options).Run();
         }
         
-        private IEnumerator Init()
+        [InitWithDependency]
+        private void Init()
         {
-
             fpsDisplayer = RootMain.CreateChild<FpsDisplayer>("fps-displayer");
             {
                 fpsDisplayer.Size = new Vector2(180f, 30f);
             }
-            yield break;
         }
-
-        protected void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Q))
-                SetFps(120);
-            if (Input.GetKeyDown(KeyCode.W))
-                SetFps(60);
-            if (Input.GetKeyDown(KeyCode.E))
-                SetFps(50);
-            if (Input.GetKeyDown(KeyCode.R))
-                SetFps(40);
-            if (Input.GetKeyDown(KeyCode.T))
-                SetFps(30);
-        }
-
-        private void SetFps(float fps)
+        
+        private IEnumerator SetFps(float fps)
         {
             Time.maximumDeltaTime = 1f / fps;
             Application.targetFrameRate = (int)fps;
+            yield break;
         }
     }
 }

@@ -9,6 +9,7 @@ using PBGame.Graphics;
 using PBGame.Rulesets;
 using PBGame.Networking.Maps;
 using PBFramework.UI;
+using PBFramework.Testing;
 using PBFramework.Graphics;
 using PBFramework.Dependencies;
 
@@ -27,14 +28,20 @@ namespace PBGame.UI.Components.Download.Tests
         [UnityTest]
         public IEnumerator Test()
         {
-            yield return TestGame.Run(
-                this,
-                () => Init(),
-                Update
-            );
+            TestOptions options = new TestOptions()
+            {
+                UseManualTesting = true,
+                Actions = new TestAction[]
+                {
+                    new TestAction(true, KeyCode.Q, () => SetTestResults(), "Sets test results to the list."),
+                    new TestAction(true, KeyCode.Q, () => SetEmptyResults(), "Sets empty test results to the list."),
+                }
+            };
+            return TestGame.Setup(this, options).Run();
         }
         
-        private IEnumerator Init()
+        [InitWithDependency]
+        private void Init()
         {
             state = new DownloadState();
             RootMain.Dependencies.Cache(state);
@@ -43,25 +50,9 @@ namespace PBGame.UI.Components.Download.Tests
             {
                 list.Size = new Vector2(1280f, 500f);
             }
-
-            yield break;
         }
 
-        protected void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                Debug.Log("Setting test results");
-                SetTestResults();
-            }
-            else if (Input.GetKeyDown(KeyCode.W))
-            {
-                Debug.Log("Setting empty result");
-                SetEmptyResults();
-            }
-        }
-
-        private void SetTestResults()
+        private IEnumerator SetTestResults()
         {
             state.ModifyResults(results =>
             {
@@ -180,11 +171,13 @@ namespace PBGame.UI.Components.Download.Tests
                     }
                 });
             });
+            yield break;
         }
 
-        private void SetEmptyResults()
+        private IEnumerator SetEmptyResults()
         {
             state.ModifyResults(results => results.Clear());
+            yield break;
         }
     }
 }

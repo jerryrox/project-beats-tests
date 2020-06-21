@@ -9,6 +9,7 @@ using PBGame.Graphics;
 using PBGame.Configurations.Settings;
 using PBFramework.UI;
 using PBFramework.Data.Bindables;
+using PBFramework.Testing;
 using PBFramework.Graphics;
 using PBFramework.Dependencies;
 
@@ -27,14 +28,15 @@ namespace PBGame.UI.Components.SettingsMenu.Contents.Test
         [UnityTest]
         public IEnumerator Test()
         {
-            yield return TestGame.Run(
-                this,
-                () => Init(),
-                null
-            );
+            TestOptions options = new TestOptions()
+            {
+                UseManualTesting = true
+            };
+            return TestGame.Setup(this, options).Run();
         }
 
-        private IEnumerator Init()
+        [InitWithDependency]
+        private void Init()
         {
             settingsData = new SettingsData();
             settingsData.AddTabData(CreateTabData("A", "icon-settings"));
@@ -51,7 +53,6 @@ namespace PBGame.UI.Components.SettingsMenu.Contents.Test
                 contentHolder.Size = new Vector2(500f, 500f);
                 contentHolder.SetSettingsData(settingsData);
             }
-            yield break;
         }
 
         private SettingsTab CreateTabData(string name, string iconName)

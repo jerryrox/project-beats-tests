@@ -4,80 +4,45 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using PBFramework.Testing;
 using PBFramework.Threading;
 
 namespace PBGame.Tests
 {
     public class TestGame : ProjectBeatsGame
     {
-        private static TestGame Game;
-
-        private Func<IEnumerator> onInit;
-        private Action onUpdate;
-        private Func<IEnumerator> onDispose;
-
-        private TestKeyBinding[] keyBindings;
-
-        private bool isRunning = true;
-        private bool shouldFail = false;
-
+        /// <summary>
+        /// Returns the testing environment instance used by this game.
+        /// </summary>
+        public TestEnvironment Environment { get; private set; }
 
         public override bool ShouldShowFirstView => false;
-
+        
 
         /// <summary>
-        /// Initializes a new game test environment and returns a yieldable coroutine for UnityTest cases.
+        /// Starts a new testing session for PBGame.
         /// </summary>
-        public static Coroutine Run<T>(T tester, Func<IEnumerator> onInit = null, Action onUpdate = null, Func<IEnumerator> onDispose = null, TestKeyBinding[] keyBindings = null)
+        public static TestGame Setup<T>(T tester, TestOptions testOptions = null)
             where T : class
         {
-            if(Game != null)
-                throw new Exception("TestGame instance is already initialized!");
+            TestGame game = new GameObject("TestGame").AddComponent<TestGame>();
 
-            Camera camera = new GameObject("camera").AddComponent<Camera>();
-            camera.gameObject.AddComponent<AudioListener>();
-            camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.backgroundColor = Color.black;
+            // Rebuild test options to inject internal dependencies.
+            testOptions = game.CreateTestOptions(testOptions);
 
-            Game = new GameObject("TestGame").AddComponent<TestGame>();
-
-            Debug.LogWarning("==============================");
-            Debug.LogWarning("Test game initialized.");
-            Debug.LogWarning("Press Cmd+1 to Succeed test");
-            Debug.LogWarning("Press Cmd+2 to Fail test");
-            Debug.LogWarning("==============================");
-
-            if (keyBindings != null && keyBindings.Length > 0)
-            {
-                Debug.LogWarning("[Test key bindings]");
-                foreach(var binding in keyBindings)
-                    Debug.Log(binding.GetUsage());
-                Debug.LogWarning("==============================");
-            }
-
-            if(tester != null)
-                Game.Dependencies.Inject(tester);
-
-            Game.onInit = onInit;
-            Game.onUpdate = onUpdate;
-            Game.onDispose = onDispose;
-            Game.keyBindings = keyBindings;
-
-            return Game.StartCoroutine(Game.TestRoutine());
+            game.Environment = TestEnvironment.Setup(tester, testOptions);
+            return game;
         }
 
         /// <summary>
-        /// Waits for the specified progress to be finished.
+        /// Handles the actual running procedure for testing the PBGame side.
         /// </summary>
-        public static Coroutine AwaitProgress(IEventProgress progress)
-        {
-            return Game.StartCoroutine(Game.ProgressYieldRoutine(progress));
-        }
+        public IEnumerator Run() => Environment.Run();
 
         /// <summary>
-        /// Handles the process for awaiting the specified progress.
+        /// Returns an enumerator which awaits until the specified progress has finished.
         /// </summary>
-        private IEnumerator ProgressYieldRoutine(IEventProgress progress)
+        public IEnumerator AwaitProgress(IEventProgress progress)
         {
             bool isFinished = false;
             progress.OnFinished += () => isFinished = true;
@@ -86,51 +51,47 @@ namespace PBGame.Tests
         }
 
         /// <summary>
-        /// Handles the test case lifecycle.
+        /// Generates a new test environment option specifically for testing the game.
         /// </summary>
-        private IEnumerator TestRoutine()
+        private TestOptions CreateTestOptions(TestOptions customOptions)
         {
-            if (onInit != null)
-                yield return onInit.Invoke();
-
-            while (isRunning)
+            if (customOptions == null)
             {
-                onUpdate?.Invoke();
-                yield return null;
+                customOptions = new TestOptions()
+                {
+                    Dependency = base.Dependencies,
+                    UseCamera = true,
+                    CleanupMethod = OnTestEnvironmentCleanup,
+                };
             }
+            else
+            {
+                // Ensure dependencies include all those used in the game.
+                if(customOptions.Dependency == null)
+                    customOptions.Dependency = base.Dependencies;
+                else
+                    customOptions.Dependency.CacheFrom(base.Dependencies, true);
 
-            if(onDispose != null)
-                yield return onDispose.Invoke();
+                // Enforce camera use
+                customOptions.UseCamera = true;
 
-            if(shouldFail)
-                Assert.Fail("Manually failed test.");
+                // Hook custom cleanup method.
+                Action customCleanupMethod = customOptions.CleanupMethod;
+                customOptions.CleanupMethod = () =>
+                {
+                    customCleanupMethod?.Invoke();
+                    OnTestEnvironmentCleanup();
+                };
+            }
+            return customOptions;
         }
 
-        protected override void Update()
+        /// <summary>
+        /// Event called on cleaning up the test environment.
+        /// </summary>
+        private void OnTestEnvironmentCleanup()
         {
-            base.Update();
-
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                if (Input.GetKey(KeyCode.LeftCommand))
-                {
-                    isRunning = false;
-                }
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                if (Input.GetKey(KeyCode.LeftCommand))
-                {
-                    isRunning = false;
-                    shouldFail = true;
-                }
-            }
-
-            if (keyBindings != null)
-            {
-                foreach(var binding in keyBindings)
-                    binding.CheckInput();
-            }
+            GameObject.Destroy(gameObject);
         }
     }
 }

@@ -7,6 +7,7 @@ using UnityEngine.TestTools;
 using PBGame.Tests;
 using PBGame.Graphics;
 using PBFramework.UI;
+using PBFramework.Testing;
 using PBFramework.Graphics;
 using PBFramework.Dependencies;
 
@@ -25,14 +26,20 @@ namespace PBGame.UI.Components.Common.Dropdown.Tests
         [UnityTest]
         public IEnumerator Test()
         {
-            yield return TestGame.Run(
-                this,
-                () => Init(),
-                Update
-            );
+            TestOptions options = new TestOptions()
+            {
+                UseManualTesting = true,
+                Actions = new TestAction[]
+                {
+                    new TestAction(true, KeyCode.Q, () => OpenMenu(), "Opens dropdown menu"),
+                    new TestAction(true, KeyCode.W, () => CloseMenu(), "Closes current dropdown menu")
+                }
+            };
+            return TestGame.Setup(this, options).Run();
         }
         
-        private IEnumerator Init()
+        [InitWithDependency]
+        private void Init()
         {
             context = new DropdownContext();
             context.OnSelection += OnSelectionChange;
@@ -55,19 +62,18 @@ namespace PBGame.UI.Components.Common.Dropdown.Tests
                 menu = container.CreateChild<DropdownMenu>("dropdown");
                 menu.CloseMenu();
             }
+        }
+
+        private IEnumerator OpenMenu()
+        {
+            menu.OpenMenu(context);
             yield break;
         }
 
-        protected void Update()
+        private IEnumerator CloseMenu()
         {
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                menu.OpenMenu(context);
-            }
-            else if (Input.GetKeyDown(KeyCode.W))
-            {
-                menu.CloseMenu();
-            }
+            menu.CloseMenu();
+            yield break;
         }
 
         private void OnSelectionChange(DropdownData data)

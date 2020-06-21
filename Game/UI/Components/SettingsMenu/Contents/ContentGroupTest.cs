@@ -9,6 +9,7 @@ using PBGame.Graphics;
 using PBGame.Configurations.Settings;
 using PBFramework.UI;
 using PBFramework.Data.Bindables;
+using PBFramework.Testing;
 using PBFramework.Graphics;
 using PBFramework.Dependencies;
 
@@ -27,13 +28,15 @@ namespace PBGame.UI.Components.SettingsMenu.Contents.Test
         [UnityTest]
         public IEnumerator Test()
         {
-            yield return TestGame.Run(
-                this,
-                () => Init()
-            );
+            TestOptions options = new TestOptions()
+            {
+                UseManualTesting = true,
+            };
+            return TestGame.Setup(this, options).Run();
         }
         
-        private IEnumerator Init()
+        [InitWithDependency]
+        private void Init()
         {
             BindableFloat bindableFloat = new BindableFloat(10f, -1, 20f);
             bindableFloat.OnValueChanged += (val, _) => Debug.Log($"{nameof(bindableFloat)} value: {val}");
@@ -71,7 +74,6 @@ namespace PBGame.UI.Components.SettingsMenu.Contents.Test
                 contentGroup.Width = 400f;
                 contentGroup.SetTabData(tabData);
             }
-            yield break;
         }
 
         private enum TestType
