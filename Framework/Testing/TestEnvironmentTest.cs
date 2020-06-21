@@ -90,12 +90,9 @@ namespace PBFramework.Testing.Tests
         public IEnumerator TestWithKeyBinding()
         {
             DummyAgent agent = new DummyAgent(new TestOptions());
-            agent.Options.KeyAction = new KeyActionOptions()
+            agent.Options.Actions = new TestAction[]
             {
-                KeyBindings = new TestKeyBinding[]
-                {
-                    new TestKeyBinding(KeyCode.A, (isAuto) => agent.KeyBoundAction(), "Lol")
-                }
+                new TestAction(false, KeyCode.A, () => agent.KeyBoundAction(), "Lol")
             };
             yield return DoGeneralRoutine(agent);
             yield return DoResultRoutine(agent, true);
@@ -151,7 +148,7 @@ namespace PBFramework.Testing.Tests
                 Assert.AreEqual(3, agent.UpdateCalls);
                 Assert.IsFalse(agent.IsCleanupCalled);
             }
-            else if (agent.Options.KeyAction != null)
+            else if (agent.Options.Actions != null)
             {
                 Assert.IsFalse(agent.IsKeyActionCalled);
                 yield return null;

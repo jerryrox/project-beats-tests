@@ -20,18 +20,12 @@ namespace PBFramework.Testing.Tests
         {
             TestOptions options = new TestOptions()
             {
-                KeyAction = new KeyActionOptions()
+                UseManualTesting = true,
+                Actions = new TestAction[]
                 {
-                    UseManualTesting = true,
-                    KeyBindings = new TestKeyBinding[]
-                    {
-                        new TestKeyBinding(KeyCode.Q, (isAuto) => TestQ(isAuto), "Tests Q"),
-                        new TestKeyBinding(KeyCode.W, (isAuto) => TestW(isAuto), "Tests W")
-                        {
-                            ForceManual = true
-                        },
-                        new TestKeyBinding(KeyCode.E, (isAuto) => TestE(isAuto), "Tests E"),
-                    }
+                    new TestAction(false, KeyCode.Q, (isAuto) => TestQ(isAuto), "Tests Q"),
+                    new TestAction(true, KeyCode.W, (isAuto) => TestW(isAuto), "Tests W"),
+                    new TestAction(false, KeyCode.E, (isAuto) => TestE(isAuto), "Tests E"),
                 }
             };
             var environment = TestEnvironment.Setup(this, options);
