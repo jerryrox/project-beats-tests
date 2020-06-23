@@ -145,7 +145,7 @@ namespace PBGame.UI.Components.Offsets.Tests
             public IAudioController AudioController { get; set; }
             public IReadOnlyBindable<int> BeatIndex => TestBeatIndex;
             public IReadOnlyBindable<int> BeatsInInterval => TestBeatsInInterval;
-            public BeatFrequency Frequency { get; set; }
+            public Bindable<BeatFrequency> Frequency { get; set; }
             public IReadOnlyBindable<float> BeatLength { get; }
 
             public void Update() { }

@@ -71,7 +71,7 @@ namespace PBGame.Audio.Tests
                 AudioController = musicController
             };
 
-            Assert.AreEqual(BeatFrequency.Full, metronome.Frequency);
+            Assert.AreEqual(BeatFrequency.Full, metronome.Frequency.Value);
             Assert.AreEqual((int)TimeSignatureType.Quadruple * (int)BeatFrequency.Full, metronome.BeatsInInterval.Value);
             Assert.AreEqual(0, metronome.BeatIndex.Value);
 
@@ -90,7 +90,7 @@ namespace PBGame.Audio.Tests
             metronome.Update();
             Assert.AreEqual(0, metronome.BeatIndex.Value);
 
-            metronome.Frequency = BeatFrequency.Half;
+            metronome.Frequency.Value = BeatFrequency.Half;
             musicController.CurrentTime = metronome.BeatLength.Value * 8f;
             metronome.Update();
             Assert.AreEqual(0, metronome.BeatIndex.Value);
@@ -106,7 +106,7 @@ namespace PBGame.Audio.Tests
             metronome.Update();
             Assert.AreEqual(0, metronome.BeatIndex.Value);
 
-            metronome.Frequency = BeatFrequency.Quarter;
+            metronome.Frequency.Value = BeatFrequency.Quarter;
             musicController.CurrentTime = metronome.BeatLength.Value * 32f;
             metronome.Update();
             Assert.AreEqual(0, metronome.BeatIndex.Value);
