@@ -67,7 +67,7 @@ namespace PBGame.UI.Components.Download.Tests
                     PlayCount = 198,
                     PreviewAudio = "https://b.ppy.sh/preview/1102807.mp3",
                     Source = "ずっと前から好きでした。～告白実行委員会～",
-                    Status = MapStateType.Ranked,
+                    Status = "Ranked",
                     Title = "Destiny ~Zutto Mae kara Kimi ga Suki Deshita~",
                     HasVideo = false,
                     HasStoryboard = false,
@@ -76,7 +76,7 @@ namespace PBGame.UI.Components.Download.Tests
                     IsDisabled = false,
                     LastUpdate = DateTime.Parse("2020-04-13T02:32:02+00:00"),
                     Tags = "kokuhaku jikkou iinkai i've ive always liked you confession executive confess your love committee insert song",
-                    Maps = new List<OnlineMap>() {
+                    Maps = new OnlineMap[] {
                         new OnlineMap() {
                             Accuracy = 7,
                             AR = 8,
@@ -87,7 +87,7 @@ namespace PBGame.UI.Components.Download.Tests
                             Drain = 5,
                             HitDuration = 312,
                             Id = 2303786,
-                            Mode = GameModeType.OsuStandard,
+                            ModeIndex = (int)GameModeType.OsuStandard,
                             SliderCount = 474,
                             SpinnerCount = 4,
                             TotalCount = 1372,
@@ -107,7 +107,7 @@ namespace PBGame.UI.Components.Download.Tests
                     PlayCount = 622252,
                     PreviewAudio = "https://b.ppy.sh/preview/1125030.mp3",
                     Source = "東方星蓮船　～ Undefined Fantastic Object.",
-                    Status = MapStateType.Approved,
+                    Status = "Approved",
                     Title = "Lucid Dream",
                     HasVideo = true,
                     HasStoryboard = true,
@@ -116,7 +116,7 @@ namespace PBGame.UI.Components.Download.Tests
                     IsDisabled = false,
                     LastUpdate = DateTime.Parse("2020-04-13T02:32:02+00:00"),
                     Tags = "eastnewsound touhou 東方project 法界の火 seirensen c77 ens sacred factor idumin izumin hijiri byakuren fires of hokkai video game japanese comiket 77 doujin circle",
-                    Maps = new List<OnlineMap>() {
+                    Maps = new OnlineMap[] {
                         new OnlineMap() {
                             Accuracy = 7,
                             AR = 8,
@@ -127,7 +127,7 @@ namespace PBGame.UI.Components.Download.Tests
                             Drain = 5,
                             HitDuration = 312,
                             Id = 2303786,
-                            Mode = GameModeType.OsuStandard,
+                            ModeIndex = (int)GameModeType.OsuStandard,
                             SliderCount = 474,
                             SpinnerCount = 4,
                             TotalCount = 1372,
@@ -144,7 +144,7 @@ namespace PBGame.UI.Components.Download.Tests
                             Drain = 5,
                             HitDuration = 312,
                             Id = 2303786,
-                            Mode = GameModeType.OsuStandard,
+                            ModeIndex = (int)GameModeType.OsuStandard,
                             SliderCount = 474,
                             SpinnerCount = 4,
                             TotalCount = 1372,
@@ -161,7 +161,7 @@ namespace PBGame.UI.Components.Download.Tests
                             Drain = 5,
                             HitDuration = 312,
                             Id = 2303786,
-                            Mode = GameModeType.OsuStandard,
+                            ModeIndex = (int)GameModeType.OsuStandard,
                             SliderCount = 474,
                             SpinnerCount = 4,
                             TotalCount = 1372,
