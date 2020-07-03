@@ -7,9 +7,9 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace PBFramework.Services.Tests
+namespace PBFramework.Threading.Tests
 {
-    public class UnityThreadServiceTest {
+    public class UnityThreadTest {
 
         [UnityTest]
         public IEnumerator TestObjectCreation()
@@ -26,7 +26,7 @@ namespace PBFramework.Services.Tests
         public IEnumerator TestStartCoroutine()
         {
             var dummy = new Dummy();
-            var coroutine = UnityThreadService.StartCoroutine(MyProcess(dummy));
+            var coroutine = UnityThread.StartCoroutine(MyProcess(dummy));
 
             int limit = 15;
             while (!dummy.Finished)
@@ -48,7 +48,7 @@ namespace PBFramework.Services.Tests
         public IEnumerator TestStopCoroutine()
         {
             var dummy = new Dummy();
-            var coroutine = UnityThreadService.StartCoroutine(MyProcess(dummy));
+            var coroutine = UnityThread.StartCoroutine(MyProcess(dummy));
 
             int dur = 5;
             while (dur > 0)
@@ -57,7 +57,7 @@ namespace PBFramework.Services.Tests
                 dur--;
             }
 
-            UnityThreadService.StopCoroutine(coroutine);
+            UnityThread.StopCoroutine(coroutine);
             dur = 8;
             while (dur > 0)
             {
@@ -78,12 +78,12 @@ namespace PBFramework.Services.Tests
 
             int unityThread = Thread.CurrentThread.ManagedThreadId;
 
-            UnityThreadService.Initialize();
+            UnityThread.Initialize();
             Task.Run(() =>
             {
                 Assert.AreNotEqual(unityThread, Thread.CurrentThread.ManagedThreadId);
                 Thread.Sleep(500);
-                Assert.IsTrue((bool)UnityThreadService.Dispatch(() => finished = true));
+                Assert.IsTrue((bool)UnityThread.Dispatch(() => finished = true));
             });
             while (!finished)
             {
@@ -98,12 +98,12 @@ namespace PBFramework.Services.Tests
 
             int unityThread = Thread.CurrentThread.ManagedThreadId;
 
-            UnityThreadService.Initialize();
+            UnityThread.Initialize();
             Task.Run(() =>
             {
                 Assert.AreNotEqual(unityThread, Thread.CurrentThread.ManagedThreadId);
                 Thread.Sleep(500);
-                UnityThreadService.DispatchUnattended(() => finished = true);
+                UnityThread.DispatchUnattended(() => finished = true);
             });
             while (!finished)
             {
