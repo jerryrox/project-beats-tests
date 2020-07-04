@@ -101,5 +101,16 @@ namespace PBFramework.Networking.Linking.Tests
             linker.Emit("api?asd%5Bf%5D=fdsa");
             Assert.AreEqual(4, calledCount);
         }
+
+        [Test]
+        public void TestRemoveLink()
+        {
+            DeepLinker linker = new DeepLinker();
+            linker.LinkPath("api", (link) => { });
+            Assert.IsTrue(linker.IsLinked("api"));
+
+            linker.RemoveLink("/api///");
+            Assert.IsFalse(linker.IsLinked("api"));
+        }
     }
 }
