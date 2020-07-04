@@ -13,7 +13,7 @@ namespace PBFramework.Networking.Tests
         [UnityTest]
         public IEnumerator TestNonStream()
         {
-            var request = new AudioRequest("http://23.237.126.42/ost/touhou-youyoumu-perfect-cherry-blossom/vrdyenmp/%5B01%5D%20Youyoumu%20~%20Snow%20or%20Cherry%20Petal.mp3", false);
+            var request = new AudioRequest("https://vgmdownloads.com/soundtracks/touhou-youyoumu-perfect-cherry-blossom/vrdyenmp/%5B01%5D%20Youyoumu%20~%20Snow%20or%20Cherry%20Petal.mp3", false);
             var progress = new ReturnableProgress<IWebRequest>();
             request.Request(progress);
 
@@ -38,7 +38,7 @@ namespace PBFramework.Networking.Tests
             // Current limitation:
             // There is no way to check whether the loaded audio is truly a streaming audio or not.
 
-            var request = new AudioRequest("http://23.237.126.42/ost/touhou-youyoumu-perfect-cherry-blossom/vrdyenmp/%5B01%5D%20Youyoumu%20~%20Snow%20or%20Cherry%20Petal.mp3", true);
+            var request = new AudioRequest("https://vgmdownloads.com/soundtracks/touhou-youyoumu-perfect-cherry-blossom/vrdyenmp/%5B01%5D%20Youyoumu%20~%20Snow%20or%20Cherry%20Petal.mp3", true);
             var progress = new ReturnableProgress<IWebRequest>();
             request.Request(progress);
 
@@ -60,7 +60,7 @@ namespace PBFramework.Networking.Tests
         [UnityTest]
         public IEnumerator TestPromise()
         {
-            var request = new AudioRequest("http://23.237.126.42/ost/touhou-youyoumu-perfect-cherry-blossom/vrdyenmp/%5B01%5D%20Youyoumu%20~%20Snow%20or%20Cherry%20Petal.mp3", false);
+            var request = new AudioRequest("https://vgmdownloads.com/soundtracks/touhou-youyoumu-perfect-cherry-blossom/vrdyenmp/%5B01%5D%20Youyoumu%20~%20Snow%20or%20Cherry%20Petal.mp3", false);
             IExplicitPromise<AudioClip> promise = request;
             Assert.AreEqual(request, promise);
             Assert.IsNull(promise.Result);
