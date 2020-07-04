@@ -74,6 +74,18 @@ namespace PBFramework.Dependencies.Tests
         }
 
         [Test]
+        public void TestCacheAndInject()
+        {
+            var dependency = new DependencyContainer();
+            Dummy dummy = new Dummy();
+            Assert.IsNull(dummy.Dependency);
+
+            dependency.CacheAndInject(dummy);
+            Assert.AreEqual(dummy, dependency.Get<Dummy>());
+            Assert.AreEqual(dependency, dummy.Dependency);
+        }
+
+        [Test]
         public void TestCacheFrom()
         {
             var dependency = new DependencyContainer();
@@ -174,6 +186,8 @@ namespace PBFramework.Dependencies.Tests
 
         private class Dummy : IDummy
         {
+            [ReceivesDependency]
+            public IDependencyContainer Dependency { get; set; }
         }
     }
 }
