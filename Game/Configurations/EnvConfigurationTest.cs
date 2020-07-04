@@ -12,7 +12,24 @@ namespace PBGame.Configurations
         [Test]
         public void TestDev()
         {
-            IEnvConfiguration config = new EnvConfiguration(true);
+            IEnvConfiguration config = new EnvConfiguration(EnvType.Development);
+            Assert.AreEqual(EnvType.Development, config.EnvironmentType);
+            Assert.IsTrue(config.IsDevelopment);
+            Assert.IsFalse(config.IsLoaded);
+            Assert.IsNull(config.Variables);
+
+            config.Load("Configurations/Env");
+
+            Assert.IsTrue(config.IsLoaded);
+            Assert.IsNotNull(config.Variables);
+            Assert.IsTrue(config.Variables.IsDevelopment);
+        }
+        
+        [Test]
+        public void TestLocal()
+        {
+            IEnvConfiguration config = new EnvConfiguration(EnvType.LocalDevelopment);
+            Assert.AreEqual(EnvType.LocalDevelopment, config.EnvironmentType);
             Assert.IsTrue(config.IsDevelopment);
             Assert.IsFalse(config.IsLoaded);
             Assert.IsNull(config.Variables);
@@ -27,7 +44,7 @@ namespace PBGame.Configurations
         [Test]
         public void TestProd()
         {
-            IEnvConfiguration config = new EnvConfiguration(false);
+            IEnvConfiguration config = new EnvConfiguration(EnvType.Production);
             Assert.IsFalse(config.IsDevelopment);
             Assert.IsFalse(config.IsLoaded);
             Assert.IsNull(config.Variables);
@@ -42,7 +59,7 @@ namespace PBGame.Configurations
         [Test]
         public void TestFailLoad()
         {
-            IEnvConfiguration config = new EnvConfiguration(true);
+            IEnvConfiguration config = new EnvConfiguration(EnvType.Development);
             try
             {
                 config.Load("fake/path/lolz");
