@@ -1,6 +1,8 @@
 ﻿using System;
 using NUnit.Framework;
 
+using IntList = System.Collections.Generic.List<int>;
+
 namespace PBFramework.Data.Bindables.Tests
 {
     public class BindableTest
@@ -146,14 +148,78 @@ namespace PBFramework.Data.Bindables.Tests
             Assert.AreEqual(9, prevValue);
         }
 
+        [Test]
+        public void TestModifyValue()
+        {
+            Bindable<IntList> bindableList = new Bindable<IntList>(new IntList() {
+                0, 1
+            });
+
+            bool calledNewValue = false;
+            bindableList.OnNewValue += delegate { calledNewValue = true; };
+
+            Assert.AreEqual(2, bindableList.Value.Count);
+            Assert.IsFalse(calledNewValue);
+
+            bindableList.ModifyValue((list) =>
+            {
+                list.Add(2);
+                list.Add(3);
+            });
+            Assert.AreEqual(4, bindableList.Value.Count);
+            Assert.IsTrue(calledNewValue);
+        }
+
+        [Test]
+        public void TestBindToAndUnbindFrom()
+        {
+            Bindable<Dummy> dummy = new Bindable<Dummy>(new Dummy());
+            Bindable<Dummy> dummy2 = new Bindable<Dummy>(new Dummy());
+            Assert.AreNotEqual(dummy.Value, dummy2.Value);
+
+            dummy2.BindTo(dummy);
+            Assert.AreEqual(dummy.Value, dummy2.Value);
+
+            dummy.Value = null;
+            Assert.IsNull(dummy.Value);
+            Assert.IsNull(dummy2.Value);
+
+            dummy2.UnbindFrom(dummy);
+            dummy.Value = new Dummy();
+            Assert.IsNotNull(dummy.Value);
+            Assert.IsNull(dummy2.Value);
+
+            Bindable<SubDummy> subDummy = new Bindable<SubDummy>(new SubDummy());
+            dummy.BindToRaw(subDummy);
+            Assert.AreEqual(subDummy.Value, dummy.Value);
+
+            subDummy.Value = new SubDummy();
+            Assert.AreEqual(subDummy.Value, dummy.Value);
+
+            dummy.UnbindFromRaw(subDummy);
+            subDummy.Value = null;
+            Assert.IsNull(subDummy.Value);
+            Assert.IsNotNull(dummy.Value);
+
+            dummy.Value = new Dummy();
+            Assert.Throws(typeof(ArgumentException), () =>
+            {
+                subDummy.BindToRaw(dummy);
+            });
+        }
+
         protected virtual IBindable<Dummy> CreateBindable(Dummy d = null)
         {
             return new Bindable<Dummy>(d);
         }
 
+
         public class Dummy
         {
+        }
 
+        public class SubDummy : Dummy
+        {
         }
     }
 }
