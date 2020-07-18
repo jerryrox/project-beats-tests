@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using PBGame.UI.Models;
 using PBGame.Tests;
 using PBGame.Graphics;
 using PBGame.Rulesets;
@@ -17,7 +18,7 @@ namespace PBGame.UI.Components.Download.Tests
 {
     public class ResultListTest {
 
-        private DownloadState state;
+        private DownloadModel model;
         private ResultList list;
 
 
@@ -43,8 +44,8 @@ namespace PBGame.UI.Components.Download.Tests
         [InitWithDependency]
         private void Init()
         {
-            state = new DownloadState();
-            RootMain.Dependencies.Cache(state);
+            model = new DownloadModel();
+            RootMain.Dependencies.Cache(model);
 
             list = RootMain.CreateChild<ResultList>("list", 0);
             {
@@ -54,7 +55,7 @@ namespace PBGame.UI.Components.Download.Tests
 
         private IEnumerator SetTestResults()
         {
-            state.ModifyResults(results =>
+            model.ModifyMapsetsList(results =>
             {
                 results.Add(new OnlineMapset()
                 {
@@ -176,7 +177,7 @@ namespace PBGame.UI.Components.Download.Tests
 
         private IEnumerator SetEmptyResults()
         {
-            state.ModifyResults(results => results.Clear());
+            model.ModifyMapsetsList(results => results.Clear());
             yield break;
         }
     }
