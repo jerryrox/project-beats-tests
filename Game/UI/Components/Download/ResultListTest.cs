@@ -10,6 +10,7 @@ using PBGame.Graphics;
 using PBGame.Rulesets;
 using PBGame.Networking.Maps;
 using PBFramework.UI;
+using PBFramework.Data.Bindables;
 using PBFramework.Testing;
 using PBFramework.Graphics;
 using PBFramework.Dependencies;
@@ -55,7 +56,9 @@ namespace PBGame.UI.Components.Download.Tests
 
         private IEnumerator SetTestResults()
         {
-            model.ModifyMapsetsList(results =>
+            var mapsetList = (Bindable<List<OnlineMapset>>)model.MapsetList;
+
+            mapsetList.ModifyValue(results =>
             {
                 results.Add(new OnlineMapset()
                 {
@@ -177,7 +180,8 @@ namespace PBGame.UI.Components.Download.Tests
 
         private IEnumerator SetEmptyResults()
         {
-            model.ModifyMapsetsList(results => results.Clear());
+            var mapsetList = (Bindable<List<OnlineMapset>>)model.MapsetList;
+            mapsetList.ModifyValue(results => results.Clear());
             yield break;
         }
     }
