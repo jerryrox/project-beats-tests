@@ -17,7 +17,9 @@ namespace PBGame.Tests
         public TestEnvironment Environment { get; private set; }
 
         public override bool ShouldShowFirstView => false;
-        
+
+        public override bool IsTestMode => true;
+
 
         /// <summary>
         /// Starts a new testing session for PBGame.

@@ -62,7 +62,7 @@ namespace PBGame.UI.Navigations.Overlays.Tests
         private IEnumerator AssignSettingsData()
         {
             overlay = OverlayNavigator.Show<SettingsMenuOverlay>();
-            overlay.SetSettingsData(settingsData);
+            overlay.Model.SetSettingsData(settingsData);
             yield break;
         }
 
