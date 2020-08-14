@@ -9,8 +9,9 @@ using UnityEngine.TestTools;
 
 namespace PBFramework.Threading.Futures.Tests
 {
-    public class FutureTest {
-        
+    public class FutureTest
+    {
+
         [Test]
         public void TestInitialization()
         {
@@ -44,7 +45,7 @@ namespace PBFramework.Threading.Futures.Tests
                 future.Start();
             });
 
-            Future futureWithTask = new Future((f) => {});
+            Future futureWithTask = new Future((f) => { });
             futureWithTask.Dispose();
             Assert.Throws<ObjectDisposedException>(() =>
             {
@@ -151,13 +152,14 @@ namespace PBFramework.Threading.Futures.Tests
         public IEnumerator TestThreadSafety()
         {
             bool shouldBeThreadSafe = false;
-            
+
             while (true)
             {
                 int mainThreadId = Thread.CurrentThread.ManagedThreadId;
                 int taskThreadId = mainThreadId;
 
-                var future = new Future((f) => Task.Run(() => {
+                var future = new Future((f) => Task.Run(() =>
+                {
                     taskThreadId = Thread.CurrentThread.ManagedThreadId;
 
                     Assert.AreNotEqual(mainThreadId, taskThreadId);
@@ -203,7 +205,7 @@ namespace PBFramework.Threading.Futures.Tests
 
                 future.Start();
 
-                while(!future.IsCompleted.Value)
+                while (!future.IsCompleted.Value)
                     yield return null;
 
                 Assert.AreEqual(expectedProgress.Length, expectedProgressInx);
@@ -212,9 +214,73 @@ namespace PBFramework.Threading.Futures.Tests
                 Assert.IsFalse(future.IsDisposed.Value);
 
                 shouldBeThreadSafe = !shouldBeThreadSafe;
-                if(!shouldBeThreadSafe)
+                if (!shouldBeThreadSafe)
                     break;
             }
+        }
+
+        [UnityTest]
+        public IEnumerator TestAwait()
+        {
+            Future future = new Future((f) => UnityThread.StartCoroutine(DummyLongProcess(f)));
+            future.Start();
+
+            bool finished = false;
+
+            Action awaitFuture = async () =>
+            {
+                Assert.IsFalse(future.IsCompleted.Value);
+                await future;
+                Assert.IsTrue(future.IsCompleted.Value);
+                Assert.AreEqual(1f, future.Progress.Value, 0.001f);
+                finished = true;
+            };
+            awaitFuture();
+
+            while (!finished)
+            {
+                yield return null;
+            }
+            Assert.IsNull(future.Error.Value);
+        }
+
+        [UnityTest]
+        public IEnumerator TestAwaitAfterFinished()
+        {
+            Future<int> future = new Future<int>((f) => f.SetComplete(5));
+            future.Start();
+
+            bool finished = false;
+
+            Action awaitFuture = async () =>
+            {
+                Assert.IsTrue(future.IsCompleted.Value);
+                Assert.AreEqual(5, future.Output.Value);
+                await future;
+                Assert.IsTrue(future.IsCompleted.Value);
+                Assert.AreEqual(5, future.Output.Value);
+                finished = true;
+            };
+            awaitFuture();
+
+            while (!finished)
+            {
+                yield return null;
+            }
+            Assert.IsNull(future.Error.Value);
+        }
+
+        private IEnumerator DummyLongProcess(Future future)
+        {
+            int i = 0;
+            while (i < 100)
+            {
+                i++;
+                future.SetProgress(i / 100f);
+                yield return new WaitForSeconds(0.02f);
+            }
+            future.SetProgress(1f);
+            future.SetComplete();
         }
     }
 }

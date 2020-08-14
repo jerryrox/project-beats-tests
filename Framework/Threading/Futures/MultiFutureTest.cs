@@ -76,6 +76,37 @@ namespace PBFramework.Threading.Futures.Tests
             Assert.AreEqual(1f, multiFuture.Progress.Value, 0.001f);
         }
 
+        [UnityTest]
+        public IEnumerator TestAwait()
+        {
+            List<Future> futures = Enumerable.Range(0, 10).Select(i => {
+                var future = new Future((f) => UnityThread.StartCoroutine(DummyProcess(f)));
+                future.Start();
+                return future;
+            }).ToList();
+
+            MultiFuture multiFuture = new MultiFuture(futures);
+            Assert.AreEqual(10, multiFuture.Futures.Count);
+
+            bool checkFinished = false;
+
+            Action awaitFuture = async () =>
+            {
+                Assert.IsFalse(multiFuture.IsCompleted.Value);
+                await multiFuture;
+                Assert.IsTrue(multiFuture.IsCompleted.Value);
+                futures.ForEach(f => Assert.IsTrue(f.IsCompleted.Value));
+                Assert.AreEqual(1f, multiFuture.Progress.Value, 0.001f);
+                checkFinished = true;
+            };
+            awaitFuture();
+
+            while (!checkFinished)
+            {
+                yield return null;
+            }
+        }
+
         private IEnumerator DummyProcess(Future future)
         {
             int loops = UnityEngine.Random.Range(5, 20);
