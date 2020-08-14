@@ -76,7 +76,7 @@ namespace PBFramework.Threading.Futures.Tests
             Assert.AreEqual(1f, multiFuture.Progress.Value, 0.001f);
         }
 
-        private IEnumerator DummyProcess(ProxyFuture future)
+        private IEnumerator DummyProcess(ProxyFuture<object> future)
         {
             int loops = UnityEngine.Random.Range(5, 20);
             for (int i = 0; i < loops; i++)

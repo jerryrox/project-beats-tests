@@ -34,7 +34,7 @@ namespace PBFramework.Threading.Futures.Tests
         public void TestStartWithError()
         {
             ProxyFuture future = new ProxyFuture((f) => {
-                f.SetComplete(new Exception("asdf"));
+                f.SetFail(new Exception("asdf"));
             });
             Assert.IsFalse(future.IsCompleted.Value);
             Assert.IsNull(future.Error.Value);

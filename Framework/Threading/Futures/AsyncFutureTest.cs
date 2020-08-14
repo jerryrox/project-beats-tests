@@ -18,7 +18,7 @@ namespace PBFramework.Threading.Futures.Tests
             AsyncFuture future = new AsyncFuture((f) =>
             {
                 Assert.AreNotEqual(mainThreadId, Thread.CurrentThread.ManagedThreadId);
-                f.SetComplete(null);
+                f.SetComplete();
             });
             future.Start();
 
