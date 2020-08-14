@@ -22,9 +22,9 @@ namespace PBFramework.Threading.Futures.Tests
         [Test]
         public void TestStartAfterMultiFuture()
         {
-            ProxyFuture future = new ProxyFuture((f) => {
+            Future future = new Future((f) => {
                 f.SetProgress(1f);
-                f.SetComplete(null);
+                f.SetComplete();
             });
 
             MultiFuture multiFuture = new MultiFuture(future);
@@ -41,9 +41,9 @@ namespace PBFramework.Threading.Futures.Tests
         [Test]
         public void TestStartBeforeMultiFuture()
         {
-            ProxyFuture future = new ProxyFuture((f) => {
+            Future future = new Future((f) => {
                 f.SetProgress(1f);
-                f.SetComplete(null);
+                f.SetComplete();
             });
             future.Start();
 
@@ -56,8 +56,8 @@ namespace PBFramework.Threading.Futures.Tests
         [UnityTest]
         public IEnumerator TestMultiple()
         {
-            List<ProxyFuture> futures = Enumerable.Range(0, 5).Select(i => {
-                var future = new ProxyFuture((f) => UnityThread.StartCoroutine(DummyProcess(f)));
+            List<Future> futures = Enumerable.Range(0, 5).Select(i => {
+                var future = new Future((f) => UnityThread.StartCoroutine(DummyProcess(f)));
                 future.Start();
                 return future;
             }).ToList();
@@ -76,7 +76,7 @@ namespace PBFramework.Threading.Futures.Tests
             Assert.AreEqual(1f, multiFuture.Progress.Value, 0.001f);
         }
 
-        private IEnumerator DummyProcess(ProxyFuture<object> future)
+        private IEnumerator DummyProcess(Future future)
         {
             int loops = UnityEngine.Random.Range(5, 20);
             for (int i = 0; i < loops; i++)
@@ -85,7 +85,7 @@ namespace PBFramework.Threading.Futures.Tests
                 yield return new WaitForSeconds(0.1f);
             }
             future.SetProgress(1f);
-            future.SetComplete(null);
+            future.SetComplete();
         }
     }
 }

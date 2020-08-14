@@ -14,7 +14,7 @@ namespace PBFramework.Threading.Futures.Tests
         [Test]
         public void TestInitialization()
         {
-            DummyFuture future = new DummyFuture();
+            Future future = new Future();
             Assert.AreEqual(0f, future.Progress.Value, 0.001f);
             Assert.IsFalse(future.IsDisposed.Value);
             Assert.IsFalse(future.IsCompleted.Value);
@@ -26,7 +26,7 @@ namespace PBFramework.Threading.Futures.Tests
         [Test]
         public void TestDispose()
         {
-            DummyFuture future = new DummyFuture();
+            Future future = new Future();
             future.Dispose();
             Assert.AreEqual(0f, future.Progress.Value, 0.001f);
             Assert.IsTrue(future.IsDisposed.Value);
@@ -41,11 +41,14 @@ namespace PBFramework.Threading.Futures.Tests
             });
             Assert.Throws<ObjectDisposedException>(() =>
             {
-                future.StartEmpty();
+                future.Start();
             });
+
+            Future futureWithTask = new Future((f) => {});
+            futureWithTask.Dispose();
             Assert.Throws<ObjectDisposedException>(() =>
             {
-                future.Start(() => {});
+                futureWithTask.Start();
             });
 
             future.SetProgress(0.5f);
@@ -55,8 +58,8 @@ namespace PBFramework.Threading.Futures.Tests
         [Test]
         public void TestStartEmpty()
         {
-            DummyFuture future = new DummyFuture();
-            future.StartEmpty();
+            Future future = new Future();
+            future.Start();
             Assert.AreEqual(1f, future.Progress.Value, 0.001f);
             Assert.IsFalse(future.IsDisposed.Value);
             Assert.IsTrue(future.IsCompleted.Value);
@@ -65,7 +68,7 @@ namespace PBFramework.Threading.Futures.Tests
 
             Assert.Throws<Exception>(() =>
             {
-                future.StartEmpty();
+                future.Start();
             });
 
             future.Dispose();
@@ -80,8 +83,8 @@ namespace PBFramework.Threading.Futures.Tests
         [Test]
         public void TestStart()
         {
-            DummyFuture future = new DummyFuture();
-            future.Start(() => { future.SetProgress(0.5f); });
+            Future future = new Future((f) => { f.SetProgress(0.5f); });
+            future.Start();
             Assert.AreEqual(0.5f, future.Progress.Value, 0.001f);
             Assert.IsFalse(future.IsDisposed.Value);
             Assert.IsFalse(future.IsCompleted.Value);
@@ -90,10 +93,10 @@ namespace PBFramework.Threading.Futures.Tests
 
             Assert.Throws<Exception>(() =>
             {
-                future.Start(() => {});
+                future.Start();
             });
 
-            future.SetComplete(null);
+            future.SetComplete();
             Assert.AreEqual(1f, future.Progress.Value, 0.001f);
             Assert.IsFalse(future.IsDisposed.Value);
             Assert.IsTrue(future.IsCompleted.Value);
@@ -102,7 +105,7 @@ namespace PBFramework.Threading.Futures.Tests
 
             Assert.Throws<Exception>(() =>
             {
-                future.SetComplete(null);
+                future.SetComplete();
             });
 
             future.Dispose();
@@ -112,16 +115,16 @@ namespace PBFramework.Threading.Futures.Tests
             Assert.IsNull(future.Error.Value);
             Assert.IsTrue(future.DidRun);
 
-            future.SetComplete(null);
+            future.SetComplete();
             Assert.AreEqual(1f, future.Progress.Value, 0.001f);
             Assert.IsTrue(future.IsDisposed.Value);
             Assert.IsTrue(future.IsCompleted.Value);
             Assert.IsNull(future.Error.Value);
             Assert.IsTrue(future.DidRun);
 
-            future = new DummyFuture();
-            future.Start(() => { });
-            future.SetComplete(new Exception("a"));
+            future = new Future((f) => { });
+            future.Start();
+            future.SetFail(new Exception("a"));
             Assert.AreEqual(1f, future.Progress.Value, 0.001f);
             Assert.IsFalse(future.IsDisposed.Value);
             Assert.IsTrue(future.IsCompleted.Value);
@@ -133,9 +136,9 @@ namespace PBFramework.Threading.Futures.Tests
         [Test]
         public void TestWithOutput()
         {
-            var future = new DummyFuture<int>();
-            future.Start(() => { });
-            future.SetComplete(50, null);
+            var future = new Future<int>((f) => { });
+            future.Start();
+            future.SetComplete(50);
             Assert.AreEqual(1f, future.Progress.Value, 0.001f);
             Assert.IsFalse(future.IsDisposed.Value);
             Assert.IsTrue(future.IsCompleted.Value);
@@ -154,7 +157,17 @@ namespace PBFramework.Threading.Futures.Tests
                 int mainThreadId = Thread.CurrentThread.ManagedThreadId;
                 int taskThreadId = mainThreadId;
 
-                var future = new DummyFuture()
+                var future = new Future((f) => Task.Run(() => {
+                    taskThreadId = Thread.CurrentThread.ManagedThreadId;
+
+                    Assert.AreNotEqual(mainThreadId, taskThreadId);
+
+                    f.SetProgress(0.25f);
+                    f.SetProgress(0.5f);
+                    f.SetProgress(0.75f);
+                    f.SetProgress(1f);
+                    f.SetComplete();
+                }))
                 {
                     IsThreadSafe = shouldBeThreadSafe
                 };
@@ -188,19 +201,7 @@ namespace PBFramework.Threading.Futures.Tests
                     }
                 };
 
-                Task asyncTask = new Task(() =>
-                {
-                    taskThreadId = Thread.CurrentThread.ManagedThreadId;
-
-                    Assert.AreNotEqual(mainThreadId, taskThreadId);
-
-                    future.SetProgress(0.25f);
-                    future.SetProgress(0.5f);
-                    future.SetProgress(0.75f);
-                    future.SetProgress(1f);
-                    future.SetComplete(null);
-                });
-                future.Start(asyncTask.Start);
+                future.Start();
 
                 while(!future.IsCompleted.Value)
                     yield return null;
@@ -214,28 +215,6 @@ namespace PBFramework.Threading.Futures.Tests
                 if(!shouldBeThreadSafe)
                     break;
             }
-        }
-
-        private class DummyFuture : Future
-        {
-            public void StartEmpty() => StartRunning(null);
-
-            public void Start(Action task) => StartRunning(task);
-
-            public void SetProgress(float progress) => ReportProgress(progress);
-
-            public void SetComplete(Exception exception) => OnComplete(exception);
-        }
-
-        private class DummyFuture<T> : Future<T>
-        {
-            public void StartEmpty() => StartRunning(null);
-
-            public void Start(Action task) => StartRunning(task);
-
-            public void SetProgress(float progress) => ReportProgress(progress);
-
-            public void SetComplete(T value, Exception exception) => OnComplete(value, exception);
         }
     }
 }

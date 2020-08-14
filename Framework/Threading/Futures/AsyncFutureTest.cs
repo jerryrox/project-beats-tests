@@ -11,7 +11,7 @@ namespace PBFramework.Threading.Futures.Tests
     public class AsyncFutureTest {
         
         [UnityTest]
-        public IEnumerable TestNormalRun()
+        public IEnumerator TestNormalRun()
         {
             int mainThreadId = Thread.CurrentThread.ManagedThreadId;
 
@@ -28,6 +28,24 @@ namespace PBFramework.Threading.Futures.Tests
             }
 
             Assert.IsNull(future.Error.Value);
+        }
+
+        [UnityTest]
+        public IEnumerator TestNormalRunGeneric()
+        {
+            AsyncFuture<string> future = new AsyncFuture<string>((f) =>
+            {
+                f.SetComplete("hi");
+            });
+            future.Start();
+
+            while (!future.IsCompleted.Value)
+            {
+                yield return null;
+            }
+
+            Assert.IsNull(future.Error.Value);
+            Assert.AreEqual("hi", future.Output.Value);
         }
     }
 }
