@@ -7,7 +7,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace PBFramework.Threading.Futures
+namespace PBFramework.Threading.Futures.Tests
 {
     public class FutureTest {
         
