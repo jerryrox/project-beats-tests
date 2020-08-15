@@ -36,7 +36,7 @@ namespace PBFramework.Threading.Futures.Tests
             Assert.IsTrue(future.IsThreadSafe);
             Assert.IsFalse(future.DidRun);
 
-            Assert.Throws<ObjectDisposedException>(() =>
+            Assert.DoesNotThrow(() =>
             {
                 future.Dispose();
             });

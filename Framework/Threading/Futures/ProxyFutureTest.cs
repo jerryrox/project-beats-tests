@@ -109,7 +109,7 @@ namespace PBFramework.Threading.Futures.Tests
             Assert.IsTrue(proxyFuture.IsDisposed.Value);
 
             Assert.Throws<ObjectDisposedException>(() => proxyFuture.Start());
-            Assert.Throws<ObjectDisposedException>(() => proxyFuture.Dispose());
+            Assert.DoesNotThrow(() => proxyFuture.Dispose());
 
             future.SetProgress(0.5f);
             Assert.AreEqual(0.5f, future.Progress.Value, Delta);
