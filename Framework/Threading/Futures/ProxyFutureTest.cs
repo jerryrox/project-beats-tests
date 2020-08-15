@@ -24,6 +24,36 @@ namespace PBFramework.Threading.Futures.Tests
         }
 
         [Test]
+        public void TestDisposeFromProxyFuture()
+        {
+            Future<int> future = new Future<int>((f) => f.SetComplete(50));
+            ProxyFuture<int> proxyFuture = new ProxyFuture<int>(future);
+
+            proxyFuture.Dispose();
+            Assert.IsTrue(future.IsDisposed.Value);
+            Assert.IsTrue(proxyFuture.IsDisposed.Value);
+            Assert.IsFalse(future.IsCompleted.Value);
+            Assert.IsFalse(proxyFuture.IsCompleted.Value);
+        }
+
+        [Test]
+        public void TestStartFromProxyFuture()
+        {
+            Future<int> future = new Future<int>((f) => f.SetComplete(4));
+            ProxyFuture<int> proxyFuture = new ProxyFuture<int>(future);
+            Assert.IsFalse(future.DidRun);
+            Assert.IsFalse(proxyFuture.DidRun);
+
+            proxyFuture.Start();
+            Assert.IsTrue(future.DidRun);
+            Assert.IsTrue(future.IsCompleted.Value);
+            Assert.IsTrue(proxyFuture.DidRun);
+            Assert.IsTrue(proxyFuture.IsCompleted.Value);
+            Assert.AreEqual(4, future.Output.Value);
+            Assert.AreEqual(4, proxyFuture.Output.Value);
+        }
+
+        [Test]
         public void TestControlledComplete()
         {
             Future future = new Future();
