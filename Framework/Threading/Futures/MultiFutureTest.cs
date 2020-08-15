@@ -15,6 +15,10 @@ namespace PBFramework.Threading.Futures.Tests
         public void TestEmpty()
         {
             MultiFuture multiFuture = new MultiFuture();
+            Assert.IsFalse(multiFuture.DidRun);
+            Assert.IsFalse(multiFuture.IsCompleted.Value);
+
+            multiFuture.Start();
             Assert.IsTrue(multiFuture.DidRun);
             Assert.IsTrue(multiFuture.IsCompleted.Value);
         }
@@ -28,14 +32,19 @@ namespace PBFramework.Threading.Futures.Tests
             });
 
             MultiFuture multiFuture = new MultiFuture(future);
-            Assert.IsTrue(multiFuture.DidRun);
+            Assert.IsFalse(multiFuture.DidRun);
             Assert.IsFalse(multiFuture.IsCompleted.Value);
-            Assert.AreEqual(0f, future.Progress.Value, 0.001f);
+            Assert.AreEqual(0f, multiFuture.Progress.Value, 0.001f);
 
             future.Start();
+            Assert.IsFalse(multiFuture.DidRun);
+            Assert.IsFalse(multiFuture.IsCompleted.Value);
+            Assert.AreEqual(0f, multiFuture.Progress.Value, 0.001f);
+
+            multiFuture.Start();
             Assert.IsTrue(multiFuture.DidRun);
             Assert.IsTrue(multiFuture.IsCompleted.Value);
-            Assert.AreEqual(1f, future.Progress.Value, 0.001f);
+            Assert.AreEqual(1f, multiFuture.Progress.Value, 0.001f);
         }
 
         [Test]
@@ -48,9 +57,14 @@ namespace PBFramework.Threading.Futures.Tests
             future.Start();
 
             MultiFuture multiFuture = new MultiFuture(future);
+            Assert.IsFalse(multiFuture.DidRun);
+            Assert.IsFalse(multiFuture.IsCompleted.Value);
+            Assert.AreEqual(0f, multiFuture.Progress.Value, 0.001f);
+
+            multiFuture.Start();
             Assert.IsTrue(multiFuture.DidRun);
             Assert.IsTrue(multiFuture.IsCompleted.Value);
-            Assert.AreEqual(1f, future.Progress.Value, 0.001f);
+            Assert.AreEqual(1f, multiFuture.Progress.Value, 0.001f);
         }
 
         [UnityTest]
@@ -63,6 +77,7 @@ namespace PBFramework.Threading.Futures.Tests
             }).ToList();
 
             MultiFuture multiFuture = new MultiFuture(futures);
+            multiFuture.Start();
             Assert.AreEqual(5, multiFuture.Futures.Count);
 
             float prevProgress = -1;
@@ -86,6 +101,7 @@ namespace PBFramework.Threading.Futures.Tests
             }).ToList();
 
             MultiFuture multiFuture = new MultiFuture(futures);
+            multiFuture.Start();
             Assert.AreEqual(10, multiFuture.Futures.Count);
 
             bool checkFinished = false;
