@@ -85,5 +85,118 @@ namespace PBFramework.Threading.Futures.Tests
             Assert.AreEqual(0.5f, future.Progress.Value, Delta);
             Assert.AreEqual(0f, proxyFuture.Progress.Value, Delta);
         }
+
+        [Test]
+        public void TestGeneric()
+        {
+            Future<int> future = new Future<int>((f) => f.SetComplete(1000));
+
+            ProxyFuture<int> proxyFuture = new ProxyFuture<int>(future as IControlledFuture<int>);
+            Assert.AreEqual(0f, proxyFuture.Progress.Value, Delta);
+            Assert.IsFalse(proxyFuture.IsCompleted.Value);
+            Assert.AreEqual(0, proxyFuture.Output.Value);
+
+            future.SetProgress(1f);
+            Assert.AreEqual(1f, proxyFuture.Progress.Value, Delta);
+
+            future.Start();
+            Assert.AreEqual(1000, proxyFuture.Output.Value);
+            Assert.IsTrue(proxyFuture.IsCompleted.Value);
+        }
+
+        [Test]
+        public void TestGenericCompleted()
+        {
+            Future<int> future = new Future<int>((f) => f.SetComplete(1000));
+            future.Start();
+
+            ProxyFuture<int> proxyFuture = new ProxyFuture<int>(future as IControlledFuture<int>);
+            Assert.AreEqual(1f, proxyFuture.Progress.Value, Delta);
+            Assert.IsTrue(proxyFuture.IsCompleted.Value);
+            Assert.AreEqual(1000, proxyFuture.Output.Value);
+        }
+
+        [Test]
+        public void TestGenericErrored()
+        {
+            Future<int> future = new Future<int>((f) => f.SetFail(new Exception()));
+            ProxyFuture<int> proxyFuture = new ProxyFuture<int>(future as IControlledFuture<int>);
+
+            future.Start();
+            Assert.IsTrue(proxyFuture.IsCompleted.Value);
+            Assert.IsNotNull(proxyFuture.Error.Value);
+            Assert.AreEqual(0, proxyFuture.Output.Value);
+        }
+
+        [Test]
+        public void TestGenericErroredFromStart()
+        {
+            Future<int> future = new Future<int>((f) => f.SetFail(new Exception()));
+            future.Start();
+
+            ProxyFuture<int> proxyFuture = new ProxyFuture<int>(future as IControlledFuture<int>);
+            Assert.IsTrue(proxyFuture.IsCompleted.Value);
+            Assert.IsNotNull(proxyFuture.Error.Value);
+            Assert.AreEqual(0, proxyFuture.Output.Value);
+        }
+
+        [Test]
+        public void TestGenericDispose()
+        {
+            Future<int> future = new Future<int>((f) => f.SetComplete(1));
+            ProxyFuture<int> proxyFuture = new ProxyFuture<int>(future as IControlledFuture<int>);
+
+            future.Start();
+            Assert.IsTrue(proxyFuture.IsCompleted.Value);
+            Assert.IsFalse(proxyFuture.IsDisposed.Value);
+            Assert.IsNull(proxyFuture.Error.Value);
+            Assert.AreEqual(1, proxyFuture.Output.Value);
+
+            future.Dispose();
+            Assert.IsTrue(proxyFuture.IsCompleted.Value);
+            Assert.IsTrue(proxyFuture.IsDisposed.Value);
+            Assert.IsNull(proxyFuture.Error.Value);
+            Assert.AreEqual(1, proxyFuture.Output.Value);
+        }
+
+
+        [Test]
+        public void TestGenericDisposedFromStart()
+        {
+            Future<int> future = new Future<int>((f) => f.SetComplete(1));
+            future.Start();
+            future.Dispose();
+
+            ProxyFuture<int> proxyFuture = new ProxyFuture<int>(future as IControlledFuture<int>);
+            Assert.IsFalse(proxyFuture.IsCompleted.Value);
+            Assert.IsTrue(proxyFuture.IsDisposed.Value);
+            Assert.IsNull(proxyFuture.Error.Value);
+            Assert.AreEqual(0, proxyFuture.Output.Value);
+        }
+
+        [Test]
+        public void TestGenericWithDifferentType()
+        {
+            Future<int> future = new Future<int>((f) => f.SetComplete(100));
+
+            ProxyFuture<int, string> proxyFuture = new DummyProxyFuture(future);
+            Assert.AreEqual("0", proxyFuture.Output.Value);
+
+            future.Start();
+            Assert.AreEqual("100", proxyFuture.Output.Value);
+        }
+
+        private class DummyProxyFuture : ProxyFuture<int, string>
+        {
+            public DummyProxyFuture(IFuture<int> future) : base(future)
+            {
+            }
+
+            public DummyProxyFuture(IControlledFuture<int> future) : base(future)
+            {
+            }
+
+            protected override string ConvertOutput(int source) => source.ToString();
+        }
     }
 }
