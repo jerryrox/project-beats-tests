@@ -227,7 +227,7 @@ namespace PBFramework.Stores.Test
 
         private static string GetPath()
         {
-            return Path.Combine(Application.streamingAssetsPath, "Stores/DirectoryBackedStoreTest");
+            return Path.Combine(TestConstants.TestAssetPath, "Stores/DirectoryBackedStoreTest");
         }
 
         private class DummyStore : DirectoryBackedStore<DummyIndex>

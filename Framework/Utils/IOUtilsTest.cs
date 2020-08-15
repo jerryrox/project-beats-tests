@@ -13,9 +13,9 @@ namespace PBFramework.Utils.Tests
         [Test]
         public void TestCopyDirectory()
         {
-            var from = new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "from"));
+            var from = new DirectoryInfo(Path.Combine(TestConstants.TestAssetPath, "from"));
             var fromFile = new FileInfo(Path.Combine(from.FullName, "text"));
-            var to = new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "to"));
+            var to = new DirectoryInfo(Path.Combine(TestConstants.TestAssetPath, "to"));
             var toFile = new FileInfo(Path.Combine(to.FullName, "text"));
 
             from.Create();

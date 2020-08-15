@@ -5,6 +5,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using PBFramework.Threading;
+using PBFramework.Threading.Futures;
 
 namespace PBFramework.Allocation.Caching.Tests
 {
@@ -13,7 +14,7 @@ namespace PBFramework.Allocation.Caching.Tests
         [Test]
         public void Test()
         {
-            var request = new DummyRequest();
+            var request = new Future<bool>((f) => f.SetComplete(true));
             var cacheReq = new CacheRequest<bool>(request);
             Assert.AreEqual(request, cacheReq.Request);
             Assert.AreEqual(0, cacheReq.ListenerCount);
@@ -34,54 +35,26 @@ namespace PBFramework.Allocation.Caching.Tests
             Assert.AreEqual(2, cacheReq.ListenerCount);
 
             request.Start();
-            request.InvokeFinish(true);
             Assert.IsTrue(listener.Value);
             Assert.IsTrue(listener2.Value);
+        }
+
+        [Test]
+        public void TestRemoveListener()
+        {
+            var request = new Future<bool>((f) => f.SetComplete(true));
+            var cacheReq = new CacheRequest<bool>(request);
+
+            var listener = new ReturnableProgress<bool>();
+            var id = cacheReq.Listen(listener);
+            var listener2 = new ReturnableProgress<bool>();
+            var id2 = cacheReq.Listen(listener2);
 
             cacheReq.Remove(id);
             Assert.AreEqual(1, cacheReq.ListenerCount);
-            request.InvokeFinish(false);
-            Assert.IsTrue(listener.Value);
-            Assert.IsFalse(listener2.Value);
-        }
-
-        private class DummyRequest : IExplicitPromise<bool>
-        {
-            public event Action<bool> OnFinishedResult;
-            public event Action OnFinished
-            {
-                add => OnFinishedResult += (v) => value();
-                remove => OnFinishedResult -= (v) => value();
-            }
-
-            public event Action<float> OnProgress;
-
-            public bool Result { get; set; } = false;
-            object IPromise.RawResult => Result;
-
-            public bool IsFinished { get; private set; }
-
-            public float Progress { get; }
-
-            public void Start()
-            {
-                IsFinished = false;
-
-                OnProgress?.Invoke(0);
-            }
-
-            public void Revoke()
-            {
-                IsFinished = false;
-            }
-
-            public void InvokeFinish(bool result)
-            {
-                IsFinished = true;
-                Result = result;
-                OnProgress?.Invoke(1);
-                OnFinishedResult?.Invoke(result);
-            }
+            request.Start();
+            Assert.IsFalse(listener.Value);
+            Assert.IsTrue(listener2.Value);
         }
     }
 }

@@ -22,22 +22,22 @@ namespace PBFramework.Assets.Fonts.Tests
         [Test]
         public void TestSystemFontProvider()
         {
-            ISystemFontInfo arialFont = null;
+            ISystemFontInfo courierFont = null;
             foreach (var font in SystemFontProvider.Fonts)
             {
-                if (arialFont == null && font.Name.Equals("Arial", StringComparison.OrdinalIgnoreCase))
+                if (courierFont == null && font.Name.Equals("Courier", StringComparison.OrdinalIgnoreCase))
                 {
-                    arialFont = font;
+                    courierFont = font;
                 }
                 Debug.Log(font.ToString());
             }
 
-            Assert.AreEqual("Arial", arialFont.Name);
-            Assert.AreEqual("Arial Bold", arialFont.BoldName);
-            Assert.AreEqual("Arial Italic", arialFont.ItalicName);
-            Assert.AreEqual("Arial Bold Italic", arialFont.BoldItalicName);
+            Assert.AreEqual("Courier", courierFont.Name);
+            Assert.AreEqual("Courier Bold", courierFont.BoldName);
+            Assert.AreEqual("Courier Italic", courierFont.ItalicName);
+            Assert.AreEqual("Courier Bold Italic", courierFont.BoldItalicName);
 
-            SystemFont systemFont = new SystemFont(arialFont);
+            SystemFont systemFont = new SystemFont(courierFont);
             Assert.IsNotNull(systemFont.Normal);
             Assert.IsNotNull(systemFont.Bold);
             Assert.IsNotNull(systemFont.Italic);

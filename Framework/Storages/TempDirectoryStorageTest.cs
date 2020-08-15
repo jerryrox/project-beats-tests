@@ -34,7 +34,7 @@ namespace PBFramework.Storages.Tests
         [Test]
         public void TestDirectoryCreation()
         {
-            var dir = new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "Storages/TempDirectoryTest2"));
+            var dir = new DirectoryInfo(Path.Combine(TestConstants.TestAssetPath, "Storages/TempDirectoryTest2"));
             var storage = new TempDirectoryStorage(dir);
             try
             {

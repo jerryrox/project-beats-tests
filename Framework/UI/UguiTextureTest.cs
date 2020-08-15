@@ -17,10 +17,10 @@ namespace PBFramework.UI.Tests
         public IEnumerator Test()
         {
             // Load test texture
-            TextureRequest req = new TextureRequest(Path.Combine(Application.streamingAssetsPath, "Graphics/UI/texture0.jpg"));//0.jpg"));
+            TextureRequest req = new TextureRequest(Path.Combine(TestConstants.TestAssetPath, "Graphics/UI/texture0.jpg"));//0.jpg"));
             var progress = new ReturnableProgress<IWebRequest>();
             req.Request(progress);
-            while (!req.IsFinished)
+            while (!req.IsCompleted.Value)
                 yield return null;
 
             Assert.IsNotNull(progress.Value);

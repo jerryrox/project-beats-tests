@@ -40,7 +40,7 @@ namespace PBFramework.DB.Tests
             for (int i = 0; i < files.Length; i++)
             {
                 Assert.AreEqual(
-                    Path.Combine(Application.streamingAssetsPath, $"DB/data/00000000-0000-0000-0000-00000000000{i}.data"),
+                    Path.Combine(TestConstants.TestAssetPath, $"DB/data/00000000-0000-0000-0000-00000000000{i}.data"),
                     files[i].FullName
                 );
             }
@@ -80,8 +80,8 @@ namespace PBFramework.DB.Tests
             var processor = new DatabaseProcessor<TestEntity>(new DummyDatabase());
             processor.LoadIndex();
 
-            var indexPath = Path.Combine(Application.streamingAssetsPath, "DB/index.dbi");
-            var backupPath = Path.Combine(Application.streamingAssetsPath, "DB/index2.dbi");
+            var indexPath = Path.Combine(TestConstants.TestAssetPath, "DB/index.dbi");
+            var backupPath = Path.Combine(TestConstants.TestAssetPath, "DB/index2.dbi");
             try
             {
                 if (File.Exists(indexPath))
@@ -162,7 +162,7 @@ namespace PBFramework.DB.Tests
             }
             finally
             {
-                var newDataFile = Path.Combine(Application.streamingAssetsPath, "DB/data/00000000-0000-0000-0000-000000000005.data");
+                var newDataFile = Path.Combine(TestConstants.TestAssetPath, "DB/data/00000000-0000-0000-0000-000000000005.data");
                 if (File.Exists(newDataFile))
                 {
                     File.Delete(newDataFile);
@@ -197,8 +197,8 @@ namespace PBFramework.DB.Tests
             };
 
             // Backup original DB first.
-            var sourcePath = Path.Combine(Application.streamingAssetsPath, "DB");
-            var backupPath = Path.Combine(Application.streamingAssetsPath, "DB_Backup");
+            var sourcePath = Path.Combine(TestConstants.TestAssetPath, "DB");
+            var backupPath = Path.Combine(TestConstants.TestAssetPath, "DB_Backup");
             if (Directory.Exists(backupPath))
             {
                 Directory.Delete(backupPath, true);
@@ -260,6 +260,7 @@ namespace PBFramework.DB.Tests
         [Test]
         public void TestLoadData()
         {
+            Debug.LogWarning(TestConstants.TestAssetPath);
             var processor = new DatabaseProcessor<TestEntity>(new DummyDatabase());
             processor.LoadIndex();
 
@@ -297,8 +298,8 @@ namespace PBFramework.DB.Tests
             var processor = new DatabaseProcessor<TestEntity>(new DummyDatabase());
             processor.LoadIndex();
 
-            var dbDir = new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "DB"));
-            var backupDir = new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "DB_Backup"));
+            var dbDir = new DirectoryInfo(Path.Combine(TestConstants.TestAssetPath, "DB"));
+            var backupDir = new DirectoryInfo(Path.Combine(TestConstants.TestAssetPath, "DB_Backup"));
 
             try
             {
@@ -333,7 +334,7 @@ namespace PBFramework.DB.Tests
         {
             public bool IsAlive => true;
 
-            public DirectoryInfo Directory => new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "DB"));
+            public DirectoryInfo Directory => new DirectoryInfo(Path.Combine(TestConstants.TestAssetPath, "DB"));
 
 
             public bool Initialize() => true;

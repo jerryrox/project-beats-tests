@@ -30,7 +30,7 @@ namespace PBFramework.IO.Decoding.Tests
 
         private StreamReader GetStream()
         {
-            string path = Path.Combine(Application.streamingAssetsPath, "IO/Decoding/JsonDecoderTest.txt");
+            string path = Path.Combine(TestConstants.TestAssetPath, "IO/Decoding/JsonDecoderTest.txt");
             return new StreamReader(File.OpenRead(path));
         }
     }

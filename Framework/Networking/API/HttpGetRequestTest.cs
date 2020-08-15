@@ -12,11 +12,11 @@ namespace PBFramework.Networking.API.Tests
         [UnityTest]
         public IEnumerator TestPlain()
         {
-            var request = new HttpGetRequest("https://osu.ppy.sh/beatmapsets/search");
-            Assert.AreEqual("https://osu.ppy.sh/beatmapsets/search", request.Url);
+            var request = new HttpGetRequest("https://www.google.com/");
+            Assert.IsTrue(request.Url.Equals("https://www.google.com") || request.Url.Equals("https://www.google.com/"));
             request.Request();
 
-            while(!request.IsFinished) yield return null;
+            while(!request.IsCompleted.Value) yield return null;
 
             Debug.Log($"TestPlain result:\n{request.Response.TextData}");
         }
@@ -27,13 +27,13 @@ namespace PBFramework.Networking.API.Tests
             var request = new HttpGetRequest("https://osu.ppy.sh/beatmapsets/search?cursor%5Bapproved_date%5D=1562342428000&cursor%5B_id%5D=942269");
             Assert.IsTrue("https://osu.ppy.sh/beatmapsets/search?cursor%5Bapproved_date%5D=1562342428000&cursor%5B_id%5D=942269".Equals(request.Url, StringComparison.OrdinalIgnoreCase));
 
-            request = new HttpGetRequest("https://osu.ppy.sh/beatmapsets/search");
+            request = new HttpGetRequest("https://www.google.com/search");
             request.AddQueryParam("cursor[approved_date]", "1562342428000");
             request.AddQueryParam("cursor[_id]", "942269");
-            Assert.IsTrue("https://osu.ppy.sh/beatmapsets/search?cursor%5Bapproved_date%5D=1562342428000&cursor%5B_id%5D=942269".Equals(request.Url, StringComparison.OrdinalIgnoreCase));
+            Assert.IsTrue("https://www.google.com/search?cursor%5Bapproved_date%5D=1562342428000&cursor%5B_id%5D=942269".Equals(request.Url, StringComparison.OrdinalIgnoreCase));
 
             request.Request();
-            while (!request.IsFinished) yield return null;
+            while (!request.IsCompleted.Value) yield return null;
 
             Debug.Log($"TestQueryParam result:\n{request.Response.TextData}");
         }

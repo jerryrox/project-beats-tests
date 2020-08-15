@@ -122,10 +122,10 @@ namespace PBFramework.Audio.Tests
             new GameObject("Listener").AddComponent<AudioListener>();
 
             Assert.IsNotNull(onFinished);
-            var request = new AudioRequest("file://" + Path.Combine(Application.streamingAssetsPath, "Audio/music.mp3"));
-            request.OnFinishedResult += (audio) => onFinished(new UnityAudio(audio));
+            var request = new AudioRequest("file://" + Path.Combine(TestConstants.TestAssetPath, "Audio/music.mp3"));
+            request.Output.OnNewValue += (audio) => onFinished(new UnityAudio(audio));
             request.Start();
-            while(!request.IsFinished)
+            while(!request.IsCompleted.Value)
                 yield return null;
             Assert.IsNotNull(request.RawResult);
             AudioClip clip = request.RawResult as AudioClip;

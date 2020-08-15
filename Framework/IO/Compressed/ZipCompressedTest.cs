@@ -30,7 +30,7 @@ namespace PBFramework.IO.Compressed.Tests
         
         private FileInfo GetFileInfo()
         {
-            string path = Path.Combine(Application.streamingAssetsPath, "TestZip.zip");
+            string path = Path.Combine(TestConstants.TestAssetPath, "TestZip.zip");
             var source = new FileInfo(path);
             Assert.IsTrue(source.Exists);
             return source;

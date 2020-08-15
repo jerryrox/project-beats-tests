@@ -121,7 +121,7 @@ namespace PBFramework.Storages.Tests
 
         private DirectoryInfo GetDirectory()
         {
-            return new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "Storages/JsonStorageTest"));
+            return new DirectoryInfo(Path.Combine(TestConstants.TestAssetPath, "Storages/JsonStorageTest"));
         }
 
         private IJsonStorage CreateStorage(bool clearFirst = true)

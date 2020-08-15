@@ -304,7 +304,7 @@ namespace PBFramework.Storages.Tests
 
         private string GetPath()
         {
-            return Path.Combine(Application.streamingAssetsPath, "Storages/DirectoryStorageTest");
+            return Path.Combine(TestConstants.TestAssetPath, "Storages/DirectoryStorageTest");
         }
 
         private DirectoryInfo GetDirectory()

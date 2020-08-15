@@ -14,18 +14,18 @@ namespace PBFramework.Networking.Tests
         [UnityTest]
         public IEnumerator Test()
         {
-            var request = new MusicAudioRequest("http://23.237.126.42/ost/touhou-youyoumu-perfect-cherry-blossom/vrdyenmp/%5B01%5D%20Youyoumu%20~%20Snow%20or%20Cherry%20Petal.mp3", false);
+            var request = new MusicAudioRequest(TestConstants.RemoteMp3Url, false);
             request.Start();
 
-            while (!request.IsFinished)
+            while (!request.IsCompleted.Value)
             {
                 Debug.Log($"Progress: {request.Progress}");
                 yield return null;
             }
 
-            Assert.IsNotNull(request.Result);
+            Assert.IsNotNull(request.Output.Value);
 
-            var unityAudio = request.Result as UnityAudio;
+            var unityAudio = request.Output.Value as UnityAudio;
             Assert.IsNotNull(unityAudio);
 
             Debug.Log($"Dur: {unityAudio.Duration}, Channels: {unityAudio.Channels}");

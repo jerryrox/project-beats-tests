@@ -13,13 +13,16 @@ namespace PBFramework.IO.Compressed.Tests
         [Test]
         public void TestGetCompressed()
         {
-            string realPath = Path.Combine(Application.streamingAssetsPath, "TestZip.ZiP");
-            string fakePath = Path.Combine(Application.streamingAssetsPath, "TestZip.lol");
+            string realPath = Path.Combine(TestConstants.TestAssetPath, "TestZip.ZiP");
+            string fakePath = Path.Combine(TestConstants.TestAssetPath, "TestZip.lol");
 
             var compressed = CompressedHelper.GetCompressed(new FileInfo(realPath));
             Assert.IsTrue(compressed is ZipCompressed);
 
             compressed = CompressedHelper.GetCompressed(new FileInfo(fakePath));
+            Assert.IsNull(compressed);
+
+            compressed = CompressedHelper.GetCompressed(new FileInfo(fakePath), true);
             Assert.IsTrue(compressed is DefaultCompressed);
         }
     }

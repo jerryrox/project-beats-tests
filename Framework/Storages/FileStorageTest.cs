@@ -90,7 +90,7 @@ namespace PBFramework.Storages.Tests
 
         private DirectoryInfo GetDirectory()
         {
-            return new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "Storages/FileStorageTest"));
+            return new DirectoryInfo(Path.Combine(TestConstants.TestAssetPath, "Storages/FileStorageTest"));
         }
 
     }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using PBFramework.Threading.Futures;
 
 namespace PBFramework.Networking.Tests
 {
@@ -13,10 +14,10 @@ namespace PBFramework.Networking.Tests
         [UnityTest]
         public IEnumerator TestReadable()
         {
-            var request = new TextureRequest("https://cdn-www.bluestacks.com/bs-images/Banner_com.sunborn.girlsfrontline.en-1.jpg", false);
+            var request = new TextureRequest(TestConstants.RemoteImageUrl, false);
             request.Request();
 
-            while (!request.IsDone)
+            while (!request.IsCompleted.Value)
             {
                 Debug.Log("Progress: " + request.Progress);
                 yield return null;
@@ -25,7 +26,7 @@ namespace PBFramework.Networking.Tests
             Assert.IsTrue(request.Response.IsSuccess);
 
             // Save to file
-            var path = Path.Combine(Application.streamingAssetsPath, "TextureRequestResult.jpg");
+            var path = Path.Combine(TestConstants.TestAssetPath, "TextureRequestResult.jpg");
             File.WriteAllBytes(path, request.Response.ByteData);
 
             Assert.IsTrue(request.Response.TextureData.isReadable);
@@ -36,10 +37,10 @@ namespace PBFramework.Networking.Tests
         [UnityTest]
         public IEnumerator TestNonReadable()
         {
-            var request = new TextureRequest("https://cdn-www.bluestacks.com/bs-images/Banner_com.sunborn.girlsfrontline.en-1.jpg");
+            var request = new TextureRequest(TestConstants.RemoteImageUrl);
             request.Request();
 
-            while (!request.IsDone)
+            while (!request.IsCompleted.Value)
             {
                 Debug.Log("Progress: " + request.Progress);
                 yield return null;
@@ -48,7 +49,7 @@ namespace PBFramework.Networking.Tests
             Assert.IsTrue(request.Response.IsSuccess);
 
             // Save to file
-            var path = Path.Combine(Application.streamingAssetsPath, "TextureRequestResult.jpg");
+            var path = Path.Combine(TestConstants.TestAssetPath, "TextureRequestResult.jpg");
             File.WriteAllBytes(path, request.Response.ByteData);
 
             Assert.IsFalse(request.Response.TextureData.isReadable);
@@ -59,34 +60,34 @@ namespace PBFramework.Networking.Tests
         [UnityTest]
         public IEnumerator TestPromise()
         {
-            var request = new TextureRequest("https://cdn-www.bluestacks.com/bs-images/Banner_com.sunborn.girlsfrontline.en-1.jpg", false);
-            IExplicitPromise<Texture2D> promise = request;
+            var request = new TextureRequest(TestConstants.RemoteImageUrl, false);
+            IControlledFuture<Texture2D> promise = request;
             Assert.AreEqual(request, promise);
-            Assert.IsNull(promise.Result);
+            Assert.IsNull(promise.Output.Value);
 
             // Receive via callback
             Texture2D texture = null;
-            promise.OnFinishedResult += (c) => texture = c;
+            promise.Output.OnNewValue += (c) => texture = c;
 
             // Request
             promise.Start();
-            Assert.IsFalse(promise.IsFinished);
-            Assert.IsFalse(request.IsDone);
+            Assert.IsFalse(promise.IsCompleted.Value);
+            Assert.IsFalse(request.IsCompleted.Value);
 
             // Wait till finish
-            while (!promise.IsFinished)
+            while (!promise.IsCompleted.Value)
             {
                 Debug.Log("Progress: " + request.Progress);
                 yield return null;
             }
 
-            Assert.IsTrue(promise.IsFinished);
-            Assert.IsTrue(request.IsDone);
+            Assert.IsTrue(promise.IsCompleted.Value);
+            Assert.IsTrue(request.IsCompleted.Value);
             Assert.IsNotNull(request.Response);
-            Assert.IsNotNull(promise.Result);
+            Assert.IsNotNull(promise.Output.Value);
             Assert.IsNotNull(texture);
-            Assert.AreEqual(promise.Result, request.Response.TextureData);
-            Assert.AreEqual(promise.Result, texture);
+            Assert.AreEqual(promise.Output.Value, request.Response.TextureData);
+            Assert.AreEqual(promise.Output.Value, texture);
         }
     }
 }

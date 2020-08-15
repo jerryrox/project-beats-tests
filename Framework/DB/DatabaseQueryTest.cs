@@ -173,7 +173,7 @@ namespace PBFramework.DB.Tests
 
             public DummyProcessor()
             {
-                directory = new DirectoryInfo(Path.Combine(Application.streamingAssetsPath, "DB"));
+                directory = new DirectoryInfo(Path.Combine(TestConstants.TestAssetPath, "DB"));
                 dataDirectory = new DirectoryInfo(Path.Combine(directory.FullName, "data"));
                 indexFile = new FileInfo(Path.Combine(directory.FullName, "index.dbi"));
 

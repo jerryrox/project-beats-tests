@@ -13,10 +13,10 @@ namespace PBFramework.Networking.Tests
         public void TestCreation()
         {
             var request = new DummyRequest("asdf");
-            Assert.AreEqual("file://asdf", request.Url);
+            Assert.AreEqual("file:///asdf", request.Url);
 
             request = new DummyRequest("file://asd");
-            Assert.AreEqual("file://asd", request.Url);
+            Assert.AreEqual("file:///asd", request.Url);
 
             request = new DummyRequest("http://asdfg");
             Assert.AreEqual("http://asdfg", request.Url);

@@ -16,7 +16,7 @@ namespace PBFramework.Assets.Caching.Tests
             var cacher = new TextureCacher(true);
             var progress = new ReturnableProgress<Texture2D>();
 
-            var key = "https://cdn-www.bluestacks.com/bs-images/Banner_com.sunborn.girlsfrontline.en-1.jpg";
+            var key = TestConstants.RemoteImageUrl;
             var id = cacher.Request(key, progress);
             while (!cacher.IsCached(key))
             {
