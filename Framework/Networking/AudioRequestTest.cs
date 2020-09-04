@@ -15,12 +15,11 @@ namespace PBFramework.Networking.Tests
         public IEnumerator TestNonStream()
         {
             var request = new AudioRequest(TestConstants.RemoteMp3Url, false);
-            var progress = new ReturnableProgress<IWebRequest>();
-            request.Request(progress);
+            var future = request.Request();
 
             while (!request.IsCompleted.Value)
             {
-                Debug.Log("Progress: " + progress.Progress);
+                Debug.Log("Progress: " + future.Progress.Value);
                 yield return null;
             }
 
@@ -40,12 +39,11 @@ namespace PBFramework.Networking.Tests
             // There is no way to check whether the loaded audio is truly a streaming audio or not.
 
             var request = new AudioRequest(TestConstants.RemoteMp3Url, true);
-            var progress = new ReturnableProgress<IWebRequest>();
-            request.Request(progress);
+            var future = request.Request();
 
             while (!request.IsCompleted.Value)
             {
-                Debug.Log("Progress: " + progress.Progress);
+                Debug.Log("Progress: " + future.Progress.Value);
                 yield return null;
             }
 

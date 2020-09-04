@@ -5,7 +5,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using PBFramework.Testing;
-using PBFramework.Threading;
+using PBFramework.Threading.Futures;
 
 namespace PBGame.Tests
 {
@@ -42,12 +42,12 @@ namespace PBGame.Tests
         public IEnumerator Run() => Environment.Run();
 
         /// <summary>
-        /// Returns an enumerator which awaits until the specified progress has finished.
+        /// Returns an enumerator which awaits until the specified future has finished.
         /// </summary>
-        public IEnumerator AwaitProgress(IEventProgress progress)
+        public IEnumerator AwaitFuture(IFuture future)
         {
             bool isFinished = false;
-            progress.OnFinished += () => isFinished = true;
+            future.IsCompleted.BindAndTrigger((completed) => isFinished = completed);
             while (!isFinished)
                 yield return null;
         }

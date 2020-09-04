@@ -16,8 +16,7 @@ namespace PBFramework.Networking.Tests
         public IEnumerator TestRequest()
         {
             var request = new WebRequest("file://" + Path.Combine(TestConstants.TestAssetPath, "TestText.txt"));
-            var progress = new ReturnableProgress<IWebRequest>();
-            request.Request(progress);
+            var future = request.Request();
 
             // Max threshold
             int time = 2;
@@ -27,7 +26,7 @@ namespace PBFramework.Networking.Tests
                 time--;
             }
 
-            Assert.AreEqual(1f, progress.Progress);
+            Assert.AreEqual(1f, future.Progress.Value);
             Assert.AreEqual(1f, request.Progress.Value);
             Assert.IsTrue(request.IsCompleted.Value);
             Assert.IsTrue(request.IsAlive);
@@ -50,58 +49,31 @@ namespace PBFramework.Networking.Tests
         [UnityTest]
         public IEnumerator TestRetry()
         {
-            var request = new WebRequest(TestConstants.RemoteMp3Url);
-            var progress = new ReturnableProgress<IWebRequest>();
-            request.Request(progress);
+            var request = new WebRequest(TestConstants.RemoteMp3Url, timeout: 1, 2);
+            var future = request.Request();
+
+            Assert.AreEqual(2, request.RemainingRetries);
 
             Debug.Log("Requesting to: " + request.Url);
 
-            // Wait until half the progress
-            while (progress.Progress < 0.5)
-            {
-                Debug.Log("First progress: " + progress.Progress);
+            while (!future.IsCompleted.Value)
                 yield return null;
-            }
 
-            // Retry now
-            request.Retry();
-
-            // Try wait for a frame.
-            yield return null;
-
-            // Check progress
-            Debug.Log("Retried new progress: " + progress.Progress);
-            while (!request.IsCompleted.Value)
-            {
-                Debug.Log("Second progress: " + progress.Progress);
-                yield return null;
-            }
-
-            Assert.AreEqual(1f, progress.Progress, 0.00000001f);
-            Assert.IsNotNull(request.Response);
-
-            Debug.Log("Content: " + request.Response.TextData);
-            Debug.Log("Content length: " + request.Response.ContentLength);
-            Debug.Log("Content type: " + request.Response.ContentType);
-
-            // Save to streaming assets just to check.
-            string savePath = Path.Combine(TestConstants.TestAssetPath, "WebRequestTestDownload.mp3");
-            File.WriteAllBytes(savePath, request.Response.ByteData);
-
-            Assert.IsTrue(File.Exists(savePath));
+            Assert.AreEqual(0, request.RemainingRetries);
+            Assert.IsTrue(request.IsCompleted.Value);
+            Assert.IsFalse(request.Response.IsSuccess);
         }
 
         [UnityTest]
         public IEnumerator TestTimeout()
         {
             var request = new WebRequest(TestConstants.RemoteMp3Url, timeout: 2);
-            var progress = new ReturnableProgress<IWebRequest>();
-            request.Request(progress);
+            var future = request.Request();
 
             while(!request.IsCompleted.Value)
                 yield return null;
 
-            Debug.Log("Stopped at progress: " + progress.Progress);
+            Debug.Log("Stopped at progress: " + future.Progress.Value);
             Debug.Log("Error message: " + request.Response.ErrorMessage);
 
             Assert.IsNotNull(request.Response);

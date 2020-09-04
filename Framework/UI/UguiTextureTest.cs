@@ -18,15 +18,14 @@ namespace PBFramework.UI.Tests
         {
             // Load test texture
             TextureRequest req = new TextureRequest(Path.Combine(TestConstants.TestAssetPath, "Graphics/UI/texture0.jpg"));//0.jpg"));
-            var progress = new ReturnableProgress<IWebRequest>();
-            req.Request(progress);
+            var future = req.Request();
             while (!req.IsCompleted.Value)
                 yield return null;
 
-            Assert.IsNotNull(progress.Value);
-            Assert.IsNotNull(progress.Value.Response);
+            Assert.IsNotNull(future.Output.Value);
+            Assert.IsNotNull(req.Response);
 
-            var loadedTexture = progress.Value.Response.TextureData;
+            var loadedTexture = future.Output.Value;
             Assert.IsNotNull(loadedTexture);
 
             var env = GraphicTestEnvironment.Create();
