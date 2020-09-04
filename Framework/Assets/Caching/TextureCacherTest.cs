@@ -14,17 +14,18 @@ namespace PBFramework.Assets.Caching.Tests
         public IEnumerator Test()
         {
             var cacher = new TextureCacher(true);
+            var progress = new ReturnableProgress<Texture2D>();
 
             var key = TestConstants.RemoteImageUrl;
-            var listener = cacher.Request(key);
+            var id = cacher.Request(key, progress);
             while (!cacher.IsCached(key))
             {
-                Debug.Log("Progress: " + listener.Progress.Value);
+                Debug.Log("Progress: " + progress.Progress);
                 yield return null;
             }
 
             Assert.IsTrue(cacher.IsCached(key));
-            Assert.IsNotNull(listener.Output.Value);
+            Assert.IsNotNull(progress.Value);
         }
     }
 }

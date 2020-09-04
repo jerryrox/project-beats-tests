@@ -57,8 +57,9 @@ namespace PBGame.UI.Components.Prepare.Details.Meta.Tests
 
             // Load a test map
             Debug.Log("Loading map");
-            var future = MapManager.Load(new Guid(testMapId));
-            yield return testGame.AwaitFuture(future);
+            var progress = new ReturnableProgress<IMapset>();
+            MapManager.Load(new Guid(testMapId), progress);
+            yield return testGame.AwaitProgress(progress);
 
             Assert.AreEqual(1, MapManager.AllMapsets.Count);
             Assert.AreEqual(testMapId, MapManager.AllMapsets[0].Id.ToString());

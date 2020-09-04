@@ -30,13 +30,17 @@ namespace PBFramework.Stores.Test
             var store = new DummyStore();
             yield return InitStore(store);
 
-            var values = new DummyIndex[3];
-            for (int i = 0; i < values.Length; i++)
+            var progresses = new List<ReturnableProgress<DummyIndex>>()
             {
-                int index = i;
-                yield return WaitImport(store, i, (output) => values[index] = output);
+                new ReturnableProgress<DummyIndex>(),
+                new ReturnableProgress<DummyIndex>(),
+                new ReturnableProgress<DummyIndex>()
+            };
+            for (int i = 0; i < progresses.Count; i++)
+            {
+                yield return WaitImport(store, i, progresses[i]);
 
-                var value = values[index];
+                var value = progresses[i].Value;
                 Assert.IsNotNull(value);
                 Assert.AreEqual($"00000000-0000-0000-0000-00000000000{i}", value.Id.ToString());
                 Assert.AreEqual($"Name{i}", value.Name);
@@ -52,13 +56,17 @@ namespace PBFramework.Stores.Test
             var store = new DummyStore();
             yield return InitStore(store);
 
-            var values = new DummyIndex[3];
-            for (int i = 0; i < values.Length; i++)
+            var progresses = new List<ReturnableProgress<DummyIndex>>()
             {
-                int index = i;
-                yield return WaitImport(store, i, (output) => values[index] = output);
+                new ReturnableProgress<DummyIndex>(),
+                new ReturnableProgress<DummyIndex>(),
+                new ReturnableProgress<DummyIndex>()
+            };
+            for (int i = 0; i < progresses.Count; i++)
+            {
+                yield return WaitImport(store, i, progresses[i]);
 
-                var value = values[index];
+                var value = progresses[i].Value;
                 Assert.IsNotNull(value);
                 Assert.AreEqual(GetDataDirectory(i).FullName, value.Directory.FullName);
                 Assert.AreEqual($"00000000-0000-0000-0000-00000000000{i}", value.Id.ToString());
@@ -90,13 +98,17 @@ namespace PBFramework.Stores.Test
             var store = new DummyStore();
             yield return InitStore(store);
 
-            var values = new DummyIndex[3];
-            for (int i = 0; i < values.Length; i++)
+            var progresses = new List<ReturnableProgress<DummyIndex>>()
             {
-                int index = i;
-                yield return WaitImport(store, i, (output) => values[index] = output);
+                new ReturnableProgress<DummyIndex>(),
+                new ReturnableProgress<DummyIndex>(),
+                new ReturnableProgress<DummyIndex>()
+            };
+            for (int i = 0; i < progresses.Count; i++)
+            {
+                yield return WaitImport(store, i, progresses[i]);
 
-                var value = values[index];
+                var value = progresses[i].Value;
                 Assert.IsNotNull(value);
                 Assert.AreEqual($"00000000-0000-0000-0000-00000000000{i}", value.Id.ToString());
                 Assert.AreEqual($"Name{i}", value.Name);
@@ -105,15 +117,15 @@ namespace PBFramework.Stores.Test
             }
             Assert.AreEqual(3, store.Count);
 
-            int inx = 1;
+            int index = 1;
             foreach (var data in store.Get(query => query.WhereNonIndexed(d => d["Age"].Value<int>() > 0)))
             {
                 Assert.IsNotNull(data);
-                Assert.AreEqual($"00000000-0000-0000-0000-00000000000{inx}", data.Id.ToString());
-                Assert.AreEqual($"Name{inx}", data.Name);
-                Assert.AreEqual(inx, data.Age);
-                Assert.AreEqual(inx % 2 == 1, data.IsVerified);
-                inx++;
+                Assert.AreEqual($"00000000-0000-0000-0000-00000000000{index}", data.Id.ToString());
+                Assert.AreEqual($"Name{index}", data.Name);
+                Assert.AreEqual(index, data.Age);
+                Assert.AreEqual(index % 2 == 1, data.IsVerified);
+                index++;
             }
         }
 
@@ -123,13 +135,17 @@ namespace PBFramework.Stores.Test
             var store = new DummyStore();
             yield return InitStore(store);
 
-            var values = new DummyIndex[3];
-            for (int i = 0; i < values.Length; i++)
+            var progresses = new List<ReturnableProgress<DummyIndex>>()
             {
-                int index = i;
-                yield return WaitImport(store, i, (output) => values[index] = output);
+                new ReturnableProgress<DummyIndex>(),
+                new ReturnableProgress<DummyIndex>(),
+                new ReturnableProgress<DummyIndex>()
+            };
+            for (int i = 0; i < progresses.Count; i++)
+            {
+                yield return WaitImport(store, i, progresses[i]);
 
-                var value = values[index];
+                var value = progresses[i].Value;
                 Assert.IsNotNull(value);
                 Assert.AreEqual($"00000000-0000-0000-0000-00000000000{i}", value.Id.ToString());
                 Assert.AreEqual($"Name{i}", value.Name);
@@ -141,7 +157,7 @@ namespace PBFramework.Stores.Test
             var removeList = new List<DummyIndex>();
             store.OnRemoveData += (removed) => removeList.Add(removed);
 
-            store.Delete(values[2]);
+            store.Delete(progresses[2].Value);
             Assert.AreEqual(2, store.Count);
             Assert.IsNotNull(removeList[0]);
             Assert.AreEqual($"00000000-0000-0000-0000-000000000002", removeList[0].Id.ToString());
@@ -160,31 +176,33 @@ namespace PBFramework.Stores.Test
 
         private IEnumerator InitStore(DummyStore store, int expectedCount = 0)
         {
-            var task = store.Reload();
-            while(!task.IsCompleted.Value)
-                yield return null;
-            Assert.AreEqual(1f, task.Progress.Value, 0.00001f);
+            var progress = new EventProgress();
+            store.Reload(progress).Wait();
+            yield return null;
+            Assert.AreEqual(1f, progress.Progress, 0.00001f);
             Assert.AreEqual(expectedCount, store.Count);
         }
 
-        private IEnumerator WaitImport(DummyStore store, int index, Action<DummyIndex> outputReceiver)
+        private IEnumerator WaitImport(DummyStore store, int index, IReturnableProgress<DummyIndex> progress)
         {
             // New data callback
             DummyIndex loadedData = null;
             Action<DummyIndex> onNewData = d => loadedData = d;
 
+            // Load completion callback
+            bool loaded = false;
+            progress.OnFinished += delegate { loaded = true; };
+
             // Start importing
             store.OnNewData += onNewData;
-            var future = store.Import(GetDataFile(index), false);
-            while (!future.IsCompleted.Value)
+            store.Import(GetDataFile(index), false, progress);
+            while (!loaded)
                 yield return null;
             store.OnNewData -= onNewData;
 
             // Checking
-            Assert.AreEqual(1f, future.Progress.Value, 0.0000001f);
-            Assert.AreEqual(loadedData, future.Output.Value);
-
-            outputReceiver?.Invoke(future.Output.Value);
+            Assert.AreEqual(1f, progress.Progress, 0.0000001f);
+            Assert.AreEqual(loadedData, progress.Value);
         }
 
         private FileInfo GetDataFile(int index)

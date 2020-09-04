@@ -15,59 +15,46 @@ namespace PBFramework.Allocation.Caching.Tests
         public void Test()
         {
             var request = new Future<bool>((f) => f.SetComplete(true));
-            var cacheReq = new CacheRequest<bool>("asdf", request);
+            var cacheReq = new CacheRequest<bool>(request);
             Assert.AreEqual(request, cacheReq.Request);
-            Assert.AreEqual(0, cacheReq.Listeners.Count);
+            Assert.AreEqual(0, cacheReq.ListenerCount);
 
-            var listener = cacheReq.Listen();
-            Assert.IsNotNull(listener);
-            Assert.AreEqual(1, cacheReq.Listeners.Count);
-            Assert.IsFalse(listener.Output.Value);
+            var listener = new ReturnableProgress<bool>();
+            var id = cacheReq.Listen(listener);
+            Assert.Greater(id, 0);
+            Assert.AreEqual(1, cacheReq.ListenerCount);
+            Assert.IsFalse(listener.Value);
 
-            var listener2 = cacheReq.Listen();
-            Assert.IsNotNull(listener);
-            Assert.AreNotEqual(listener, listener2);
-            Assert.AreEqual(2, cacheReq.Listeners.Count);
-            Assert.IsFalse(listener2.Output.Value);
+            var listener2 = new ReturnableProgress<bool>();
+            var id2 = cacheReq.Listen(listener2);
+            Assert.Greater(id2, 0);
+            Assert.AreEqual(2, cacheReq.ListenerCount);
+            Assert.IsFalse(listener2.Value);
 
-            cacheReq.Unlisten(new CacheListener<bool>("fdsa", null));
-            cacheReq.Unlisten(null);
-            Assert.AreEqual(2, cacheReq.Listeners.Count);
+            cacheReq.Remove(10000);
+            Assert.AreEqual(2, cacheReq.ListenerCount);
 
             request.Start();
-            Assert.IsTrue(listener.Output.Value);
-            Assert.IsTrue(listener2.Output.Value);
+            Assert.IsTrue(listener.Value);
+            Assert.IsTrue(listener2.Value);
         }
 
         [Test]
         public void TestRemoveListener()
         {
             var request = new Future<bool>((f) => f.SetComplete(true));
-            var cacheReq = new CacheRequest<bool>("asdf", request);
+            var cacheReq = new CacheRequest<bool>(request);
 
-            var listener = cacheReq.Listen();
-            var listener2 = cacheReq.Listen();
+            var listener = new ReturnableProgress<bool>();
+            var id = cacheReq.Listen(listener);
+            var listener2 = new ReturnableProgress<bool>();
+            var id2 = cacheReq.Listen(listener2);
 
-            cacheReq.Unlisten(listener);
-            Assert.AreEqual(1, cacheReq.Listeners.Count);
+            cacheReq.Remove(id);
+            Assert.AreEqual(1, cacheReq.ListenerCount);
             request.Start();
-            Assert.IsFalse(listener.Output.Value);
-            Assert.IsTrue(listener2.Output.Value);
-        }
-
-        [Test]
-        public void TestDispose()
-        {
-            var request = new Future<bool>((f) => f.SetComplete(true));
-            var cacheReq = new CacheRequest<bool>("asdf", request);
-            var listener = cacheReq.Listen();
-            var listener2 = cacheReq.Listen();
-            cacheReq.Dispose();
-
-            Assert.AreEqual(0, cacheReq.Listeners.Count);
-            Assert.Throws<ObjectDisposedException>(() => cacheReq.Listen());
-            Assert.Throws<ObjectDisposedException>(() => cacheReq.Unlisten(listener));
-            Assert.IsNull(cacheReq.Request);
+            Assert.IsFalse(listener.Value);
+            Assert.IsTrue(listener2.Value);
         }
     }
 }

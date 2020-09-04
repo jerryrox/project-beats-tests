@@ -25,13 +25,11 @@ namespace PBFramework.Networking.Tests
             Assert.AreEqual("HTtpS://bbb", request.Url);
         }
 
-        private class DummyRequest : AssetRequest<Texture2D>
+        private class DummyRequest : AssetRequest
         {
             public DummyRequest(string url) : base(url)
             {
             }
-
-            protected override Texture2D EvaluateResponse() => null;
         }
     }
 }

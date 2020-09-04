@@ -25,6 +25,18 @@ namespace PBFramework.Threading.Tests
             yield return TestLimit(new SynchronizedTimer());
         }
 
+        [UnityTest]
+        public IEnumerator TestAsynchronizedSimple()
+        {
+            yield return TestSimple(new AsynchronizedTimer());
+        }
+
+        [UnityTest]
+        public IEnumerator TestAsynchronizedLimit()
+        {
+            yield return TestLimit(new AsynchronizedTimer());
+        }
+
         private IEnumerator TestSimple(ITimer timer)
         {
             // Surrounded with a bunch of try/catch to prevent leak when using AsynchornizedTimer.
@@ -115,14 +127,13 @@ namespace PBFramework.Threading.Tests
             catch (Exception e)
             {
                 timer.Stop();
-                Debug.LogError(e.StackTrace);
                 throw e;
             }
 
             yield return new WaitForSecondsRealtime(1.25f);
             try
             {
-                Assert.AreEqual(1f, timer.Progress.Value);
+                Assert.AreEqual(1f, timer.Progress);
                 Assert.IsTrue(finished);
                 Assert.IsTrue(finisehd2);
                 Assert.IsFalse(timer.IsRunning);
@@ -132,7 +143,6 @@ namespace PBFramework.Threading.Tests
             catch (Exception e)
             {
                 timer.Stop();
-                Debug.LogError(e.StackTrace);
                 throw e;
             }
         }

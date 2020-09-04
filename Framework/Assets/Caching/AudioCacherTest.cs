@@ -12,17 +12,18 @@ namespace PBFramework.Assets.Caching.Tests
         public IEnumerator Test()
         {
             var cacher = new AudioCacher(true);
+            var progress = new ReturnableProgress<AudioClip>();
 
             var key = TestConstants.RemoteMp3Url;
-            var listener = cacher.Request(key);
+            var id = cacher.Request(key, progress);
             while (!cacher.IsCached(key))
             {
-                Debug.Log("Progress: " + listener.Progress.Value);
+                Debug.Log("Progress: " + progress.Progress);
                 yield return null;
             }
 
             Assert.IsTrue(cacher.IsCached(key));
-            Assert.IsNotNull(listener.Output.Value);
+            Assert.IsNotNull(progress.Value);
         }
     }
 }
