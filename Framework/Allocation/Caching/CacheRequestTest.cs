@@ -19,13 +19,13 @@ namespace PBFramework.Allocation.Caching.Tests
             Assert.AreEqual(request, cacheReq.Request);
             Assert.AreEqual(0, cacheReq.ListenerCount);
 
-            var listener = new ReturnableProgress<bool>();
+            var listener = new TaskListener<bool>();
             var id = cacheReq.Listen(listener);
             Assert.Greater(id, 0);
             Assert.AreEqual(1, cacheReq.ListenerCount);
             Assert.IsFalse(listener.Value);
 
-            var listener2 = new ReturnableProgress<bool>();
+            var listener2 = new TaskListener<bool>();
             var id2 = cacheReq.Listen(listener2);
             Assert.Greater(id2, 0);
             Assert.AreEqual(2, cacheReq.ListenerCount);
@@ -45,9 +45,9 @@ namespace PBFramework.Allocation.Caching.Tests
             var request = new Future<bool>((f) => f.SetComplete(true));
             var cacheReq = new CacheRequest<bool>(request);
 
-            var listener = new ReturnableProgress<bool>();
+            var listener = new TaskListener<bool>();
             var id = cacheReq.Listen(listener);
-            var listener2 = new ReturnableProgress<bool>();
+            var listener2 = new TaskListener<bool>();
             var id2 = cacheReq.Listen(listener2);
 
             cacheReq.Remove(id);

@@ -16,8 +16,8 @@ namespace PBFramework.Networking.Tests
         public IEnumerator TestRequest()
         {
             var request = new WebRequest("file://" + Path.Combine(TestConstants.TestAssetPath, "TestText.txt"));
-            var progress = new ReturnableProgress<IWebRequest>();
-            request.Request(progress);
+            var listener = new TaskListener<IWebRequest>();
+            request.Request(listener);
 
             // Max threshold
             int time = 2;
@@ -27,7 +27,7 @@ namespace PBFramework.Networking.Tests
                 time--;
             }
 
-            Assert.AreEqual(1f, progress.Progress);
+            Assert.AreEqual(1f, listener.Progress);
             Assert.AreEqual(1f, request.Progress.Value);
             Assert.IsTrue(request.IsCompleted.Value);
             Assert.IsTrue(request.IsAlive);
@@ -51,15 +51,15 @@ namespace PBFramework.Networking.Tests
         public IEnumerator TestRetry()
         {
             var request = new WebRequest(TestConstants.RemoteMp3Url);
-            var progress = new ReturnableProgress<IWebRequest>();
-            request.Request(progress);
+            var listener = new TaskListener<IWebRequest>();
+            request.Request(listener);
 
             Debug.Log("Requesting to: " + request.Url);
 
             // Wait until half the progress
-            while (progress.Progress < 0.5)
+            while (listener.Progress < 0.5)
             {
-                Debug.Log("First progress: " + progress.Progress);
+                Debug.Log("First progress: " + listener.Progress);
                 yield return null;
             }
 
@@ -70,14 +70,14 @@ namespace PBFramework.Networking.Tests
             yield return null;
 
             // Check progress
-            Debug.Log("Retried new progress: " + progress.Progress);
+            Debug.Log("Retried new progress: " + listener.Progress);
             while (!request.IsCompleted.Value)
             {
-                Debug.Log("Second progress: " + progress.Progress);
+                Debug.Log("Second progress: " + listener.Progress);
                 yield return null;
             }
 
-            Assert.AreEqual(1f, progress.Progress, 0.00000001f);
+            Assert.AreEqual(1f, listener.Progress, 0.00000001f);
             Assert.IsNotNull(request.Response);
 
             Debug.Log("Content: " + request.Response.TextData);
@@ -95,13 +95,13 @@ namespace PBFramework.Networking.Tests
         public IEnumerator TestTimeout()
         {
             var request = new WebRequest(TestConstants.RemoteMp3Url, timeout: 2);
-            var progress = new ReturnableProgress<IWebRequest>();
-            request.Request(progress);
+            var listener = new TaskListener<IWebRequest>();
+            request.Request(listener);
 
             while(!request.IsCompleted.Value)
                 yield return null;
 
-            Debug.Log("Stopped at progress: " + progress.Progress);
+            Debug.Log("Stopped at progress: " + listener.Progress);
             Debug.Log("Error message: " + request.Response.ErrorMessage);
 
             Assert.IsNotNull(request.Response);

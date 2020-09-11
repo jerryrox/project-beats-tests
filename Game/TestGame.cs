@@ -44,10 +44,10 @@ namespace PBGame.Tests
         /// <summary>
         /// Returns an enumerator which awaits until the specified progress has finished.
         /// </summary>
-        public IEnumerator AwaitProgress(IEventProgress progress)
+        public IEnumerator AwaitProgress(TaskListener listener)
         {
             bool isFinished = false;
-            progress.OnFinished += () => isFinished = true;
+            listener.OnFinished += () => isFinished = true;
             while (!isFinished)
                 yield return null;
         }

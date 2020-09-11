@@ -15,8 +15,8 @@ namespace PBFramework.Allocation.Caching.Tests
         [UnityTest]
         public IEnumerator TestRequest()
         {
-            var listener = new ReturnableProgress<DummyCacherData>();
-            var listener2 = new ReturnableProgress<DummyCacherData>();
+            var listener = new TaskListener<DummyCacherData>();
+            var listener2 = new TaskListener<DummyCacherData>();
 
             var cacher = new DummyCacher();
             cacher.Request("Key1", listener);
@@ -58,9 +58,9 @@ namespace PBFramework.Allocation.Caching.Tests
         public IEnumerator TestRemove()
         {
             var cacher = new DummyCacher();
-            var listener = new ReturnableProgress<DummyCacherData>();
-            var listener2 = new ReturnableProgress<DummyCacherData>();
-            var listener3 = new ReturnableProgress<DummyCacherData>();
+            var listener = new TaskListener<DummyCacherData>();
+            var listener2 = new TaskListener<DummyCacherData>();
+            var listener3 = new TaskListener<DummyCacherData>();
 
             var id = cacher.Request("AA", listener);
             var id2 = cacher.Request("BB", listener2);
@@ -106,10 +106,10 @@ namespace PBFramework.Allocation.Caching.Tests
         public IEnumerator TestDataLockRequest()
         {
             var cacher = new DummyCacher();
-            var listeners = new ReturnableProgress<DummyCacherData>[] {
-                new ReturnableProgress<DummyCacherData>(),
-                new ReturnableProgress<DummyCacherData>(),
-                new ReturnableProgress<DummyCacherData>(),
+            var listeners = new TaskListener<DummyCacherData>[] {
+                new TaskListener<DummyCacherData>(),
+                new TaskListener<DummyCacherData>(),
+                new TaskListener<DummyCacherData>(),
             };
             var ids = new uint[3];
 
@@ -139,10 +139,10 @@ namespace PBFramework.Allocation.Caching.Tests
         public IEnumerator TestDataLockCached()
         {
             var cacher = new DummyCacher();
-            var listeners = new ReturnableProgress<DummyCacherData>[] {
-                new ReturnableProgress<DummyCacherData>(),
-                new ReturnableProgress<DummyCacherData>(),
-                new ReturnableProgress<DummyCacherData>(),
+            var listeners = new TaskListener<DummyCacherData>[] {
+                new TaskListener<DummyCacherData>(),
+                new TaskListener<DummyCacherData>(),
+                new TaskListener<DummyCacherData>(),
             };
 
             for (int i = 0; i < listeners.Length; i++)
