@@ -216,5 +216,63 @@ namespace PBFramework.Threading.Tests
             Assert.IsTrue(listener.IsFinished);
             Assert.AreEqual(1f, listener.TotalProgress, Delta);
         }
+
+        [Test]
+        public void TestHasOwnProgress()
+        {
+            var listener = new TaskListener();
+            Assert.IsTrue(listener.HasOwnProgress);
+
+            listener.SetProgress(0.5f);
+            Assert.AreEqual(0.5f, listener.Progress, Delta);
+            Assert.AreEqual(0.5f, listener.TotalProgress, Delta);
+
+            var subListener = listener.CreateSubListener();
+            Assert.AreEqual(0.5f, listener.Progress, Delta);
+            Assert.AreEqual(0f, subListener.Progress, Delta);
+            Assert.AreEqual(0.25f, listener.TotalProgress, Delta);
+
+            listener.HasOwnProgress = false;
+            Assert.IsFalse(listener.HasOwnProgress);
+            Assert.AreEqual(0.5f, listener.Progress, Delta);
+            Assert.AreEqual(0f, subListener.Progress, Delta);
+            Assert.AreEqual(0f, listener.TotalProgress, Delta);
+
+            listener.SetProgress(1f);
+            subListener.SetProgress(0.25f);
+            Assert.AreEqual(1f, listener.Progress, Delta);
+            Assert.AreEqual(0.25f, subListener.Progress, Delta);
+            Assert.AreEqual(0.25f, listener.TotalProgress, Delta);
+        }
+
+        [Test]
+        public void TestAutoFinish()
+        {
+            var listener = new TaskListener();
+            Assert.IsFalse(listener.IsAutoFinish);
+            Assert.IsFalse(listener.IsFinished);
+            listener.SetFinished();
+            Assert.IsTrue(listener.IsFinished);
+
+            listener = new TaskListener();
+            listener.IsAutoFinish = true;
+            Assert.IsFalse(listener.IsFinished);
+            Assert.IsTrue(listener.IsAutoFinish);
+            listener.SetFinished();
+            Assert.IsTrue(listener.IsFinished);
+
+            listener = new TaskListener();
+            var sub = listener.CreateSubListener();
+            sub.SetFinished();
+            Assert.IsFalse(listener.IsFinished);
+            var sub2 = listener.CreateSubListener();
+            var sub3 = listener.CreateSubListener();
+            listener.IsAutoFinish = true;
+            Assert.IsFalse(listener.IsFinished);
+            sub2.SetFinished();
+            Assert.IsFalse(listener.IsFinished);
+            sub3.SetFinished();
+            Assert.IsTrue(listener.IsFinished);
+        }
     }
 }
