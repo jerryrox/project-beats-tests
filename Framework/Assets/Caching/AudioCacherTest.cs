@@ -12,10 +12,9 @@ namespace PBFramework.Assets.Caching.Tests
         public IEnumerator Test()
         {
             var cacher = new AudioCacher(true);
-            var listener = new TaskListener<AudioClip>();
 
             var key = TestConstants.RemoteMp3Url;
-            var id = cacher.Request(key, listener);
+            var listener = cacher.Request(key);
             while (!cacher.IsCached(key))
             {
                 Debug.Log("Progress: " + listener.Progress);

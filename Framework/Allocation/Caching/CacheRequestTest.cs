@@ -14,24 +14,22 @@ namespace PBFramework.Allocation.Caching.Tests
         public void Test()
         {
             var request = new ManualTask<bool>((f) => f.SetFinished(true));
-            var cacheReq = new CacheRequest<bool>(request);
+            var cacheReq = new CacheRequest<bool>(0, request);
             Assert.AreEqual(request, cacheReq.Request);
-            Assert.AreEqual(0, cacheReq.ListenerCount);
+            Assert.AreEqual(0, cacheReq.Listeners.Count);
 
-            var listener = new TaskListener<bool>();
-            var id = cacheReq.Listen(listener);
-            Assert.Greater(id, 0);
-            Assert.AreEqual(1, cacheReq.ListenerCount);
+            var listener = cacheReq.Listen();
+            Assert.IsNotNull(listener);
+            Assert.AreEqual(1, cacheReq.Listeners.Count);
             Assert.IsFalse(listener.Value);
 
-            var listener2 = new TaskListener<bool>();
-            var id2 = cacheReq.Listen(listener2);
-            Assert.Greater(id2, 0);
-            Assert.AreEqual(2, cacheReq.ListenerCount);
+            var listener2 = cacheReq.Listen();
+            Assert.IsNotNull(listener2);
+            Assert.AreEqual(2, cacheReq.Listeners.Count);
             Assert.IsFalse(listener2.Value);
 
-            cacheReq.Remove(10000);
-            Assert.AreEqual(2, cacheReq.ListenerCount);
+            cacheReq.Unlisten(new CacheListener<bool>(0));
+            Assert.AreEqual(2, cacheReq.Listeners.Count);
 
             cacheReq.StartRequest();
             Assert.IsTrue(listener.Value);
@@ -42,15 +40,13 @@ namespace PBFramework.Allocation.Caching.Tests
         public void TestRemoveListener()
         {
             var request = new ManualTask<bool>((f) => f.SetFinished(true));
-            var cacheReq = new CacheRequest<bool>(request);
+            var cacheReq = new CacheRequest<bool>(0, request);
 
-            var listener = new TaskListener<bool>();
-            var id = cacheReq.Listen(listener);
-            var listener2 = new TaskListener<bool>();
-            var id2 = cacheReq.Listen(listener2);
+            var listener = cacheReq.Listen();
+            var listener2 = cacheReq.Listen();
 
-            cacheReq.Remove(id);
-            Assert.AreEqual(1, cacheReq.ListenerCount);
+            cacheReq.Unlisten(listener);
+            Assert.AreEqual(1, cacheReq.Listeners.Count);
             cacheReq.StartRequest();
             Assert.IsFalse(listener.Value);
             Assert.IsTrue(listener2.Value);
