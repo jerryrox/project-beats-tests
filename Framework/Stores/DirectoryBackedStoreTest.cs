@@ -16,10 +16,10 @@ namespace PBFramework.Stores.Test
 {
     public class DirectoryBackedStoreTest
     {
-
         [UnityTest]
         public IEnumerator TestInitialize()
         {
+            UnityThread.Initialize();
             var store = new DummyStore();
             yield return InitStore(store);
         }
@@ -27,6 +27,7 @@ namespace PBFramework.Stores.Test
         [UnityTest]
         public IEnumerator TestImport()
         {
+            UnityThread.Initialize();
             var store = new DummyStore();
             yield return InitStore(store);
 
@@ -53,6 +54,7 @@ namespace PBFramework.Stores.Test
         [UnityTest]
         public IEnumerator TestReload()
         {
+            UnityThread.Initialize();
             var store = new DummyStore();
             yield return InitStore(store);
 
@@ -95,6 +97,7 @@ namespace PBFramework.Stores.Test
         [UnityTest]
         public IEnumerator TestGet()
         {
+            UnityThread.Initialize();
             var store = new DummyStore();
             yield return InitStore(store);
 
@@ -132,6 +135,7 @@ namespace PBFramework.Stores.Test
         [UnityTest]
         public IEnumerator TestDelete()
         {
+            UnityThread.Initialize();
             var store = new DummyStore();
             yield return InitStore(store);
 

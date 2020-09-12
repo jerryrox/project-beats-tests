@@ -15,7 +15,7 @@ namespace PBFramework.Allocation.Caching.Tests
         {
             var request = new ManualTask<bool>((f) => f.SetFinished(true));
             var cacheReq = new CacheRequest<bool>(request);
-            Assert.AreEqual(request, cacheReq.RequestListener);
+            Assert.AreEqual(request, cacheReq.Request);
             Assert.AreEqual(0, cacheReq.ListenerCount);
 
             var listener = new TaskListener<bool>();
@@ -33,7 +33,7 @@ namespace PBFramework.Allocation.Caching.Tests
             cacheReq.Remove(10000);
             Assert.AreEqual(2, cacheReq.ListenerCount);
 
-            request.StartTask();
+            cacheReq.StartRequest();
             Assert.IsTrue(listener.Value);
             Assert.IsTrue(listener2.Value);
         }
@@ -51,7 +51,7 @@ namespace PBFramework.Allocation.Caching.Tests
 
             cacheReq.Remove(id);
             Assert.AreEqual(1, cacheReq.ListenerCount);
-            request.StartTask();
+            cacheReq.StartRequest();
             Assert.IsFalse(listener.Value);
             Assert.IsTrue(listener2.Value);
         }

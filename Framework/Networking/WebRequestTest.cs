@@ -179,7 +179,7 @@ namespace PBFramework.Networking.Tests
             Assert.IsFalse(task.IsFinished);
 
             // Revoke the request.
-            task.RevokeTask(false);
+            task.RevokeTask(true);
             Assert.IsFalse(request.IsFinished);
             Assert.IsFalse(task.IsFinished);
 

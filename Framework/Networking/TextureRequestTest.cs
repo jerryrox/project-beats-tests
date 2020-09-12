@@ -70,7 +70,7 @@ namespace PBFramework.Networking.Tests
             listener.OnFinished += (value) => texture = value;
 
             // Request
-            promise.StartTask();
+            promise.StartTask(listener);
             Assert.IsFalse(promise.IsFinished);
             Assert.IsFalse(request.IsFinished);
 
