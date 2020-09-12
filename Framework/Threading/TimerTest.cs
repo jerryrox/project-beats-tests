@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using PBFramework.Threading.Futures;
 
 namespace PBFramework.Threading.Tests
 {
@@ -25,18 +24,6 @@ namespace PBFramework.Threading.Tests
             yield return TestLimit(new SynchronizedTimer());
         }
 
-        [UnityTest]
-        public IEnumerator TestAsynchronizedSimple()
-        {
-            yield return TestSimple(new AsynchronizedTimer());
-        }
-
-        [UnityTest]
-        public IEnumerator TestAsynchronizedLimit()
-        {
-            yield return TestLimit(new AsynchronizedTimer());
-        }
-
         private IEnumerator TestSimple(ITimer timer)
         {
             // Surrounded with a bunch of try/catch to prevent leak when using AsynchornizedTimer.
@@ -45,11 +32,11 @@ namespace PBFramework.Threading.Tests
             {
                 Assert.AreEqual(0f, timer.Current, Delta);
                 Assert.IsFalse(timer.IsRunning);
-                Assert.IsFalse(timer.IsCompleted.Value);
+                Assert.IsFalse(timer.IsFinished);
 
                 timer.Start();
                 Assert.IsTrue(timer.IsRunning);
-                Assert.IsFalse(timer.IsCompleted.Value);
+                Assert.IsFalse(timer.IsFinished);
             }
             catch (Exception e)
             {
@@ -65,18 +52,18 @@ namespace PBFramework.Threading.Tests
                 Debug.Log("Timer time: " + curTime);
                 Assert.Greater(timer.Current, 0.75f);
                 Assert.IsTrue(timer.IsRunning);
-                Assert.IsFalse(timer.IsCompleted.Value);
+                Assert.IsFalse(timer.IsFinished);
 
                 timer.Pause();
                 curTime = timer.Current;
                 Assert.AreEqual(curTime, timer.Current, Delta);
                 Assert.IsFalse(timer.IsRunning);
-                Assert.IsFalse(timer.IsCompleted.Value);
+                Assert.IsFalse(timer.IsFinished);
 
                 timer.Stop();
                 Assert.AreEqual(0f, timer.Current, Delta);
                 Assert.IsFalse(timer.IsRunning);
-                Assert.IsFalse(timer.IsCompleted.Value);
+                Assert.IsFalse(timer.IsFinished);
 
                 timer.Start();
             }
@@ -93,7 +80,7 @@ namespace PBFramework.Threading.Tests
                 curTime = timer.Current;
                 Assert.Greater(timer.Current, 0.75f);
                 Assert.IsTrue(timer.IsRunning);
-                Assert.IsFalse(timer.IsCompleted.Value);
+                Assert.IsFalse(timer.IsFinished);
 
                 timer.Stop();
             }
@@ -109,20 +96,17 @@ namespace PBFramework.Threading.Tests
             timer.Limit = 1f;
 
             bool finished = false;
-            timer.IsCompleted.OnNewValue += (completed) => finished = true;
-            bool finisehd2 = false;
-            ((IFuture)timer).IsCompleted.OnNewValue += (completed) => finisehd2 = true;
+            timer.OnFinished += () => finished = true;
 
             try
             {
                 Assert.IsFalse(timer.IsRunning);
-                Assert.IsFalse(timer.IsCompleted.Value);
+                Assert.IsFalse(timer.IsFinished);
 
                 timer.Start();
                 Assert.IsFalse(finished);
-                Assert.IsFalse(finisehd2);
                 Assert.IsTrue(timer.IsRunning);
-                Assert.IsFalse(timer.IsCompleted.Value);
+                Assert.IsFalse(timer.IsFinished);
             }
             catch (Exception e)
             {
@@ -135,9 +119,8 @@ namespace PBFramework.Threading.Tests
             {
                 Assert.AreEqual(1f, timer.Progress);
                 Assert.IsTrue(finished);
-                Assert.IsTrue(finisehd2);
                 Assert.IsFalse(timer.IsRunning);
-                Assert.True(timer.IsCompleted.Value);
+                Assert.True(timer.IsFinished);
                 Assert.AreEqual(timer.Current, timer.Limit, Delta);
             }
             catch (Exception e)

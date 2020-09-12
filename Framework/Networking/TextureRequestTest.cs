@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using PBFramework.Threading.Futures;
+using PBFramework.Threading;
 
 namespace PBFramework.Networking.Tests
 {
@@ -17,7 +17,7 @@ namespace PBFramework.Networking.Tests
             var request = new TextureRequest(TestConstants.RemoteImageUrl, false);
             request.Request();
 
-            while (!request.IsCompleted.Value)
+            while (!request.IsFinished)
             {
                 Debug.Log("Progress: " + request.Progress);
                 yield return null;
@@ -40,7 +40,7 @@ namespace PBFramework.Networking.Tests
             var request = new TextureRequest(TestConstants.RemoteImageUrl);
             request.Request();
 
-            while (!request.IsCompleted.Value)
+            while (!request.IsFinished)
             {
                 Debug.Log("Progress: " + request.Progress);
                 yield return null;
@@ -58,36 +58,35 @@ namespace PBFramework.Networking.Tests
         }
 
         [UnityTest]
-        public IEnumerator TestPromise()
+        public IEnumerator TestTask()
         {
             var request = new TextureRequest(TestConstants.RemoteImageUrl, false);
-            IControlledFuture<Texture2D> promise = request;
+            ITask<Texture2D> promise = request;
             Assert.AreEqual(request, promise);
-            Assert.IsNull(promise.Output.Value);
 
             // Receive via callback
             Texture2D texture = null;
-            promise.Output.OnNewValue += (c) => texture = c;
+            var listener = new TaskListener<Texture2D>();
+            listener.OnFinished += (value) => texture = value;
 
             // Request
-            promise.Start();
-            Assert.IsFalse(promise.IsCompleted.Value);
-            Assert.IsFalse(request.IsCompleted.Value);
+            promise.StartTask(listener);
+            Assert.IsFalse(promise.IsFinished);
+            Assert.IsFalse(request.IsFinished);
 
             // Wait till finish
-            while (!promise.IsCompleted.Value)
+            while (!promise.IsFinished)
             {
                 Debug.Log("Progress: " + request.Progress);
                 yield return null;
             }
 
-            Assert.IsTrue(promise.IsCompleted.Value);
-            Assert.IsTrue(request.IsCompleted.Value);
+            Assert.IsTrue(promise.IsFinished);
+            Assert.IsTrue(request.IsFinished);
             Assert.IsNotNull(request.Response);
-            Assert.IsNotNull(promise.Output.Value);
             Assert.IsNotNull(texture);
-            Assert.AreEqual(promise.Output.Value, request.Response.TextureData);
-            Assert.AreEqual(promise.Output.Value, texture);
+            Assert.AreEqual(listener.Value, request.Response.TextureData);
+            Assert.AreEqual(listener.Value, texture);
         }
     }
 }

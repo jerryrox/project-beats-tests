@@ -211,12 +211,12 @@ namespace PBFramework.Audio.Tests
 
             Assert.IsNotNull(onFinished);
             var request = new AudioRequest("file://" + Path.Combine(TestConstants.TestAssetPath, "Audio/effect.mp3"));
-            request.Output.OnNewValue += (audio) => onFinished(new UnityAudio(audio));
-            request.Start();
-            while(!request.IsCompleted.Value)
+            request.OnOutput += (audio) => onFinished(new UnityAudio(audio));
+            request.Request();
+            while(!request.IsFinished)
                 yield return null;
-            Assert.IsNotNull(request.RawResult);
-            AudioClip clip = request.RawResult as AudioClip;
+            Assert.IsNotNull(request.Output);
+            AudioClip clip = request.Output as AudioClip;
             Assert.IsNotNull(clip);
             Assert.Greater(clip.length, 0f);
         }

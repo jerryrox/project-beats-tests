@@ -15,17 +15,17 @@ namespace PBFramework.Networking.Tests
         public IEnumerator Test()
         {
             var request = new MusicAudioRequest(TestConstants.RemoteMp3Url, false);
-            request.Start();
+            request.StartTask();
 
-            while (!request.IsCompleted.Value)
+            while (!request.IsFinished)
             {
                 Debug.Log($"Progress: {request.Progress}");
                 yield return null;
             }
 
-            Assert.IsNotNull(request.Output.Value);
+            Assert.IsNotNull(request.Output);
 
-            var unityAudio = request.Output.Value as UnityAudio;
+            var unityAudio = request.Output as UnityAudio;
             Assert.IsNotNull(unityAudio);
 
             Debug.Log($"Dur: {unityAudio.Duration}, Channels: {unityAudio.Channels}");

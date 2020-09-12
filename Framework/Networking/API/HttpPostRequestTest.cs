@@ -16,7 +16,7 @@ namespace PBFramework.Networking.API.Tests
             var request = new HttpPostRequest("http://httpbin.org/post");
             request.Request();
 
-            while(!request.IsCompleted.Value) yield return null;
+            while(!request.IsFinished) yield return null;
 
             Debug.Log($"TestPlain result:\n{request.Response.TextData}");
         }
@@ -30,7 +30,7 @@ namespace PBFramework.Networking.API.Tests
             request.SetPostData(data);
             request.Request();
 
-            while(!request.IsCompleted.Value) yield return null;
+            while(!request.IsFinished) yield return null;
 
             Debug.Log($"TestBinary result:\n{request.Response.TextData}");
         }
@@ -48,7 +48,7 @@ namespace PBFramework.Networking.API.Tests
             request.SetPostData(data);
             request.Request();
 
-            while(!request.IsCompleted.Value) yield return null;
+            while(!request.IsFinished) yield return null;
 
             Debug.Log($"TestForm result:\n{request.Response.TextData}");
         }
@@ -62,7 +62,7 @@ namespace PBFramework.Networking.API.Tests
             request.SetPostData(data);
             request.Request();
 
-            while(!request.IsCompleted.Value) yield return null;
+            while(!request.IsFinished) yield return null;
 
             Debug.Log($"TestRawText result:\n{request.Response.TextData}");
         }
@@ -76,7 +76,7 @@ namespace PBFramework.Networking.API.Tests
             request.SetPostData(data);
             request.Request();
 
-            while(!request.IsCompleted.Value) yield return null;
+            while(!request.IsFinished) yield return null;
 
             Debug.Log($"TestRawJson result:\n{request.Response.TextData}");
         }
@@ -90,7 +90,7 @@ namespace PBFramework.Networking.API.Tests
             request.SetPostData(data);
             request.Request();
 
-            while(!request.IsCompleted.Value) yield return null;
+            while(!request.IsFinished) yield return null;
 
             Debug.Log($"TestRawJavascript result:\n{request.Response.TextData}");
         }
@@ -104,7 +104,7 @@ namespace PBFramework.Networking.API.Tests
             request.SetPostData(data);
             request.Request();
 
-            while(!request.IsCompleted.Value) yield return null;
+            while(!request.IsFinished) yield return null;
 
             Debug.Log($"TestRawHtml result:\n{request.Response.TextData}");
         }
@@ -118,7 +118,7 @@ namespace PBFramework.Networking.API.Tests
             request.SetPostData(data);
             request.Request();
 
-            while(!request.IsCompleted.Value) yield return null;
+            while(!request.IsFinished) yield return null;
 
             Debug.Log($"TestRawXml result:\n{request.Response.TextData}");
         }

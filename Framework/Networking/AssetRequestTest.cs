@@ -10,7 +10,7 @@ namespace PBFramework.Networking.Tests
     public class AssetRequestTest {
         
         [Test]
-        public void TestCreation()
+        public void TestUrl()
         {
             var request = new DummyRequest("asdf");
             Assert.AreEqual("file:///asdf", request.Url);
@@ -25,7 +25,7 @@ namespace PBFramework.Networking.Tests
             Assert.AreEqual("HTtpS://bbb", request.Url);
         }
 
-        private class DummyRequest : AssetRequest
+        private class DummyRequest : AssetRequest<GameObject>
         {
             public DummyRequest(string url) : base(url)
             {

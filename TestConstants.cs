@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class TestConstants {
 
-    public const string RemoteMp3Url = "https://vgmdownloads.com/soundtracks/touhou-youyoumu-perfect-cherry-blossom/vrdyenmp/%5B01%5D%20Youyoumu%20~%20Snow%20or%20Cherry%20Petal.mp3";
+    public const string RemoteMp3Url = "https://vgmdownloads.com/soundtracks/touhou-youyoumu-perfect-cherry-blossom/bufsdczp/%5B05%5D%20Diao%20ye%20zong%20%28withered%20leaf%29.mp3";
 
     public const string RemoteImageUrl = "https://cdn-www.bluestacks.com/bs-images/Banner_com.sunborn.girlsfrontline.en-1.jpg";
 
