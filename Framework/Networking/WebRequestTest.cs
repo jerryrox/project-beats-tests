@@ -6,7 +6,6 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using PBFramework.Threading;
-using PBFramework.Threading.Futures;
 
 namespace PBFramework.Networking.Tests
 {
@@ -28,8 +27,8 @@ namespace PBFramework.Networking.Tests
             }
 
             Assert.AreEqual(1f, listener.Progress);
-            Assert.AreEqual(1f, request.Progress.Value);
-            Assert.IsTrue(request.IsCompleted.Value);
+            Assert.AreEqual(1f, request.Progress);
+            Assert.IsTrue(request.IsFinished);
             Assert.IsTrue(request.IsAlive);
 
             var response = request.Response;
@@ -71,7 +70,7 @@ namespace PBFramework.Networking.Tests
 
             // Check progress
             Debug.Log("Retried new progress: " + listener.Progress);
-            while (!request.IsCompleted.Value)
+            while (!request.IsFinished)
             {
                 Debug.Log("Second progress: " + listener.Progress);
                 yield return null;
@@ -98,7 +97,7 @@ namespace PBFramework.Networking.Tests
             var listener = new TaskListener<IWebRequest>();
             request.Request(listener);
 
-            while(!request.IsCompleted.Value)
+            while(!request.IsFinished)
                 yield return null;
 
             Debug.Log("Stopped at progress: " + listener.Progress);
@@ -119,26 +118,24 @@ namespace PBFramework.Networking.Tests
         }
 
         [UnityTest]
-        public IEnumerator TestPromiseStart()
+        public IEnumerator TestTaskStart()
         {
             var request = new WebRequest("file://" + Path.Combine(TestConstants.TestAssetPath, "TestText.txt"));
-            IControlledFuture promise = request;
+            ITask promise = request;
             Assert.IsNotNull(promise);
 
             // Register callback on finish.
             bool onFinishedCalled = false;
-            promise.IsCompleted.OnNewValue += (completed) =>
-            {
-                onFinishedCalled = true;
-            };
+            var listener = new TaskListener();
+            listener.OnFinished += () => onFinishedCalled = true;
             Assert.IsFalse(onFinishedCalled);
 
             // Start the request.
-            promise.Start();
+            promise.StartTask(listener);
 
             // Setup time limit.
             float limit = 4;
-            while (!promise.IsCompleted.Value)
+            while (!promise.IsFinished)
             {
                 limit -= Time.deltaTime;
                 if(limit <= 0)
@@ -146,8 +143,8 @@ namespace PBFramework.Networking.Tests
                 yield return null;
             }
 
-            Assert.IsTrue(promise.IsCompleted.Value);
-            Assert.IsTrue(request.IsCompleted.Value);
+            Assert.IsTrue(promise.IsFinished);
+            Assert.IsTrue(request.IsFinished);
             Assert.IsTrue(onFinishedCalled);
 
             var response = request.Response;
@@ -156,45 +153,43 @@ namespace PBFramework.Networking.Tests
         }
 
         [UnityTest]
-        public IEnumerator TestPromiseRevoke()
+        public IEnumerator TestTaskRevoke()
         {
             var request = new WebRequest(TestConstants.RemoteMp3Url);
-            IControlledFuture promise = request;
-            Assert.IsNotNull(promise);
+            ITask task = request;
+            Assert.IsNotNull(task);
 
             // Register callback
             bool onFinishedCalled = false;
-            promise.IsCompleted.OnNewValue += (completed) =>
-            {
-                onFinishedCalled = true;
-            };
+            var listener = new TaskListener();
+            listener.OnFinished += () => onFinishedCalled = true;
             Assert.IsFalse(onFinishedCalled);
 
             // Start request
-            promise.Start();
+            task.StartTask(listener);
 
             // Wait till certain progress level
-            while (request.Progress.Value < 0.4f)
+            while (request.Progress < 0.4f)
             {
                 Debug.Log("Progress: " + request.Progress);
                 yield return null;
             }
 
-            Assert.IsFalse(request.IsCompleted.Value);
-            Assert.IsFalse(promise.IsCompleted.Value);
+            Assert.IsFalse(request.IsFinished);
+            Assert.IsFalse(task.IsFinished);
 
             // Revoke the request.
-            promise.Dispose();
-            Assert.IsFalse(request.IsCompleted.Value);
-            Assert.IsFalse(promise.IsCompleted.Value);
+            task.RevokeTask(false);
+            Assert.IsFalse(request.IsFinished);
+            Assert.IsFalse(task.IsFinished);
 
             // See if any progress is changing even after revoke.
-            float lastProgress = request.Progress.Value;
+            float lastProgress = request.Progress;
             float limit = 3;
             while (true)
             {
                 limit -= Time.deltaTime;
-                if (request.Progress.Value != lastProgress)
+                if (request.Progress != lastProgress)
                 {
                     Debug.Log("New progress detected! " + request.Progress);
                     Assert.Fail("There mustn't be any progressing going on!");
@@ -205,8 +200,8 @@ namespace PBFramework.Networking.Tests
             }
 
             Assert.IsNull(request.Response);
-            Assert.IsFalse(request.IsCompleted.Value);
-            Assert.IsFalse(promise.IsCompleted.Value);
+            Assert.IsFalse(request.IsFinished);
+            Assert.IsFalse(task.IsFinished);
             Assert.IsFalse(onFinishedCalled);
         }
     }

@@ -20,7 +20,7 @@ namespace PBFramework.UI.Tests
             TextureRequest req = new TextureRequest(Path.Combine(TestConstants.TestAssetPath, "Graphics/UI/texture0.jpg"));//0.jpg"));
             var listener = new TaskListener<IWebRequest>();
             req.Request(listener);
-            while (!req.IsCompleted.Value)
+            while (!req.IsFinished)
                 yield return null;
 
             Assert.IsNotNull(listener.Value);

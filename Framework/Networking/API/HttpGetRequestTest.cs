@@ -16,7 +16,7 @@ namespace PBFramework.Networking.API.Tests
             Assert.IsTrue(request.Url.Equals("https://www.google.com") || request.Url.Equals("https://www.google.com/"));
             request.Request();
 
-            while(!request.IsCompleted.Value) yield return null;
+            while(!request.IsFinished) yield return null;
 
             Debug.Log($"TestPlain result:\n{request.Response.TextData}");
         }
@@ -33,7 +33,7 @@ namespace PBFramework.Networking.API.Tests
             Assert.IsTrue("https://www.google.com/search?cursor%5Bapproved_date%5D=1562342428000&cursor%5B_id%5D=942269".Equals(request.Url, StringComparison.OrdinalIgnoreCase));
 
             request.Request();
-            while (!request.IsCompleted.Value) yield return null;
+            while (!request.IsFinished) yield return null;
 
             Debug.Log($"TestQueryParam result:\n{request.Response.TextData}");
         }

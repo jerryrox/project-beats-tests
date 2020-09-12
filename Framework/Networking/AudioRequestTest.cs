@@ -5,7 +5,6 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using PBFramework.Threading;
-using PBFramework.Threading.Futures;
 
 namespace PBFramework.Networking.Tests
 {
@@ -18,7 +17,7 @@ namespace PBFramework.Networking.Tests
             var listener = new TaskListener<IWebRequest>();
             request.Request(listener);
 
-            while (!request.IsCompleted.Value)
+            while (!request.IsFinished)
             {
                 Debug.Log("Progress: " + listener.Progress);
                 yield return null;
@@ -43,7 +42,7 @@ namespace PBFramework.Networking.Tests
             var listener = new TaskListener<IWebRequest>();
             request.Request(listener);
 
-            while (!request.IsCompleted.Value)
+            while (!request.IsFinished)
             {
                 Debug.Log("Progress: " + listener.Progress);
                 yield return null;
@@ -59,36 +58,38 @@ namespace PBFramework.Networking.Tests
         }
 
         [UnityTest]
-        public IEnumerator TestPromise()
+        public IEnumerator TestTask()
         {
             var request = new AudioRequest(TestConstants.RemoteMp3Url, false);
-            IControlledFuture<AudioClip> promise = request;
-            Assert.AreEqual(request, promise);
-            Assert.IsNull(promise.Output.Value);
+            ITask<AudioClip> task = request;
+            Assert.AreEqual(request, task);
+            Assert.IsFalse(task.DidRun);
+            Assert.IsFalse(task.IsFinished);
 
             // Receive via callback
             AudioClip clip = null;
-            promise.Output.OnNewValue += (c) => clip = c;
+            TaskListener<AudioClip> listener = new TaskListener<AudioClip>();
+            listener.OnFinished += (value) => clip = value;
 
             // Request
-            promise.Start();
-            Assert.IsFalse(promise.IsCompleted.Value);
-            Assert.IsFalse(request.IsCompleted.Value);
+            task.StartTask(listener);
+            Assert.IsFalse(task.IsFinished);
+            Assert.IsFalse(request.IsFinished);
 
             // Wait till finish
-            while (!promise.IsCompleted.Value)
+            while (!task.IsFinished)
             {
                 Debug.Log("Progress: " + request.Progress);
                 yield return null;
             }
 
-            Assert.IsTrue(promise.IsCompleted.Value);
-            Assert.IsTrue(request.IsCompleted.Value);
+            Assert.IsTrue(task.DidRun);
+            Assert.IsTrue(task.IsFinished);
+            Assert.IsTrue(request.IsFinished);
             Assert.IsNotNull(request.Response);
-            Assert.IsNotNull(promise.Output.Value);
             Assert.IsNotNull(clip);
-            Assert.AreEqual(promise.Output.Value, request.Response.AudioData);
-            Assert.AreEqual(promise.Output.Value, clip);
+            Assert.AreEqual(clip, request.Response.AudioData);
+            Assert.AreEqual(listener.Value, clip);
         }
     }
 }

@@ -5,7 +5,6 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using PBFramework.Threading;
-using PBFramework.Threading.Futures;
 
 namespace PBFramework.Allocation.Caching.Tests
 {
@@ -14,9 +13,9 @@ namespace PBFramework.Allocation.Caching.Tests
         [Test]
         public void Test()
         {
-            var request = new Future<bool>((f) => f.SetComplete(true));
+            var request = new ManualTask<bool>((f) => f.SetFinished(true));
             var cacheReq = new CacheRequest<bool>(request);
-            Assert.AreEqual(request, cacheReq.Request);
+            Assert.AreEqual(request, cacheReq.RequestListener);
             Assert.AreEqual(0, cacheReq.ListenerCount);
 
             var listener = new TaskListener<bool>();
@@ -34,7 +33,7 @@ namespace PBFramework.Allocation.Caching.Tests
             cacheReq.Remove(10000);
             Assert.AreEqual(2, cacheReq.ListenerCount);
 
-            request.Start();
+            request.StartTask();
             Assert.IsTrue(listener.Value);
             Assert.IsTrue(listener2.Value);
         }
@@ -42,7 +41,7 @@ namespace PBFramework.Allocation.Caching.Tests
         [Test]
         public void TestRemoveListener()
         {
-            var request = new Future<bool>((f) => f.SetComplete(true));
+            var request = new ManualTask<bool>((f) => f.SetFinished(true));
             var cacheReq = new CacheRequest<bool>(request);
 
             var listener = new TaskListener<bool>();
@@ -52,7 +51,7 @@ namespace PBFramework.Allocation.Caching.Tests
 
             cacheReq.Remove(id);
             Assert.AreEqual(1, cacheReq.ListenerCount);
-            request.Start();
+            request.StartTask();
             Assert.IsFalse(listener.Value);
             Assert.IsTrue(listener2.Value);
         }

@@ -1,13 +1,12 @@
 using PBFramework.Threading;
-using PBFramework.Threading.Futures;
 
 namespace PBFramework.Allocation.Caching.Tests
 {
     public class DummyCacher : Cacher<string, DummyCacherData> {
 
-        protected override IControlledFuture<DummyCacherData> CreateRequest(string key)
+        protected override ITask<DummyCacherData> CreateRequest(string key)
         {
-            return new Future<DummyCacherData>((f) => RunDummyTask(f, key));
+            return new ManualTask<DummyCacherData>((f) => RunDummyTask(f, key));
         }
 
         protected override void DestroyData(DummyCacherData data)
@@ -15,22 +14,21 @@ namespace PBFramework.Allocation.Caching.Tests
             data.IsDestroyed = true;
         }
 
-        private void RunDummyTask(Future<DummyCacherData> future, string key)
+        private void RunDummyTask(ManualTask<DummyCacherData> task, string key)
         {
             var timer = new SynchronizedTimer()
             {
                 Limit = 1f
             };
-            timer.IsCompleted.OnNewValue += (completed) =>
+            timer.OnFinished += () =>
             {
-                if(completed)
-                    future.SetComplete(new DummyCacherData()
-                    {
-                        Key = key,
-                        IsDestroyed = false
+                task.SetFinished(new DummyCacherData()
+                {
+                    Key = key,
+                    IsDestroyed = false
                 });
             };
-            timer.Progress.OnNewValue += future.SetProgress;
+            timer.OnProgress += task.SetProgress;
             timer.Start();
         }
     }
