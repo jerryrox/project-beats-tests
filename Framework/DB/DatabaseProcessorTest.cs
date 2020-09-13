@@ -14,22 +14,8 @@ using PBFramework.DB.Entities.Tests;
 namespace PBFramework.DB.Tests
 {
     public class DatabaseProcessorTest {
-        
-        [Test]
-        public void TestWhileLocked()
-        {
-            var processor = new DatabaseProcessor<TestEntity>(new DummyDatabase());
 
-            int val = 0;
-            var tasks = new Task[8];
-            for (int i = 0; i < tasks.Length; i++)
-            {
-                tasks[i] = Task.Run(() => val++);
-            }
-
-            Task.WaitAll(tasks);
-            Assert.AreEqual(tasks.Length, val);
-        }
+        private const string TestDbFolder = "DBProcessorTest";
 
         [Test]
         public void TestGetDataFiles()
@@ -40,7 +26,7 @@ namespace PBFramework.DB.Tests
             for (int i = 0; i < files.Length; i++)
             {
                 Assert.AreEqual(
-                    Path.Combine(TestConstants.TestAssetPath, $"DB/data/00000000-0000-0000-0000-00000000000{i}.data"),
+                    Path.Combine(TestConstants.TestAssetPath, $"{TestDbFolder}/data/00000000-0000-0000-0000-00000000000{i}.data"),
                     files[i].FullName
                 );
             }
@@ -70,6 +56,11 @@ namespace PBFramework.DB.Tests
             var processor = new DatabaseProcessor<TestEntity>(new DummyDatabase());
             processor.LoadIndex();
 
+            foreach (var index in processor.Index.Raw)
+            {
+                Debug.LogWarning(index.ToString());
+            }
+
             Assert.IsNotNull(processor.Index);
             Assert.AreEqual(5, processor.Index.Raw.Count());
         }
@@ -80,39 +71,21 @@ namespace PBFramework.DB.Tests
             var processor = new DatabaseProcessor<TestEntity>(new DummyDatabase());
             processor.LoadIndex();
 
-            var indexPath = Path.Combine(TestConstants.TestAssetPath, "DB/index.dbi");
-            var backupPath = Path.Combine(TestConstants.TestAssetPath, "DB/index2.dbi");
-            try
+            var indexPath = Path.Combine(TestConstants.TestAssetPath, $"{TestDbFolder}/index.dbi");
+            File.Delete(indexPath);
+
+            processor.SaveIndex();
+            Assert.IsTrue(File.Exists(indexPath));
+            Debug.Log("Index content: " + File.ReadAllText(indexPath));
+
+            processor.LoadIndex();
+            int index = 0;
+            foreach (var json in processor.Index.Raw)
             {
-                if (File.Exists(indexPath))
-                {
-                    File.Move(indexPath, backupPath);
-                }
-                Assert.IsFalse(File.Exists(indexPath));
-
-                processor.SaveIndex();
-                Assert.IsTrue(File.Exists(indexPath));
-                Debug.Log("Index content: " + File.ReadAllText(indexPath));
-
-                processor.LoadIndex();
-                int index = 0;
-                foreach (var json in processor.Index.Raw)
-                {
-                    Assert.AreEqual($"00000000-0000-0000-0000-00000000000{index}", json["Id"].ToString());
-                    index++;
-                }
-
-                if(File.Exists(backupPath))
-                    File.Delete(backupPath);
+                Assert.AreEqual($"00000000-0000-0000-0000-00000000000{index}", json["Id"].ToString());
+                index++;
             }
-            catch (Exception e)
-            {
-                if (File.Exists(backupPath) && !File.Exists(indexPath))
-                {
-                    File.Move(backupPath, indexPath);
-                }
-                throw e;
-            }
+            Assert.AreEqual(5, index);
         }
 
         [Test]
@@ -141,32 +114,17 @@ namespace PBFramework.DB.Tests
                 ")
             };
 
-            try
-            {
-                processor.WriteData(data, index);
+            processor.WriteData(data, index);
 
-                Assert.AreEqual(6, processor.Index.Raw.Count());
-                Assert.AreEqual(6, processor.GetDataFiles().Length);
-                for (int i = 0; i < 6; i++)
-                {
-                    var d = processor.LoadData($"00000000-0000-0000-0000-00000000000{i}");
-                    Assert.AreEqual($"00000000-0000-0000-0000-00000000000{i}", d.Id.ToString());
-                    Assert.AreEqual(i, d.Age);
-                    Assert.AreEqual($"FN{i}", d.FirstName);
-                    Assert.AreEqual($"LN{i}", d.LastName);
-                }
-            }
-            catch (Exception e)
+            Assert.AreEqual(6, processor.Index.Raw.Count());
+            Assert.AreEqual(6, processor.GetDataFiles().Length);
+            for (int i = 0; i < 6; i++)
             {
-                throw e;
-            }
-            finally
-            {
-                var newDataFile = Path.Combine(TestConstants.TestAssetPath, "DB/data/00000000-0000-0000-0000-000000000005.data");
-                if (File.Exists(newDataFile))
-                {
-                    File.Delete(newDataFile);
-                }
+                var d = processor.LoadData($"00000000-0000-0000-0000-00000000000{i}");
+                Assert.AreEqual($"00000000-0000-0000-0000-00000000000{i}", d.Id.ToString());
+                Assert.AreEqual(i, d.Age);
+                Assert.AreEqual($"FN{i}", d.FirstName);
+                Assert.AreEqual($"LN{i}", d.LastName);
             }
         }
 
@@ -196,51 +154,20 @@ namespace PBFramework.DB.Tests
                 data[4]
             };
 
-            // Backup original DB first.
-            var sourcePath = Path.Combine(TestConstants.TestAssetPath, "DB");
-            var backupPath = Path.Combine(TestConstants.TestAssetPath, "DB_Backup");
-            if (Directory.Exists(backupPath))
-            {
-                Directory.Delete(backupPath, true);
-            }
-            Directory.CreateDirectory(backupPath);
-            Directory.CreateDirectory(Path.Combine(backupPath, "data"));
-            File.Copy(Path.Combine(sourcePath, "index.dbi"), Path.Combine(backupPath, "index.dbi"));
-            for (int i = 0; i < 5; i++)
-            {
-                File.Copy(
-                    Path.Combine(sourcePath, $"data/00000000-0000-0000-0000-00000000000{i}.data"),
-                    Path.Combine(backupPath, $"data/00000000-0000-0000-0000-00000000000{i}.data")
-                );
-            }
+            processor.RemoveData(targets);
 
-            try
-            {
-                processor.RemoveData(targets);
+            var index = processor.Index.GetAll();
+            Assert.AreEqual(3, index.Count);
+            Assert.AreEqual(processor.GetDataFiles().Length, index.Count);
 
-                var index = processor.Index.GetAll();
-                Assert.AreEqual(3, index.Count);
-                Assert.AreEqual(processor.GetDataFiles().Length, index.Count);
-
-                for (int i = 0; i < 3; i++)
-                {
-                    var d = processor.LoadData($"00000000-0000-0000-0000-00000000000{i}");
-                    Assert.AreEqual($"00000000-0000-0000-0000-00000000000{i}", d.Id.ToString());
-                    Assert.AreEqual(i, d.Age);
-                    Assert.AreEqual($"FN{i}", d.FirstName);
-                    Assert.AreEqual($"LN{i}", d.LastName);
-                    Assert.AreEqual(d.Id.ToString(), index[i]["Id"].ToString());
-                }
-            }
-            catch (Exception e)
+            for (int i = 0; i < 3; i++)
             {
-                throw e;
-            }
-            finally
-            {
-                Directory.Delete(sourcePath, true);
-                Directory.Move(backupPath, sourcePath);
-                Debug.Log("Reverted test environment.");
+                var d = processor.LoadData($"00000000-0000-0000-0000-00000000000{i}");
+                Assert.AreEqual($"00000000-0000-0000-0000-00000000000{i}", d.Id.ToString());
+                Assert.AreEqual(i, d.Age);
+                Assert.AreEqual($"FN{i}", d.FirstName);
+                Assert.AreEqual($"LN{i}", d.LastName);
+                Assert.AreEqual(d.Id.ToString(), index[i]["Id"].ToString());
             }
         }
 
@@ -298,35 +225,9 @@ namespace PBFramework.DB.Tests
             var processor = new DatabaseProcessor<TestEntity>(new DummyDatabase());
             processor.LoadIndex();
 
-            var dbDir = new DirectoryInfo(Path.Combine(TestConstants.TestAssetPath, "DB"));
-            var backupDir = new DirectoryInfo(Path.Combine(TestConstants.TestAssetPath, "DB_Backup"));
-
-            try
-            {
-                dbDir.Copy(backupDir, true);
-            }
-            catch (Exception e)
-            {
-                Debug.Log("Failed to make a backup before testing!: " + e.Message);
-                throw e;
-            }
-
-            try
-            {
-                Assert.AreEqual(5, processor.Index.GetAll().Count);
-                processor.Wipe();
-                Assert.AreEqual(0, processor.Index.GetAll().Count);
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-            finally
-            {
-                // Revert
-                dbDir.Delete(true);
-                backupDir.MoveTo(dbDir.FullName);
-            }
+            Assert.AreEqual(5, processor.Index.GetAll().Count);
+            processor.Wipe();
+            Assert.AreEqual(0, processor.Index.GetAll().Count);
         }
 
 
@@ -334,10 +235,59 @@ namespace PBFramework.DB.Tests
         {
             public bool IsAlive => true;
 
-            public DirectoryInfo Directory => new DirectoryInfo(Path.Combine(TestConstants.TestAssetPath, "DB"));
+            public DirectoryInfo Directory => new DirectoryInfo(Path.Combine(TestConstants.TestAssetPath, TestDbFolder));
 
 
-            public bool Initialize() => true;
+            public DummyDatabase()
+            {
+                Assert.IsTrue(Initialize());
+            }
+
+            public bool Initialize()
+            {
+                if (Directory.Exists)
+                {
+                    Directory.Delete(true);
+                    Directory.Refresh();
+                }
+
+                Directory.Create();
+                Directory.Refresh();
+
+                dynamic[] datas = new dynamic[5];
+                dynamic[] indexes = new dynamic[5];
+                for (int i = 0; i < 5; i++)
+                {
+                    datas[i] = new
+                    {
+                        Id = $"00000000-0000-0000-0000-00000000000{i}",
+                        Age = i,
+                        Name = $"FN{i}",
+                        LastName = $"LN{i}",
+                    };
+                    indexes[i] = new
+                    {
+                        Id = $"00000000-0000-0000-0000-00000000000{i}",
+                        Age = i,
+                        Name = $"FN{i}",
+                    };
+                }
+
+                File.WriteAllText(
+                    Path.Combine(Directory.FullName, "index.dbi"),
+                    JsonConvert.SerializeObject(indexes)
+                );
+                var dataFolder = Directory.CreateSubdirectory("data");
+                for (int i = 0; i < datas.Length; i++)
+                {
+                    File.WriteAllText(
+                        Path.Combine(dataFolder.FullName, $"{datas[i].Id}.data"),
+                        JsonConvert.SerializeObject(datas[i])
+                    );
+                }
+
+                return true;
+            }
 
             public IDatabaseEditor<TestEntity> Edit() => null;
 

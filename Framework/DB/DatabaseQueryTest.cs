@@ -12,7 +12,10 @@ using PBFramework.DB.Entities.Tests;
 namespace PBFramework.DB.Tests
 {
     public class DatabaseQueryTest {
-        
+
+        private const string TestDbPath = "DBQueryTest";
+
+
         [Test]
         public void TestPreload()
         {
@@ -173,7 +176,49 @@ namespace PBFramework.DB.Tests
 
             public DummyProcessor()
             {
-                directory = new DirectoryInfo(Path.Combine(TestConstants.TestAssetPath, "DB"));
+                directory = new DirectoryInfo(Path.Combine(TestConstants.TestAssetPath, TestDbPath));
+
+                if (directory.Exists)
+                {
+                    directory.Delete(true);
+                    directory.Refresh();
+                }
+
+                directory.Create();
+                directory.Refresh();
+
+                dynamic[] datas = new dynamic[5];
+                dynamic[] indexes = new dynamic[5];
+                for (int i = 0; i < 5; i++)
+                {
+                    datas[i] = new
+                    {
+                        Id = $"00000000-0000-0000-0000-00000000000{i}",
+                        Age = i,
+                        Name = $"FN{i}",
+                        LastName = $"LN{i}",
+                    };
+                    indexes[i] = new
+                    {
+                        Id = $"00000000-0000-0000-0000-00000000000{i}",
+                        Age = i,
+                        Name = $"FN{i}",
+                    };
+                }
+
+                File.WriteAllText(
+                    Path.Combine(directory.FullName, "index.dbi"),
+                    JsonConvert.SerializeObject(indexes)
+                );
+                var dataFolder = directory.CreateSubdirectory("data");
+                for (int i = 0; i < datas.Length; i++)
+                {
+                    File.WriteAllText(
+                        Path.Combine(dataFolder.FullName, $"{datas[i].Id}.data"),
+                        JsonConvert.SerializeObject(datas[i])
+                    );
+                }
+
                 dataDirectory = new DirectoryInfo(Path.Combine(directory.FullName, "data"));
                 indexFile = new FileInfo(Path.Combine(directory.FullName, "index.dbi"));
 
