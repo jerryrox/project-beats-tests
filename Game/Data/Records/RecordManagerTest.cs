@@ -82,6 +82,7 @@ namespace PBGame.Data.Records.Tests
             Assert.AreEqual(100, record.Time);
             Assert.AreEqual(UserId, record.UserId.ToString());
             Assert.AreEqual("Offline user", record.Username);
+            Assert.AreEqual("", record.AvatarUrl);
         }
 
         [Test]
@@ -392,6 +393,8 @@ namespace PBGame.Data.Records.Tests
             public int JudgeCount { get; }
 
 
+            public float GetRankAccuracy(RankType type) => 0f;
+
             /// <summary>
             /// Apply any changes to the score processing from specified map.
             /// </summary>
@@ -401,6 +404,8 @@ namespace PBGame.Data.Records.Tests
             /// Processes the specified judgement for scoring.
             /// </summary>
             public void ProcessJudgement(JudgementResult result) { }
+
+            public RankType CalculateRank(float acc) => RankType.D;
 
             public void Dispose() { }
         }

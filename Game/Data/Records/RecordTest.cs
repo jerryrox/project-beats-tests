@@ -71,6 +71,7 @@ namespace PBGame.Data.Records.Tests
             Assert.AreEqual("0x0", record.MapHash);
             Assert.AreEqual(GameModeType.BeatsStandard, record.GameMode);
             Assert.AreEqual("Offline user", record.Username);
+            Assert.AreEqual("", record.AvatarUrl);
             Assert.AreEqual(RankType.B, record.Rank);
             Assert.AreEqual(12345678, record.Score);
             Assert.AreEqual(1000, record.MaxCombo);
@@ -198,6 +199,8 @@ namespace PBGame.Data.Records.Tests
             public int JudgeCount { get; }
 
 
+            public float GetRankAccuracy(RankType type) => 0f;
+
             /// <summary>
             /// Apply any changes to the score processing from specified map.
             /// </summary>
@@ -207,6 +210,8 @@ namespace PBGame.Data.Records.Tests
             /// Processes the specified judgement for scoring.
             /// </summary>
             public void ProcessJudgement(JudgementResult result) { }
+
+            public RankType CalculateRank(float acc) => RankType.D;
 
             public void Dispose() { }
         }
