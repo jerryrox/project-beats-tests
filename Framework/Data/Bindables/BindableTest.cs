@@ -208,6 +208,56 @@ namespace PBFramework.Data.Bindables.Tests
             });
         }
 
+        [Test]
+        public void TestBindUnbind()
+        {
+            var bindable = new Bindable<string>("");
+            var rawBindable = bindable as IBindable;
+            int newValueCount = 0;
+            int valueChangeCount = 0;
+            int newRawValueCount = 0;
+            int rawValueChangeCount = 0;
+
+            Action<string> onNewValue = (v) => newValueCount++;
+            Action<string, string> onValueChange = (v, v2) => valueChangeCount++;
+            Action<object> onNewRawValue = (v) => newRawValueCount++;
+            Action<object, object> onRawValueChange = (v, v2) => rawValueChangeCount++;
+            bindable.Bind(onNewValue);
+            bindable.Bind(onValueChange);
+            rawBindable.Bind(onNewRawValue);
+            rawBindable.Bind(onRawValueChange);
+
+            rawBindable.RawValue = "a";
+            Assert.AreEqual(1, newValueCount);
+            Assert.AreEqual(1, valueChangeCount);
+            Assert.AreEqual(1, newRawValueCount);
+            Assert.AreEqual(1, rawValueChangeCount);
+
+            bindable.Unbind(onNewValue);
+            bindable.Unbind(onValueChange);
+            bindable.Value = "b";
+            Assert.AreEqual(1, newValueCount);
+            Assert.AreEqual(1, valueChangeCount);
+            Assert.AreEqual(2, newRawValueCount);
+            Assert.AreEqual(2, rawValueChangeCount);
+
+            bindable.Unbind(onNewRawValue);
+            bindable.Unbind(onRawValueChange);
+            bindable.Value = "c";
+            Assert.AreEqual(1, newValueCount);
+            Assert.AreEqual(1, valueChangeCount);
+            Assert.AreEqual(3, newRawValueCount);
+            Assert.AreEqual(3, rawValueChangeCount);
+
+            rawBindable.Unbind(onNewRawValue);
+            rawBindable.Unbind(onRawValueChange);
+            bindable.Value = "d";
+            Assert.AreEqual(1, newValueCount);
+            Assert.AreEqual(1, valueChangeCount);
+            Assert.AreEqual(3, newRawValueCount);
+            Assert.AreEqual(3, rawValueChangeCount);
+        }
+
         protected virtual IBindable<Dummy> CreateBindable(Dummy d = null)
         {
             return new Bindable<Dummy>(d);
