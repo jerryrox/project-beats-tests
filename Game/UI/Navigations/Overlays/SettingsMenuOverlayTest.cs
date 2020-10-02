@@ -34,10 +34,9 @@ namespace PBGame.UI.Navigations.Overlays.Tests
         {
             TestOptions options = new TestOptions()
             {
-                UseManualTesting = true,
                 Actions = new TestAction[]
                 {
-                    new TestAction(true, KeyCode.Q, (isAuto) => AssignSettingsData(), "Assigns settings data to overlay.")
+                    new TestAction(true, KeyCode.Q, () => AssignSettingsData(), "Assigns settings data to overlay.")
                 }
             };
             return TestGame.Setup(this, options).Run();

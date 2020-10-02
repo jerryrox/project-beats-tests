@@ -28,10 +28,7 @@ namespace PBGame.UI.Components.SettingsMenu.Contents.Test
         [UnityTest]
         public IEnumerator Test()
         {
-            TestOptions options = new TestOptions()
-            {
-                UseManualTesting = true
-            };
+            TestOptions options = new TestOptions();
             return TestGame.Setup(this, options).Run();
         }
 

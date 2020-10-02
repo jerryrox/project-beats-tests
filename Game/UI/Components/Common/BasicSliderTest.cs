@@ -27,7 +27,6 @@ namespace PBGame.UI.Components.Common.Tests
         {
             TestOptions options = new TestOptions()
             {
-                UseManualTesting = true,
                 Actions = new TestAction[]
                 {
                     new TestAction(true, KeyCode.Q, () => SetTint(Color.red), "Sets slider tint to red"),

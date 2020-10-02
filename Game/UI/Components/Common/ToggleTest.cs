@@ -27,7 +27,6 @@ namespace PBGame.UI.Components.Common.Tests
         {
             TestOptions options = new TestOptions()
             {
-                UseManualTesting = true,
                 Actions = new TestAction[]
                 {
                     new TestAction(() => InitBasic()),
@@ -50,7 +49,6 @@ namespace PBGame.UI.Components.Common.Tests
         {
             TestOptions options = new TestOptions()
             {
-                UseManualTesting = true,
                 Actions = new TestAction[]
                 {
                     new TestAction(() => InitLabelled()),

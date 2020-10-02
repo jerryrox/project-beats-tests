@@ -28,7 +28,6 @@ namespace PBGame.UI.Components.Common.Dropdown.Tests
         {
             TestOptions options = new TestOptions()
             {
-                UseManualTesting = true,
                 Actions = new TestAction[]
                 {
                     new TestAction(true, KeyCode.Q, () => OpenMenu(), "Opens dropdown menu"),

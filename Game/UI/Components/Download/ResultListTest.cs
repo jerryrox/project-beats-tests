@@ -32,7 +32,6 @@ namespace PBGame.UI.Components.Download.Tests
         {
             TestOptions options = new TestOptions()
             {
-                UseManualTesting = true,
                 Actions = new TestAction[]
                 {
                     new TestAction(true, KeyCode.Q, () => SetTestResults(), "Sets test results to the list."),

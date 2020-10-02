@@ -30,7 +30,6 @@ namespace PBGame.UI.Components.Offsets.Tests
         {
             TestOptions options = new TestOptions()
             {
-                UseManualTesting = true,
                 Actions = new TestAction[]
                 {
                     new TestAction(() => AutoTest()),
@@ -47,7 +46,6 @@ namespace PBGame.UI.Components.Offsets.Tests
         {
             TestOptions options = new TestOptions()
             {
-                UseManualTesting = true,
                 Actions = new TestAction[]
                 {
                     new TestAction(false, KeyCode.Q, () => AutoTestWithMetronome(), "Runs auto test with metronome"),

@@ -46,7 +46,6 @@ namespace PBGame.UI.Components.SettingsMenu.Navbars.Tests
             isUsingActualConfig = false;
             TestOptions options = new TestOptions()
             {
-                UseManualTesting = true,
                 UpdateMethod = Update,
             };
             return TestGame.Setup(this, options).Run();
@@ -58,7 +57,6 @@ namespace PBGame.UI.Components.SettingsMenu.Navbars.Tests
             isUsingActualConfig = true;
             TestOptions options = new TestOptions()
             {
-                UseManualTesting = true,
                 UpdateMethod = Update,
             };
             return TestGame.Setup(this, options).Run();

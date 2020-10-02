@@ -28,7 +28,6 @@ namespace PBGame.UI.Components.Offsets.Tests
         {
             TestOptions options = new TestOptions()
             {
-                UseManualTesting = true,
                 Actions = new TestAction[]
                 {
                     new TestAction(true, KeyCode.Q, () => CreateOffset(), "Creates a new offset instance to modify with slider."),

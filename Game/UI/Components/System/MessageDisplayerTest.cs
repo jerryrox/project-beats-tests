@@ -33,7 +33,6 @@ namespace PBGame.UI.Components.System
         {
             TestOptions options = new TestOptions()
             {
-                UseManualTesting = true,
                 Actions = new TestAction[]
                 {
                     new TestAction(true, KeyCode.Q, () => AddNotification(1, NotificationScope.Temporary), "Adds a new temporary notification with one line."),

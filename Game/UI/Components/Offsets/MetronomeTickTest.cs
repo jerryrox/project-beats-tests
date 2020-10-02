@@ -27,7 +27,6 @@ namespace PBGame.UI.Components.Offsets.Tests
         {
             TestOptions options = new TestOptions()
             {
-                UseManualTesting = true,
                 Actions = new TestAction[]
                 {
                     new TestAction(false, KeyCode.Q, () => DoTick(), "Sets the metronome tick to its Ticked state.")

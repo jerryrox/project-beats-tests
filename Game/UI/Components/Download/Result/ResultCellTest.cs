@@ -32,7 +32,6 @@ namespace PBGame.UI.Components.Download.Result.Tests
         {
             TestOptions options = new TestOptions()
             {
-                UseManualTesting = true,
                 Actions = new TestAction[]
                 {
                     new TestAction(KeyCode.Q, () => AssignMapset(), "Assigns mapset to the result cell"),

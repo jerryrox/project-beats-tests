@@ -27,7 +27,6 @@ namespace PBGame.UI.Components.System.Tests
         {
             TestOptions options = new TestOptions()
             {
-                UseManualTesting = true,
                 Actions = new TestAction[]
                 {
                     new TestAction(true, KeyCode.Q, () => SetFps(120), "Sets to 120 fps"),

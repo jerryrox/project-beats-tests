@@ -41,7 +41,6 @@ namespace PBGame.UI.Components.Prepare.Details.Meta.Tests
         {
             TestOptions options = new TestOptions()
             {
-                UseManualTesting = true,
                 Actions = new TestAction[]
                 {
                     new TestAction(() => Init()),

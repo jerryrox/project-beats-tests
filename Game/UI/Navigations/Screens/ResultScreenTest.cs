@@ -64,7 +64,6 @@ namespace PBGame.UI.Navigations.Screens.Tests
         {
             TestOptions options = new TestOptions()
             {
-                UseManualTesting = true,
                 Actions = new TestAction[]
                 {
                     new TestAction(() => InitTest(), "Initializes the test environment"),

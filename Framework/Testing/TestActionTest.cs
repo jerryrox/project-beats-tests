@@ -12,40 +12,28 @@ namespace PBFramework.Testing.Tests
         [Test]
         public void TestAuto()
         {
-            int invokeCount = 0;
             TestAction action = new TestAction(() => DummyAction(), "");
             
             Assert.IsNotNull(action.RunAction(false));
-            Assert.AreEqual(0, invokeCount);
-
             Assert.IsNull(action.RunAction(true));
-            Assert.AreEqual(1, invokeCount);
         }
 
         [Test]
         public void TestManual()
         {
-            int invokeCount = 0;
             TestAction action = new TestAction(true, KeyCode.A, () => DummyAction(), "");
             
-            Assert.IsNotNull(action.RunAction(false));
-            Assert.AreEqual(0, invokeCount);
-
-            Assert.IsNull(action.RunAction(true));
-            Assert.AreEqual(0, invokeCount);
+            Assert.IsNull(action.RunAction(false));
+            Assert.IsNotNull(action.RunAction(true));
         }
 
         [Test]
         public void TestBoth()
         {
-            int invokeCount = 0;
             TestAction action = new TestAction(false, KeyCode.A, () => DummyAction(), "");
             
             Assert.IsNotNull(action.RunAction(false));
-            Assert.AreEqual(0, invokeCount);
-
-            Assert.IsNull(action.RunAction(true));
-            Assert.AreEqual(1, invokeCount);
+            Assert.IsNotNull(action.RunAction(true));
         }
 
         [Test]
