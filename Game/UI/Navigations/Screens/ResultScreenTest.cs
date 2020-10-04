@@ -15,9 +15,9 @@ using PBGame.Tests;
 using PBGame.Rulesets;
 using PBGame.Rulesets.Maps;
 using PBGame.Rulesets.Scoring;
-using PBGame.Rulesets.Judgements;
 using PBGame.Graphics;
 using PBGame.Networking.API;
+using PBGame.Configurations;
 using PBFramework;
 using PBFramework.UI;
 using PBFramework.Testing;
@@ -57,6 +57,9 @@ namespace PBGame.UI.Navigations.Screens.Tests
 
         [ReceivesDependency]
         private IModeManager ModeManager { get; set; }
+
+        [ReceivesDependency]
+        private IGameConfiguration GameConfiguration { get; set; }
 
 
         [UnityTest]
@@ -128,11 +131,39 @@ namespace PBGame.UI.Navigations.Screens.Tests
 
         private IEnumerator SetupState(int index)
         {
-            resultModel.Setup(mapset.Maps[index].GetPlayable(GameModeType.BeatsStandard), records[index]);
+            var map = mapset.Maps[index];
+            var record = records[index];
+            var preferUnicode = GameConfiguration.PreferUnicode.Value;
+            resultModel.Setup(map.GetPlayable(GameModeType.BeatsStandard), record);
 
+            InfoBlock infoBlock = resultScreen.GetComponentInChildren<InfoBlock>(true);
+            {
+                Assert.AreEqual(map.Metadata.GetTitle(preferUnicode), infoBlock.FindWithName<Label>("title").Text);
+                Assert.AreEqual(map.Metadata.GetArtist(preferUnicode), infoBlock.FindWithName<Label>("artist").Text);
+                Assert.AreEqual(map.Detail.Version, infoBlock.FindWithName<Label>("version").Text);
+                Assert.AreEqual($"mapped by {map.Metadata.Creator}", infoBlock.FindWithName<Label>("mapper").Text.Trim());
+            }
+            InfoStrip infoStrip = resultScreen.GetComponentInChildren<InfoStrip>(true);
+            {
+                Assert.AreEqual(record.Score.ToString("N0"), infoStrip.FindWithName<Label>("score").Text);
+                Assert.AreEqual($"x{record.MaxCombo.ToString("N0")}", infoStrip.FindWithName<Label>("combo").Text);
+                Assert.AreEqual(record.Username, infoStrip.FindWithName<Label>("name").Text);
+                Assert.AreEqual(record.Date.ToString("YYYY/MM/DD HH:MM:SS"), infoStrip.FindWithName<Label>("date").Text);
+            }
+            RankCircle rankCircle = resultScreen.GetComponentInChildren<RankCircle>(true);
+            {
+                Assert.AreEqual(record.Accuracy, rankCircle.FindWithName<UguiSprite>("meter").FillAmount, Delta);
+                Assert.AreEqual(ColorPreset.GetRankColor(record.Rank).Base.WithAlpha(0.625f), rankCircle.FindWithName<UguiSprite>("rank-glow").Tint);
+                Assert.AreEqual(ColorPreset.GetRankColor(record.Rank).Base, rankCircle.FindWithName<Label>("rank").Color);
+                Assert.AreEqual(record.Rank.ToDisplayedString(), rankCircle.FindWithName<Label>("rank").Text);
+                Assert.AreEqual(record.Accuracy.ToString("P2"), rankCircle.FindWithName<Label>("accuracy").Text);
+
+                RankCircleRange range = rankCircle.GetComponentInChildren<RankCircleRange>(true);
+                {
+                    Assert.IsTrue(range.Active);
+                }
+            }
             yield return new WaitForSeconds(0.1f);
-            // TODO: Assertion
-            yield break;
         }
 
         private IEnumerator ResetState()
@@ -158,11 +189,9 @@ namespace PBGame.UI.Navigations.Screens.Tests
             {
                 Assert.AreEqual(0f, rankCircle.FindWithName<UguiSprite>("meter").FillAmount);
                 Assert.IsTrue(rankCircle.FindWithName<MapImageDisplay>("thumb").GetComponentsInChildren<ITexture>(true).Any(t => t.Active == false));
-                Assert.AreNotEqual(1f, rankCircle.FindWithName<UguiSprite>("rank-glow").Alpha);
-                Assert.AreNotEqual(0f, rankCircle.FindWithName<UguiSprite>("rank-glow").Alpha);
                 Assert.AreEqual(ColorPreset.GetRankColor(RankType.D).Base.WithAlpha(0.625f), rankCircle.FindWithName<UguiSprite>("rank-glow").Tint);
                 Assert.AreEqual(ColorPreset.GetRankColor(RankType.D).Base, rankCircle.FindWithName<Label>("rank").Color);
-                Assert.AreEqual(RankType.D.ToString(), rankCircle.FindWithName<Label>("rank").Text);
+                Assert.AreEqual(RankType.D.ToDisplayedString(), rankCircle.FindWithName<Label>("rank").Text);
                 Assert.AreEqual("0.00%", rankCircle.FindWithName<Label>("accuracy").Text);
 
                 RankCircleRange range = rankCircle.GetComponentInChildren<RankCircleRange>(true);
