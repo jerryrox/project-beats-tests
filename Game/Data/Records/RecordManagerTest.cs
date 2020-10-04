@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
@@ -58,7 +59,7 @@ namespace PBGame.Data.Records.Tests
                 }
             ));
             var listener = new TaskListener<List<IRecord>>();
-            recordManager.GetRecords(maps[0], listener).Wait();
+            recordManager.GetRecords(maps[0], listener: listener).Wait();
             Assert.AreEqual(1, listener.Value.Count);
             var record = listener.Value[0];
             Assert.AreEqual(0.9f, record.Accuracy, Delta);
@@ -138,7 +139,7 @@ namespace PBGame.Data.Records.Tests
             ));
 
             var listener = new TaskListener<List<IRecord>>();
-            recordManager.GetRecords(maps[0], listener).Wait();
+            recordManager.GetRecords(maps[0], listener: listener).Wait();
             Assert.AreEqual(3, listener.Value.Count);
             Assert.AreEqual(3, recordManager.GetPlayCount(maps[0], CreateUser()));
             Assert.AreEqual(0, recordManager.GetPlayCount(maps[0], CreateUser(Guid.Empty.ToString())));
@@ -159,7 +160,7 @@ namespace PBGame.Data.Records.Tests
             ));
 
             listener = new TaskListener<List<IRecord>>();
-            recordManager.GetRecords(maps[0], listener).Wait();
+            recordManager.GetRecords(maps[0], listener: listener).Wait();
             Assert.AreEqual(4, listener.Value.Count);
             bestRecord = recordManager.GetBestRecord(listener.Value);
             Assert.AreEqual(4321, bestRecord.Score);
@@ -246,19 +247,89 @@ namespace PBGame.Data.Records.Tests
             ));
 
             var listener = new TaskListener<List<IRecord>>();
-            recordManager.GetRecords(maps[0], listener).Wait();
+            recordManager.GetRecords(maps[0], listener: listener).Wait();
             Assert.AreEqual(1, listener.Value.Count);
             Assert.AreEqual(1, recordManager.GetPlayCount(maps[0], CreateUser()));
 
             listener = new TaskListener<List<IRecord>>();
-            recordManager.GetRecords(maps[1], listener).Wait();
+            recordManager.GetRecords(maps[1], listener: listener).Wait();
             Assert.AreEqual(2, listener.Value.Count);
             Assert.AreEqual(2, recordManager.GetPlayCount(maps[1], CreateUser()));
 
             listener = new TaskListener<List<IRecord>>();
-            recordManager.GetRecords(maps[2], listener).Wait();
+            recordManager.GetRecords(maps[2], listener: listener).Wait();
             Assert.AreEqual(1, listener.Value.Count);
             Assert.AreEqual(1, recordManager.GetPlayCount(maps[2], CreateUser()));
+        }
+
+        [Test]
+        public void TestGetRecordsDifferentUser()
+        {
+            var recordManager = new RecordManager();
+            DummyMap map = new DummyMap()
+            {
+                Detail = new MapDetail()
+                {
+                    Hash = "0001",
+                },
+                PlayableMode = GameModeType.BeatsStandard,
+            };
+
+            IUser userA = CreateUser("00000000-0000-0000-0000-000000000000");
+            IUser userB = CreateUser("00000000-0000-0000-0000-000000000001");
+
+            Initialize(recordManager, new List<DummyMap>()
+            {
+                map
+            });
+
+            recordManager.SaveRecord(CreateRecord(
+                map, 0.9f, RankType.X, 99, 1234,
+                new List<JudgementResult>()
+                {
+                    CreateJudgementResult(0, 0, HitResultType.Perfect),
+                    CreateJudgementResult(1, 1, HitResultType.Perfect),
+                    CreateJudgementResult(2, 1, HitResultType.Great),
+                    CreateJudgementResult(3, 1, HitResultType.Good),
+                    CreateJudgementResult(4, 1, HitResultType.Good),
+                },
+                user: userA
+            ));
+            recordManager.SaveRecord(CreateRecord(
+                map, 0.8f, RankType.A, 98, 123,
+                new List<JudgementResult>()
+                {
+                    CreateJudgementResult(0, 0, HitResultType.Perfect),
+                    CreateJudgementResult(1, 1, HitResultType.Perfect),
+                    CreateJudgementResult(2, 1, HitResultType.Great),
+                    CreateJudgementResult(3, 1, HitResultType.Good),
+                    CreateJudgementResult(4, 1, HitResultType.Good),
+                },
+                user: userA
+            ));
+            recordManager.SaveRecord(CreateRecord(
+                map, 0.95f, RankType.SH, 88, 4321,
+                new List<JudgementResult>()
+                {
+                    CreateJudgementResult(0, 0, HitResultType.Perfect),
+                    CreateJudgementResult(1, 1, HitResultType.Perfect),
+                    CreateJudgementResult(2, 1, HitResultType.Great),
+                    CreateJudgementResult(3, 1, HitResultType.Good),
+                    CreateJudgementResult(4, 1, HitResultType.Good),
+                },
+                user: userB
+            ));
+
+            var listener = new TaskListener<List<IRecord>>();
+            recordManager.GetRecords(map, userA, listener: listener).Wait();
+            Assert.AreEqual(2, listener.Value.Count);
+            Assert.IsTrue(listener.Value.Where((r) => r.Accuracy == 0.9f && r.UserId == userA.Id).Count() == 1);
+            Assert.IsTrue(listener.Value.Where((r) => r.Accuracy == 0.8f && r.UserId == userA.Id).Count() == 1);
+
+            listener = new TaskListener<List<IRecord>>();
+            recordManager.GetRecords(map, userB, listener: listener).Wait();
+            Assert.AreEqual(1, listener.Value.Count);
+            Assert.IsTrue(listener.Value.Where((r) => r.Accuracy == 0.95f && r.UserId == userB.Id).Count() == 1);
         }
 
         private void Initialize(RecordManager manager, List<DummyMap> dummyMaps)
@@ -276,7 +347,7 @@ namespace PBGame.Data.Records.Tests
                 manager.DeleteRecords(map);
 
                 var listener = new TaskListener<List<IRecord>>();
-                manager.GetRecords(map, listener).Wait();
+                manager.GetRecords(map, listener: listener).Wait();
                 Assert.IsTrue(listener.IsFinished);
                 Assert.IsNotNull(listener.Value);
                 Assert.AreEqual(0, listener.Value.Count);
@@ -288,12 +359,12 @@ namespace PBGame.Data.Records.Tests
         private Record CreateRecord(
             DummyMap map,
             float accuracy = 1, RankType ranking = RankType.SH, int highestCombo = 1,
-            int score = 1000, List<JudgementResult> judgements = null
+            int score = 1000, List<JudgementResult> judgements = null, IUser user = null
         )
         {
             return new Record(
                 map,
-                CreateUser(),
+                user ?? CreateUser(),
                 new DummyScoreProcessor()
                 {
                     Accuracy = new BindableFloat(accuracy),
