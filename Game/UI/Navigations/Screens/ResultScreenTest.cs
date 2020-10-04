@@ -148,7 +148,7 @@ namespace PBGame.UI.Navigations.Screens.Tests
                 Assert.AreEqual(record.Score.ToString("N0"), infoStrip.FindWithName<Label>("score").Text);
                 Assert.AreEqual($"x{record.MaxCombo.ToString("N0")}", infoStrip.FindWithName<Label>("combo").Text);
                 Assert.AreEqual(record.Username, infoStrip.FindWithName<Label>("name").Text);
-                Assert.AreEqual(record.Date.ToString("YYYY/MM/DD HH:MM:SS"), infoStrip.FindWithName<Label>("date").Text);
+                Assert.AreEqual(record.Date.ToString("yyyy-MM-dd HH:mm:ss"), infoStrip.FindWithName<Label>("date").Text);
             }
             RankCircle rankCircle = resultScreen.GetComponentInChildren<RankCircle>(true);
             {
