@@ -15,11 +15,13 @@ using PBGame.Tests;
 using PBGame.Rulesets;
 using PBGame.Rulesets.Maps;
 using PBGame.Rulesets.Scoring;
+using PBGame.Rulesets.Judgements;
 using PBGame.Graphics;
 using PBGame.Networking.API;
 using PBGame.Configurations;
 using PBFramework;
 using PBFramework.UI;
+using PBFramework.UI.Navigations;
 using PBFramework.Testing;
 using PBFramework.Graphics;
 using PBFramework.Threading;
@@ -83,13 +85,10 @@ namespace PBGame.UI.Navigations.Screens.Tests
         }
         
         [InitWithDependency]
-        private void Init()
+        private void Init(IScreenNavigator screenNavigator)
         {
-            resultScreen = RootMain.CreateChild<ResultScreen>("result");
+            resultScreen = screenNavigator.Show<ResultScreen>();
             {
-                resultScreen.Anchor = AnchorType.Fill;
-                resultScreen.Offset = Offset.Zero;
-
                 resultModel = resultScreen.Model;
             }
         }
@@ -163,6 +162,27 @@ namespace PBGame.UI.Navigations.Screens.Tests
                     Assert.IsTrue(range.Active);
                 }
             }
+            JudgementCounter counter = resultScreen.GetComponentInChildren<JudgementCounter>(true);
+            {
+                var items = counter.transform.GetComponentsInChildren<JudgementCountItem>(true);
+                foreach (var type in (HitResultType[])Enum.GetValues(typeof(HitResultType)))
+                {
+                    if (type == HitResultType.None)
+                    {
+                        Assert.AreEqual(0, items.Where(i => i.name == $"item{(int)HitResultType.None}").Count());
+                    }
+                    else
+                    {
+                        var item = items.Where(i => i.name == $"item{(int)type}").FirstOrDefault();
+                        Assert.IsNotNull(item);
+                        Assert.AreEqual(resultModel.IsSupportedHitType(type), item.Active);
+                        if (item.Active)
+                        {
+                            Assert.AreEqual(record.GetHitCount(type).ToString("N0"), item.FindWithName<Label>("count").Text);
+                        }
+                    }
+                }
+            }
             yield return new WaitForSeconds(0.1f);
         }
 
@@ -181,7 +201,7 @@ namespace PBGame.UI.Navigations.Screens.Tests
             {
                 Assert.AreEqual("0", infoStrip.FindWithName<Label>("score").Text);
                 Assert.AreEqual("x0", infoStrip.FindWithName<Label>("combo").Text);
-                Assert.IsNull(infoStrip.FindWithName<UguiTexture>("texture").Texture);
+                Assert.IsFalse(infoStrip.FindWithName<AvatarDisplay>("avatar").HasTexture);
                 Assert.AreEqual("", infoStrip.FindWithName<Label>("name").Text);
                 Assert.AreEqual("", infoStrip.FindWithName<Label>("date").Text);
             }
