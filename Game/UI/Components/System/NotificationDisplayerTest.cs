@@ -15,10 +15,10 @@ using PBFramework.Dependencies;
 
 namespace PBGame.UI.Components.System
 {
-    public class MessageDisplayerTest {
+    public class NotificationDisplayerTest {
 
         private int nextNotifType;
-        private MessageDisplayer displayer;
+        private NotificationDisplayer displayer;
 
 
         [ReceivesDependency]
@@ -46,7 +46,7 @@ namespace PBGame.UI.Components.System
         [InitWithDependency]
         private void Init()
         {
-            displayer = RootMain.CreateChild<MessageDisplayer>("displayer", 0);
+            displayer = RootMain.CreateChild<NotificationDisplayer>("displayer", 0);
             {
                 displayer.Size = new Vector2(320f, 0f);
                 displayer.Position = new Vector3(0f, 300f, 0f);
