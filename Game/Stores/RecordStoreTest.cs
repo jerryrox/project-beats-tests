@@ -76,7 +76,7 @@ namespace PBGame.Stores.Tests
             Assert.IsFalse(record.HitResultCounts.ContainsKey(HitResultType.Miss));
             Assert.IsFalse(record.HitResultCounts.ContainsKey(HitResultType.None));
             Assert.AreEqual(true, record.IsClear);
-            Assert.AreEqual(5, record.Judgements.Count);
+            Assert.AreEqual(5, record.HitCount);
             Assert.AreEqual(maps[0].Detail.Hash, record.MapHash);
             Assert.AreEqual(100, record.MaxCombo);
             Assert.AreEqual(RankType.A, record.Rank);

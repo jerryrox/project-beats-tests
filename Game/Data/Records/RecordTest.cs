@@ -76,20 +76,7 @@ namespace PBGame.Data.Records.Tests
             Assert.AreEqual(12345678, record.Score);
             Assert.AreEqual(1000, record.MaxCombo);
             Assert.AreEqual(0.55f, record.Accuracy, Delta);
-            Assert.AreEqual(3, record.Judgements.Count);
-
-            Assert.AreEqual(0, record.Judgements[0].Combo);
-            Assert.AreEqual(1, record.Judgements[0].HitOffset);
-            Assert.AreEqual(HitResultType.Perfect, record.Judgements[0].Result);
-            Assert.AreEqual(true, record.Judgements[0].IsHit);
-            Assert.AreEqual(1, record.Judgements[1].Combo);
-            Assert.AreEqual(2, record.Judgements[1].HitOffset);
-            Assert.AreEqual(HitResultType.Great, record.Judgements[1].Result);
-            Assert.AreEqual(true, record.Judgements[1].IsHit);
-            Assert.AreEqual(2, record.Judgements[2].Combo);
-            Assert.AreEqual(5, record.Judgements[2].HitOffset);
-            Assert.AreEqual(HitResultType.Miss, record.Judgements[2].Result);
-            Assert.AreEqual(false, record.Judgements[2].IsHit);
+            Assert.AreEqual(3, record.HitCount);
 
             Assert.IsFalse(record.HitResultCounts.ContainsKey(HitResultType.Good));
             Assert.IsFalse(record.HitResultCounts.ContainsKey(HitResultType.Bad));
