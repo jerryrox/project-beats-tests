@@ -9,32 +9,32 @@ using UnityEngine.TestTools;
 
 namespace PBGame.IO
 {
-    public class DataStreamSaverTest {
+    public class DataStreamWriterTest {
 
         [UnityTest]
         public IEnumerator TestSinglePoolSize()
         {
-            var saver = new DataStreamSaver<DummyData>(1);
-            saver.StopStream();
-            Assert.Throws<Exception>(() => saver.PushData(new DummyData()));
-            Assert.Throws<ArgumentNullException>(() => saver.StartStream(null));
+            var dataWriter = new DataStreamWriter<DummyData>(1);
+            dataWriter.StopStream();
+            Assert.Throws<Exception>(() => dataWriter.WriteData(new DummyData()));
+            Assert.Throws<ArgumentNullException>(() => dataWriter.StartStream(null));
             using (MemoryStream memStream = new MemoryStream())
             {
                 using (StreamWriter writer = new StreamWriter(memStream))
                 {
-                    saver.StartStream(writer);
-                    saver.PushData(new DummyData()
+                    dataWriter.StartStream(writer);
+                    dataWriter.WriteData(new DummyData()
                     {
                         Num = 100,
                         Str = "MyStringLol"
                     });
                     yield return new WaitForSecondsRealtime(0.1f);
-                    saver.PushData(new DummyData()
+                    dataWriter.WriteData(new DummyData()
                     {
                         Num = 101,
                         Str = "MyStringLol2"
                     });
-                    saver.StopStream();
+                    dataWriter.StopStream();
 
                     memStream.Position = 0;
                     using (StreamReader reader = new StreamReader(memStream))
@@ -49,44 +49,44 @@ namespace PBGame.IO
         [UnityTest]
         public IEnumerator TestWrap()
         {
-            var saver = new DataStreamSaver<DummyData>(2);
-            saver.StopStream();
-            Assert.Throws<Exception>(() => saver.PushData(new DummyData()));
-            Assert.Throws<ArgumentNullException>(() => saver.StartStream(null));
+            var dataWriter = new DataStreamWriter<DummyData>(2);
+            dataWriter.StopStream();
+            Assert.Throws<Exception>(() => dataWriter.WriteData(new DummyData()));
+            Assert.Throws<ArgumentNullException>(() => dataWriter.StartStream(null));
             using (MemoryStream memStream = new MemoryStream())
             {
                 using (StreamWriter writer = new StreamWriter(memStream))
                 {
-                    saver.StartStream(writer);
-                    saver.PushData(new DummyData()
+                    dataWriter.StartStream(writer);
+                    dataWriter.WriteData(new DummyData()
                     {
                         Num = 0,
                         Str = "a"
                     });
                     yield return new WaitForSecondsRealtime(0.1f);
-                    saver.PushData(new DummyData()
+                    dataWriter.WriteData(new DummyData()
                     {
                         Num = 1,
                         Str = "b"
                     });
-                    saver.PushData(new DummyData()
+                    dataWriter.WriteData(new DummyData()
                     {
                         Num = 2,
                         Str = "c"
                     });
                     yield return new WaitForSecondsRealtime(0.1f);
-                    saver.PushData(new DummyData()
+                    dataWriter.WriteData(new DummyData()
                     {
                         Num = 3,
                         Str = "d"
                     });
                     yield return new WaitForSecondsRealtime(0.1f);
-                    saver.PushData(new DummyData()
+                    dataWriter.WriteData(new DummyData()
                     {
                         Num = 4,
                         Str = "e"
                     });
-                    saver.StopStream();
+                    dataWriter.StopStream();
 
                     memStream.Position = 0;
                     using (StreamReader reader = new StreamReader(memStream))
@@ -101,7 +101,7 @@ namespace PBGame.IO
         [UnityTest]
         public IEnumerator TestStressedPush()
         {
-            var saver = new DataStreamSaver<DummyData>(250);
+            var saver = new DataStreamWriter<DummyData>(250);
             using (MemoryStream memStream = new MemoryStream())
             {
                 StringBuilder sb = new StringBuilder();
@@ -117,8 +117,8 @@ namespace PBGame.IO
                                 Num = r * 100 + i,
                                 Str = "Lolz"
                             };
-                            sb.Append(data.ToStreamData());
-                            saver.PushData(data);
+                            sb.AppendLine(data.ToStreamData());
+                            saver.WriteData(data);
                         }
                         yield return new WaitForSecondsRealtime(0.1f);
                     }
@@ -131,17 +131,6 @@ namespace PBGame.IO
                         Assert.AreEqual(sb.ToString(), content);
                     }
                 }
-            }
-        }
-
-        private class DummyData : IStreamableData
-        {
-            public int Num;
-            public string Str;
-
-            public string ToStreamData()
-            {
-                return $"{Num};{Str}\n";
             }
         }
     }
