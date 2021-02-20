@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace PBGame.IO
 {
     public class DummyData : IStreamableData
@@ -5,16 +7,16 @@ namespace PBGame.IO
         public int Num;
         public string Str;
 
-        public string ToStreamData()
+        public void WriteStreamData(BinaryWriter writer)
         {
-            return $"{Num};{Str}";
+            writer.Write(Num);
+            writer.Write(Str);
         }
 
-        public void FromStreamData(string data)
+        public void ReadStreamData(BinaryReader reader)
         {
-            string[] splits = data.Split(';');
-            Num = int.Parse(splits[0]);
-            Str = splits[1];
+            Num = reader.ReadInt32();
+            Str = reader.ReadString();
         }
     }
 }

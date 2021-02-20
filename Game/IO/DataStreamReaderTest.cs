@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Collections;
-using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -13,34 +12,34 @@ namespace PBGame.IO
         [UnityTest]
         public IEnumerator TestSinglePoolSize()
         {
-            var dataReader = new DataStreamReader<DummyData>(1);
+            var dataReader = new DataStreamReader<DummyData>(() => new DummyData(), 1);
             dataReader.StopStream();
             Assert.Throws<Exception>(() => dataReader.ReadData());
             Assert.Throws<Exception>(() => dataReader.PeekData());
             Assert.Throws<ArgumentNullException>(() => dataReader.StartStream(null));
             using (MemoryStream memStream = new MemoryStream())
             {
-                using (StreamWriter writer = new StreamWriter(memStream))
+                using (BinaryWriter writer = new BinaryWriter(memStream))
                 {
-                    writer.WriteLine(new DummyData()
+                    new DummyData()
                     {
                         Num = 1,
                         Str = "z"
-                    }.ToStreamData());
-                    writer.WriteLine(new DummyData()
+                    }.WriteStreamData(writer);
+                    new DummyData()
                     {
                         Num = 2,
                         Str = "x"
-                    }.ToStreamData());
-                    writer.WriteLine(new DummyData()
+                    }.WriteStreamData(writer);
+                    new DummyData()
                     {
                         Num = 3,
                         Str = "c"
-                    }.ToStreamData());
+                    }.WriteStreamData(writer);
                     writer.Flush();
 
                     memStream.Position = 0;
-                    using (StreamReader reader = new StreamReader(memStream))
+                    using (BinaryReader reader = new BinaryReader(memStream))
                     {
                         dataReader.StartStream(reader);
                         yield return new WaitForSecondsRealtime(0.1f);

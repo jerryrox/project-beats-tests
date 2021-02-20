@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections;
-using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -14,13 +13,13 @@ namespace PBGame.IO
         [UnityTest]
         public IEnumerator TestSinglePoolSize()
         {
-            var dataWriter = new DataStreamWriter<DummyData>(1);
+            var dataWriter = new DataStreamWriter<DummyData>(() => new DummyData(), 1);
             dataWriter.StopStream();
             Assert.Throws<Exception>(() => dataWriter.WriteData(new DummyData()));
             Assert.Throws<ArgumentNullException>(() => dataWriter.StartStream(null));
             using (MemoryStream memStream = new MemoryStream())
             {
-                using (StreamWriter writer = new StreamWriter(memStream))
+                using (BinaryWriter writer = new BinaryWriter(memStream))
                 {
                     dataWriter.StartStream(writer);
                     dataWriter.WriteData(new DummyData()
@@ -37,10 +36,12 @@ namespace PBGame.IO
                     dataWriter.StopStream();
 
                     memStream.Position = 0;
-                    using (StreamReader reader = new StreamReader(memStream))
+                    using (BinaryReader reader = new BinaryReader(memStream))
                     {
-                        string content = reader.ReadToEnd();
-                        Assert.AreEqual("100;MyStringLol\n101;MyStringLol2\n", content);
+                        Assert.AreEqual(100, reader.ReadInt32());
+                        Assert.AreEqual("MyStringLol", reader.ReadString());
+                        Assert.AreEqual(101, reader.ReadInt32());
+                        Assert.AreEqual("MyStringLol2", reader.ReadString());
                     }
                 }
             }
@@ -49,13 +50,13 @@ namespace PBGame.IO
         [UnityTest]
         public IEnumerator TestWrap()
         {
-            var dataWriter = new DataStreamWriter<DummyData>(2);
+            var dataWriter = new DataStreamWriter<DummyData>(() => new DummyData(), 2);
             dataWriter.StopStream();
             Assert.Throws<Exception>(() => dataWriter.WriteData(new DummyData()));
             Assert.Throws<ArgumentNullException>(() => dataWriter.StartStream(null));
             using (MemoryStream memStream = new MemoryStream())
             {
-                using (StreamWriter writer = new StreamWriter(memStream))
+                using (BinaryWriter writer = new BinaryWriter(memStream))
                 {
                     dataWriter.StartStream(writer);
                     dataWriter.WriteData(new DummyData()
@@ -89,10 +90,18 @@ namespace PBGame.IO
                     dataWriter.StopStream();
 
                     memStream.Position = 0;
-                    using (StreamReader reader = new StreamReader(memStream))
+                    using (BinaryReader reader = new BinaryReader(memStream))
                     {
-                        string content = reader.ReadToEnd();
-                        Assert.AreEqual("0;a\n1;b\n2;c\n3;d\n4;e\n", content);
+                        Assert.AreEqual(0, reader.ReadInt32());
+                        Assert.AreEqual("a", reader.ReadString());
+                        Assert.AreEqual(1, reader.ReadInt32());
+                        Assert.AreEqual("b", reader.ReadString());
+                        Assert.AreEqual(2, reader.ReadInt32());
+                        Assert.AreEqual("c", reader.ReadString());
+                        Assert.AreEqual(3, reader.ReadInt32());
+                        Assert.AreEqual("d", reader.ReadString());
+                        Assert.AreEqual(4, reader.ReadInt32());
+                        Assert.AreEqual("e", reader.ReadString());
                     }
                 }
             }
@@ -101,11 +110,10 @@ namespace PBGame.IO
         [UnityTest]
         public IEnumerator TestStressedPush()
         {
-            var saver = new DataStreamWriter<DummyData>(250);
+            var saver = new DataStreamWriter<DummyData>(() => new DummyData(), 250);
             using (MemoryStream memStream = new MemoryStream())
             {
-                StringBuilder sb = new StringBuilder();
-                using (StreamWriter writer = new StreamWriter(memStream))
+                using (BinaryWriter writer = new BinaryWriter(memStream))
                 {
                     saver.StartStream(writer);
                     for (int r = 0; r < 5; r++)
@@ -117,7 +125,6 @@ namespace PBGame.IO
                                 Num = r * 100 + i,
                                 Str = "Lolz"
                             };
-                            sb.AppendLine(data.ToStreamData());
                             saver.WriteData(data);
                         }
                         yield return new WaitForSecondsRealtime(0.1f);
@@ -125,10 +132,16 @@ namespace PBGame.IO
                     saver.StopStream();
 
                     memStream.Position = 0;
-                    using (StreamReader reader = new StreamReader(memStream))
+                    using (BinaryReader reader = new BinaryReader(memStream))
                     {
-                        string content = reader.ReadToEnd();
-                        Assert.AreEqual(sb.ToString(), content);
+                        for (int r = 0; r < 5; r++)
+                        {
+                            for (int i = 0; i < 100; i++)
+                            {
+                                Assert.AreEqual(r * 100 + i, reader.ReadInt32());
+                                Assert.AreEqual("Lolz", reader.ReadString());
+                            }
+                        }
                     }
                 }
             }
