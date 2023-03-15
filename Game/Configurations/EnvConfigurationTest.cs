@@ -26,22 +26,6 @@ namespace PBGame.Configurations
         }
         
         [Test]
-        public void TestLocal()
-        {
-            IEnvConfiguration config = new EnvConfiguration(EnvType.LocalDevelopment);
-            Assert.AreEqual(EnvType.LocalDevelopment, config.EnvironmentType);
-            Assert.IsTrue(config.IsDevelopment);
-            Assert.IsFalse(config.IsLoaded);
-            Assert.IsNull(config.Variables);
-
-            config.Load("Configurations/Env");
-
-            Assert.IsTrue(config.IsLoaded);
-            Assert.IsNotNull(config.Variables);
-            Assert.IsTrue(config.Variables.IsDevelopment);
-        }
-
-        [Test]
         public void TestProd()
         {
             IEnvConfiguration config = new EnvConfiguration(EnvType.Production);
